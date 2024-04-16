@@ -1,0 +1,14 @@
+No json das settings do vosso VSCODE metam este código para o vscode saber onde ir buscar as librarias externas:
+
+"java.project.referencedLibraries": [
+        "lib/**/*.jar",
+ ],
+
+
+
+Um bug que tive foi quando corria o java file ele não encontrava a classe (A classe que estava criado dentro do file que 
+estava a correr) e para dar fix têm de instalar (caso não tenham instalado) a extensão "Language Support for Java(TM) by 
+Red Hat" (caso tenham instalado verfiquem se conseguem dar update). 
+Depois de instalada/atualizada se continuar a não dar cliquem F1, escrevam Java e cliquem na opção: Java: Clean Java language server workspace.
+
+Com isto, esse bug fica resolvido porque ele dá rebuild ao classpath.
