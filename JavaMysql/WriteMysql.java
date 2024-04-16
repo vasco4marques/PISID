@@ -38,6 +38,7 @@ public class WriteMysql {
     static DBCollection colTemp1;
     static DBCollection colTemp2;
 
+
 	// Objeto SQL
 	static Connection connTo;
 	
@@ -101,6 +102,8 @@ public class WriteMysql {
 		}
 	}
 
+
+	// Ligação ao MONGODB
 	public void connectToMongo(){
 		String mongoURI = new String();
 		mongoURI = "mongodb://";		
@@ -117,6 +120,16 @@ public class WriteMysql {
 		colDoors = db.getCollection(mongo_doors);
 		colTemp1 = db.getCollection(mongo_temp1);
 		colTemp2 = db.getCollection(mongo_temp2);
+	}
+
+	// Lê a coleção dada como parâmetro e retorna uma lista de DBObjects
+	// Para leres estes objetos podes usar o .get(key) que ele retorna o value
+	public List<DBObject> readFromMongo(DBCollection col){
+		List<DBObject> results = null;
+		try(DBCursor resultado = col.find()){
+			results = resultado.toArray();
+		}
+		return results;
 	}
 
 
