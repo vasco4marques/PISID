@@ -25,14 +25,40 @@ import java.sql.ResultSetMetaData;
 ///////////////////////////////////////////////////////////////////IMPORTES PARA TESTE////////////////////////////////////////////////////////////////
 import java.util.regex.Pattern;
 
+import com.mongodb.*;
+import com.mongodb.util.JSON;
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 public class WriteMysql {
-	static JTextArea documentLabel = new JTextArea("\n");
+	
+	// Objetos Mongo
+    static MongoClient mongoClient;
+    static DB db;
+    static DBCollection colDoors;
+    static DBCollection colTemp1;
+    static DBCollection colTemp2;
+
+	// Objeto SQL
 	static Connection connTo;
+	
+	static JTextArea documentLabel = new JTextArea("\n");
+	
+	// Dados do SQL do ficheiro ini
 	static String sql_database_connection_to = new String();
 	static String sql_database_password_to = new String();
 	static String sql_database_user_to = new String();
 	static String sql_table_to = new String();
+	
+	// Dados mongo do ficheiro ini
+	static String mongo_user = new String();
+	static String mongo_password = new String();
+	static String mongo_address = new String();
+	static String mongo_replica = new String();
+	static String mongo_database = new String();
+    static String mongo_doors = new String();
+    static String mongo_temp1 = new String();
+    static String mongo_temp2 = new String();
+	static String mongo_authentication = new String();
 
 	LinkedHashSet<String> dadoSet = new LinkedHashSet<>();
 	private final static int OUTLIERS = 16;
@@ -74,6 +100,25 @@ public class WriteMysql {
 			System.out.println("Mysql Server Destination down, unable to make the connection. " + e);
 		}
 	}
+
+	public void connectToMongo(){
+		String mongoURI = new String();
+		mongoURI = "mongodb://";		
+		if (mongo_authentication.equals("true")) mongoURI = mongoURI + mongo_user + ":" + mongo_password + "@";		
+		mongoURI = mongoURI + mongo_address;		
+		if (!mongo_replica.equals("false")) 
+			if (mongo_authentication.equals("true")) mongoURI = mongoURI + "/?replicaSet=" + mongo_replica+"&authSource=admin";
+			else mongoURI = mongoURI + "/?replicaSet=" + mongo_replica;		
+		else
+			if (mongo_authentication.equals("true")) mongoURI = mongoURI  + "/?authSource=admin";			
+		MongoClient mongoClient = new MongoClient(new MongoClientURI(mongoURI));						
+		db = mongoClient.getDB(mongo_database);
+        // 3 coleções que precisas
+		colDoors = db.getCollection(mongo_doors);
+		colTemp1 = db.getCollection(mongo_temp1);
+		colTemp2 = db.getCollection(mongo_temp2);
+	}
+
 
 	public void ReadData() {
 		/*
@@ -462,11 +507,22 @@ public class WriteMysql {
 		createWindow();
 		try {
 			Properties p = new Properties();
-			p.load(new FileInputStream("WriteMysql.ini"));
+			p.load(new FileInputStream("JavaMysql/WriteMysql.ini"));
 			sql_table_to = p.getProperty("sql_table_to");
 			sql_database_connection_to = p.getProperty("sql_database_connection_to");
 			sql_database_password_to = p.getProperty("sql_database_password_to");
 			sql_database_user_to = p.getProperty("sql_database_user_to");
+			mongo_user = p.getProperty("mongo_user");
+            mongo_password = p.getProperty("mongo_password");
+			mongo_address = p.getProperty("mongo_addresss");
+			mongo_database = p.getProperty("mongo_database");
+            mongo_authentication = p.getProperty("mongo_authentication");			
+            mongo_doors = p.getProperty("mongo_collection");
+            mongo_temp1 = p.getProperty("mongo_collection");
+            mongo_temp2 = p.getProperty("mongo_collection");
+			mongo_replica = p.getProperty("mongo_replica");
+
+
 		} catch (Exception e) {
 			System.out.println("Error reading WriteMysql.ini file " + e);
 			JOptionPane.showMessageDialog(null, "The WriteMysql inifile wasn't found.", "Data Migration",
@@ -481,7 +537,7 @@ public class WriteMysql {
 	////////////////////////////////////////////////////////////// TESTE//////////////////////////////////
 
 	public void writeArrayListToFile(ArrayList<String> dataList, String fileName) {
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter("JavaMysql/Anomalos/" + fileName))) {
 			for (String data : dataList) {
 				writer.write(data);
 				writer.newLine(); // Adiciona uma nova linha após cada conjunto de dados
@@ -495,7 +551,7 @@ public class WriteMysql {
 
 
 	public void writeHashSetToFile(Set<String> dataSet, String fileName) {
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter("JavaMysql/Anomalos/" + fileName))) {
 			for (String data : dataSet) {
 				writer.write(data);
 				writer.newLine(); // Adiciona uma nova linha após cada conjunto de dados
@@ -508,7 +564,7 @@ public class WriteMysql {
 	}
 
 	public static void writeMapToFile(HashMap<Integer, Integer> dataMap, String fileName) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("JavaMysql/Anomalos/" + fileName))) {
             for (Integer key : dataMap.keySet()) {
                 String data = "Sala "+ key + ": " + dataMap.get(key);
                 writer.write(data);

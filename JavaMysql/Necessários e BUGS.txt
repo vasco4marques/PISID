@@ -1,8 +1,9 @@
 No json das settings do vosso VSCODE metam este código para o vscode saber onde ir buscar as librarias externas:
 
-"java.project.referencedLibraries": [
-        "lib/**/*.jar",
- ],
+ "java.project.referencedLibraries": [
+        "JavaMQTT/lib/**/*.jar",
+        "JavaMysql/lib/**/*.jar"
+],
 
 
 

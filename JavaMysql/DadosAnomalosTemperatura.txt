@@ -1,9 +1,0 @@
-{_id: ObjectId('7a4a24f2'), Hora: 'Hora_anomala', Leitura: 0, Sensor: 0}
-{_id: ObjectId('8eefa28e'), Hora: 'Hora_anomala', Leitura: 0, Sensor: 0}
-{_id: ObjectId('56c19b41'), Hora: 'Hora_anomala', Leitura: 0, Sensor: 0}
-{_id: ObjectId('dbeb618c'), Hora: 'Hora_anomala', Leitura: 0, Sensor: 0}
-{_id: ObjectId('1ee746cd'), Hora: 'Hora_anomala', Leitura: 0, Sensor: 0}
-{_id: ObjectId('1d187248'), Hora: 'Hora_anomala', Leitura: 0, Sensor: 0}
-{_id: ObjectId('3503d068'), Hora: 'Hora_anomala', Leitura: 0, Sensor: 0}
-{_id: ObjectId('94aa31b8'), Hora: 'Hora_anomala', Leitura: 0, Sensor: 0}
-{_id: ObjectId('831778e7'), Hora: 'Hora_anomala', Leitura: 0, Sensor: 0}

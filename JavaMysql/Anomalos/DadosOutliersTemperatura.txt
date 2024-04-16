@@ -1,0 +1,6 @@
+{_id: ObjectId('9f78bb7ff547945f469c0e16b34ab2d71f34837a'), Hora: '2024-04-16 20:07:51.946', Leitura: 100.0, Sensor: 2}
+{_id: ObjectId('83ac6c49f8dec4ccf6fa21606fb0502162ae14e0'), Hora: '2024-04-16 20:07:51.948', Leitura: 19.269876, Sensor: 1}
+{_id: ObjectId('317e86984afb7ee4a893610b21bdc803234428b5'), Hora: '2024-04-16 20:07:51.949', Leitura: 15.0, Sensor: 2}
+{_id: ObjectId('e7b5435555da1e8952cc74b58239a1805254a08e'), Hora: '2024-04-16 20:07:51.949', Leitura: 15.5, Sensor: 2}
+{_id: ObjectId('71d0748a579a2e144d8aacc793c72fd9759493a9'), Hora: '2024-04-16 20:07:51.949', Leitura: 100.0, Sensor: 2}
+{_id: ObjectId('7b948c519deb2aa59c33b8d23285a980fa5c971b'), Hora: '2024-04-16 20:07:51.950', Leitura: 100.0, Sensor: 2}

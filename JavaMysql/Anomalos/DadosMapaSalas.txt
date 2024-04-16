@@ -1,0 +1,10 @@
+Sala 1: -6
+Sala 2: 7
+Sala 3: 3
+Sala 4: -3
+Sala 5: -1
+Sala 6: -5
+Sala 7: 6
+Sala 8: 0
+Sala 9: 0
+Sala 10: -1
