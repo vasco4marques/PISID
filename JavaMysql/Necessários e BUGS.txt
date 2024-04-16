@@ -1,4 +1,5 @@
 No json das settings do vosso VSCODE metam este código para o vscode saber onde ir buscar as librarias externas:
+F1-> Open User Settings (JSON)
 
  "java.project.referencedLibraries": [
         "JavaMQTT/lib/**/*.jar",
