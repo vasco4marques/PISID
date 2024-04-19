@@ -22,9 +22,9 @@ import javax.swing.text.BadLocationException;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+
 ///////////////////////////////////////////////////////////////////IMPORTES PARA TESTE////////////////////////////////////////////////////////////////
 import java.util.regex.Pattern;
-
 import com.mongodb.*;
 import com.mongodb.util.JSON;
 
@@ -131,6 +131,9 @@ public class WriteMysql {
 	// Para leres estes objetos podes usar o .get(key) que ele retorna o value
 	public List<DBObject> readFromMongo(DBCollection col) {
 		List<DBObject> results = null;
+
+		// query = new BasicDBObject("i", new BasicDBObject("$gt", 52));
+
 		try (DBCursor resultado = col.find()) {
 			results = resultado.toArray();
 		}
@@ -138,33 +141,62 @@ public class WriteMysql {
 	}
 
 	public void ReadData() {
+		// Começa e acaba quando:
+		// Hora ser 2000-01-01 00:00:00.000
+		// e se sala origem e destino for 0
 
-		ArrayList<String> dateListTemperatura = new ArrayList<String>();
-		ArrayList<String> dateListRatos = new ArrayList<>();
-		List<DBObject> doors = readFromMongo(colDoors);
-		List<DBObject> temp1 = readFromMongo(colTemp1);
-		List<DBObject> temp2 = readFromMongo(colTemp2);
+		int i = 0;
+		while (i < 10000) {
+			float now = System.nanoTime();
 
-		for (DBObject door : doors) {
-			System.out.println(door);
+			ArrayList<String> dateListTemperatura = new ArrayList<String>();
+			ArrayList<String> dateListRatos = new ArrayList<>();
+			List<DBObject> sensors = readFromMongo(colDoors);
+			List<DBObject> temp1 = readFromMongo(colTemp1);
+			List<DBObject> temp2 = readFromMongo(colTemp2);
+
+			for (DBObject sensor : sensors) {
+				String data = sensor.toString();
+				dateListRatos.add(data);
+				int salaOrigem = (int) sensor.get("SalaOrigem");
+				int salaDestino = (int) sensor.get("SalaDestino");
+				if (!salasMap.containsKey(salaOrigem))
+					salasMap.put(salaOrigem, 0);
+				if (!salasMap.containsKey(salaDestino))
+					salasMap.put(salaDestino, 0);
+			}
+
+
+			for (DBObject t1 : temp1) {
+				String data = t1.toString();
+				dateListTemperatura.add(data);
+			}
+
+			for (DBObject t2 : temp2) {
+				String data = t2.toString();
+				dateListTemperatura.add(data);
+			}
+
+			validarFormatosTemperatura(dateListTemperatura);
+			validarFormatosSalas(dateListRatos);
+
+			writeArrayListToFile(dateListTemperatura, "DadosMongoTemperatura.txt");
+			writeArrayListToFile(dateListRatos, "DadosMongoSalas.txt");
+
+			float end = System.nanoTime();
+			float time = (end - now) / 1000000000;
+
+			if (time >= 0 && time <= 3000) {
+				try {
+					Thread.sleep(3000 - (long) time);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+
+			i++;
 		}
 
-		/*
-		 * String doc = new String();
-		 * int i=0;
-		 * while (i<100) {
-		 * doc = "{Name:\"Nome_"+i+"\", Location:\"Portugal\", id:"+i+"}";
-		 * //WriteToMySQL(com.mongodb.util.JSON.serialize(doc));
-		 * WriteToMySQL(doc);
-		 * i++;
-		 * }
-		 */
-
-		writeArrayListToFile(dateListTemperatura, "DadosMongoTemperatura.txt");
-		validarFormatosTemperatura(dateListTemperatura);
-
-		writeArrayListToFile(dateListRatos, "DadosMongoSalas.txt");
-		validarFormatosSalas(dateListRatos);
 	}
 
 	private void validarFormatosSalas(ArrayList<String> dateListRatos) {
@@ -172,7 +204,7 @@ public class WriteMysql {
 		ArrayList<String> dadosCorretos = new ArrayList<String>();
 		for (String data : dateListRatos) {
 			boolean anomalia = false; // Variável para verificar se é uma anomalia
-			if (!data.contains("Hora:") || !data.contains("SalaDestino:") || !data.contains("SalaOrigem:")) {
+			if (!data.contains("Hora") || !data.contains("SalaDestino") || !data.contains("SalaOrigem")) {
 				dadosAnomalos.add(data);
 				anomalia = true;
 			}
@@ -213,6 +245,11 @@ public class WriteMysql {
 			}
 		}
 
+		for (String data : dadosCorretos) {
+			WriteToMySQL(com.mongodb.util.JSON.serialize(data));
+			// TODO: Salvar data no ficheiro txt para backup
+		}
+
 		writeArrayListToFile(dadosCorretos, "DadosCorretosSalas.txt");
 		writeArrayListToFile(dadosAnomalos, "DadosAnomalosSalas.txt");
 
@@ -222,8 +259,8 @@ public class WriteMysql {
 
 	private void moverRatos(ArrayList<String> dadosCorretos) {
 		for (String data : dadosCorretos) {
-			int salaOrigem = extractRoom(data, "SalaOrigem:");
-			int salaDestino = extractRoom(data, "SalaDestino:");
+			int salaOrigem = extractRoom(data, "SalaOrigem");
+			int salaDestino = extractRoom(data, "SalaDestino");
 
 			// Atualiza as contagens das salas
 			salasMap.put(salaOrigem, salasMap.get(salaOrigem) - 1);
@@ -238,17 +275,24 @@ public class WriteMysql {
 			}
 		}
 		writeMapToFile(salasMap, "DadosMapaSalas.txt");
-		System.exit(0);
 	}
 
 	public int extractRoom(String data, String key) {
-		String[] partes = data.split(", ");
-		for (String parte : partes)
-			if (parte.startsWith(key)) {
-				String valorSala = parte.substring(key.length()).trim();
-				valorSala = valorSala.replace("}", "");
+		// Remove os espaços em branco e as vírgulas extras e, em seguida, divide a
+		// string pelos espaços restantes
+		String[] partes = data.replaceAll("[{}]", "").split("\\s*,\\s*");
+		for (String parte : partes) {
+			// Divide a parte atual pelos dois pontos
+			String[] chaveValor = parte.split("\\s*:\\s*");
+			// Verifica se a chave atual corresponde à chave desejada
+			if (chaveValor[0].equals("\"" + key + "\"")) {
+				// Obtém o valor da chave e remove as aspas e espaços em branco
+				String valorSala = chaveValor[1].replaceAll("\"", "").trim();
+				// Retorna o valor da sala como um inteiro
 				return Integer.parseInt(valorSala);
 			}
+		}
+		// Retorna -1 se a chave não for encontrada
 		return -1;
 	}
 
@@ -256,11 +300,11 @@ public class WriteMysql {
 		ArrayList<String> dadosAnomalos = new ArrayList<String>();
 		ArrayList<String> dadosCorretos = new ArrayList<String>();
 		for (String data : dateListTemperatura) {
-
+			// System.out.println(data);
 			boolean anomalia = false; // Variável para verificar se é uma anomalia
-			if (!data.contains("Hora:") || !data.contains("Leitura:")) {
+			if (!data.contains("Hora") || !data.contains("Leitura")) {
 				dadosAnomalos.add(data);
-				// System.err.println("HORA OU LEITURA NÃO ENCONTRADOS");
+				System.err.println("HORA OU LEITURA NÃO ENCONTRADOS");
 				anomalia = true; // Define como anomalia se Hora ou Leitura não forem encontrados
 			}
 			if (!anomalia) { // Se não for uma anomalia
@@ -274,14 +318,14 @@ public class WriteMysql {
 							if (!Pattern.matches("'\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3,}'", valor)) {
 								// System.err.println("VALOR "+valor);
 								dadosAnomalos.add(data);
-								// System.err.println("HORA MAL FORMATADA");
+								System.err.println("HORA MAL FORMATADA");
 								anomalia = true; // Define como anomalia se Hora estiver mal formatada
 							} else if (chave.equals("Leitura")) {
 								try {
 									Float.parseFloat(valor);
 								} catch (NumberFormatException e) {
 									dadosAnomalos.add(data);
-									// System.err.println("LEITURA MAL FORMATADA");
+									System.err.println("LEITURA MAL FORMATADA");
 									anomalia = true; // Define como anomalia se Leitura estiver mal formatada
 								}
 							}
@@ -298,6 +342,11 @@ public class WriteMysql {
 
 		writeArrayListToFile(dadosCorretos, "DadosCorretosTemperatura.txt");
 		writeArrayListToFile(dadosAnomalos, "DadosAnomalosTemperatura.txt");
+
+		for (String data : dadosCorretos) {
+			WriteToMySQL(com.mongodb.util.JSON.serialize(data));
+			// TODO: Salvar data no ficheiro txt para backup
+		}
 
 		// System.out.println("\n\n\n\n A DETETAR OUTLIERS:\n\n");
 		detetarOutliers(dadosCorretos);
@@ -491,7 +540,7 @@ public class WriteMysql {
 			sql_database_user_to = p.getProperty("sql_database_user_to");
 			mongo_user = p.getProperty("mongo_user");
 			mongo_password = p.getProperty("mongo_password");
-			mongo_address = p.getProperty("mongo_addresss");
+			mongo_address = p.getProperty("mongo_address");
 			mongo_database = p.getProperty("mongo_database");
 			mongo_authentication = p.getProperty("mongo_authentication");
 			mongo_doors = p.getProperty("mongo_doors");
@@ -505,7 +554,7 @@ public class WriteMysql {
 					JOptionPane.ERROR_MESSAGE);
 		}
 		new WriteMysql().connectToMongo();
-		//new WriteMysql().connectDatabase_to();
+		// new WriteMysql().connectDatabase_to();
 		new WriteMysql().ReadData();
 	}
 }

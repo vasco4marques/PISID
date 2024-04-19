@@ -1,4 +1,0 @@
-{_id: ObjectId('65f493b1f0af1672643d6af4'), Hora: '2024-03-15 18:30:08.832404', SalaDestino: 3}
-{_id: ObjectId('65f493b1f0af1672643d6af4'), Hora: '2024-03-15 18:30:08.832404', SalaDestino: 3}
-{_id: ObjectId('65f493b1f0af1672643d6af4'), Hora: '2024-03-15 18:30:08.832404', SalaDestino: 3}
-{_id: ObjectId('65f493b1f0af1672643d6af4'), Hora: '2024-03-15 18:30:08.832404', SalaDestino: 3}
