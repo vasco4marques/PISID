@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
 import java.util.Random;
@@ -21,7 +22,6 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-
 import com.mongodb.*;
 import com.mongodb.util.JSON;
 
@@ -68,7 +68,7 @@ public class PortsToMongo implements MqttCallback {
     public static void readDocument(){
         try {
             Properties p = new Properties();
-            p.load(new FileInputStream("PortsToMongo.ini"));
+            p.load(new FileInputStream("./JavaMQTT/PortToMongo.ini"));
 			mongo_address = p.getProperty("mongo_address");
             mongo_user = p.getProperty("mongo_user");
             mongo_password = p.getProperty("mongo_password");						

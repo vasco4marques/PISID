@@ -30,35 +30,34 @@ import com.mongodb.util.JSON;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 public class WriteMysql {
-	
-	// Objetos Mongo
-    static MongoClient mongoClient;
-    static DB db;
-    static DBCollection colDoors;
-    static DBCollection colTemp1;
-    static DBCollection colTemp2;
 
+	// Objetos Mongo
+	static MongoClient mongoClient;
+	static DB db;
+	static DBCollection colDoors;
+	static DBCollection colTemp1;
+	static DBCollection colTemp2;
 
 	// Objeto SQL
 	static Connection connTo;
-	
+
 	static JTextArea documentLabel = new JTextArea("\n");
-	
+
 	// Dados do SQL do ficheiro ini
 	static String sql_database_connection_to = new String();
 	static String sql_database_password_to = new String();
 	static String sql_database_user_to = new String();
 	static String sql_table_to = new String();
-	
+
 	// Dados mongo do ficheiro ini
 	static String mongo_user = new String();
 	static String mongo_password = new String();
 	static String mongo_address = new String();
 	static String mongo_replica = new String();
 	static String mongo_database = new String();
-    static String mongo_doors = new String();
-    static String mongo_temp1 = new String();
-    static String mongo_temp2 = new String();
+	static String mongo_doors = new String();
+	static String mongo_temp1 = new String();
+	static String mongo_temp2 = new String();
 	static String mongo_authentication = new String();
 
 	LinkedHashSet<String> dadoSet = new LinkedHashSet<>();
@@ -102,21 +101,27 @@ public class WriteMysql {
 		}
 	}
 
-
 	// Ligação ao MONGODB
-	public void connectToMongo(){
+	public void connectToMongo() {
 		String mongoURI = new String();
-		mongoURI = "mongodb://";		
-		if (mongo_authentication.equals("true")) mongoURI = mongoURI + mongo_user + ":" + mongo_password + "@";		
-		mongoURI = mongoURI + mongo_address;		
-		if (!mongo_replica.equals("false")) 
-			if (mongo_authentication.equals("true")) mongoURI = mongoURI + "/?replicaSet=" + mongo_replica+"&authSource=admin";
-			else mongoURI = mongoURI + "/?replicaSet=" + mongo_replica;		
-		else
-			if (mongo_authentication.equals("true")) mongoURI = mongoURI  + "/?authSource=admin";			
-		MongoClient mongoClient = new MongoClient(new MongoClientURI(mongoURI));						
+		mongoURI = "mongodb://";
+		if (mongo_authentication.equals("true"))
+			mongoURI = mongoURI + mongo_user + ":" + mongo_password + "@";
+		mongoURI = mongoURI + mongo_address;
+		if (!mongo_replica.equals("false"))
+			if (mongo_authentication.equals("true"))
+				mongoURI = mongoURI + "/?replicaSet=" + mongo_replica + "&authSource=admin";
+			else
+				mongoURI = mongoURI + "/?replicaSet=" + mongo_replica;
+		else if (mongo_authentication.equals("true"))
+			mongoURI = mongoURI + "/?authSource=admin";
+		MongoClient mongoClient = new MongoClient(new MongoClientURI(mongoURI));
 		db = mongoClient.getDB(mongo_database);
-        // 3 coleções que precisas
+		// 3 coleções que precisas
+		System.out.println(mongo_doors);
+		System.out.println(mongo_temp1);
+		System.out.println(mongo_temp2);
+		System.out.println(db);
 		colDoors = db.getCollection(mongo_doors);
 		colTemp1 = db.getCollection(mongo_temp1);
 		colTemp2 = db.getCollection(mongo_temp2);
@@ -124,16 +129,26 @@ public class WriteMysql {
 
 	// Lê a coleção dada como parâmetro e retorna uma lista de DBObjects
 	// Para leres estes objetos podes usar o .get(key) que ele retorna o value
-	public List<DBObject> readFromMongo(DBCollection col){
+	public List<DBObject> readFromMongo(DBCollection col) {
 		List<DBObject> results = null;
-		try(DBCursor resultado = col.find()){
+		try (DBCursor resultado = col.find()) {
 			results = resultado.toArray();
 		}
 		return results;
 	}
 
-
 	public void ReadData() {
+
+		ArrayList<String> dateListTemperatura = new ArrayList<String>();
+		ArrayList<String> dateListRatos = new ArrayList<>();
+		List<DBObject> doors = readFromMongo(colDoors);
+		List<DBObject> temp1 = readFromMongo(colTemp1);
+		List<DBObject> temp2 = readFromMongo(colTemp2);
+
+		for (DBObject door : doors) {
+			System.out.println(door);
+		}
+
 		/*
 		 * String doc = new String();
 		 * int i=0;
@@ -145,87 +160,19 @@ public class WriteMysql {
 		 * }
 		 */
 
-		// GERAR POSSIVEL TEMPERATURA
-		Random rand = new Random();
-		ArrayList<String> dateListTemperatura = new ArrayList<String>();
-		int buscar = 100;
-		for (int i = 0; i < buscar; i++) {
-			String dadoAnomalo = gerarDadoAnomaloTemperatura(rand);
-			String outlier = gerarOutlier(rand);
-
-			// Adicionar dados anômalos, outliers ou dados normais
-			if (i < buscar / 2) {
-				if (dadoAnomalo != null) {
-					dateListTemperatura.add(dadoAnomalo);
-				} else if (outlier != null) {
-					dateListTemperatura.add(outlier);
-				} else {
-					String objectId = "ObjectId('" + Integer.toHexString(rand.nextInt())
-							+ Integer.toHexString(rand.nextInt()) + Integer.toHexString(rand.nextInt())
-							+ Integer.toHexString(rand.nextInt()) + Integer.toHexString(rand.nextInt()) + "')";
-					String hora = dateFormat.format(new Date());
-					float leitura = rand.nextFloat() * (14f - 13f) + 13f; // Random entre 13 e 14
-					int sensor = rand.nextInt(2) + 1; // Random entre 1 e 2
-					String doc = "{_id: " + objectId + ", Hora: '" + hora + "', Leitura: " + leitura + ", Sensor: "
-							+ sensor + "}";
-					// WriteToMySQL(doc);
-					dateListTemperatura.add(doc);
-				}
-			} else if (i > buscar / 2 && i < buscar / 2 + 10) {
-				dateListTemperatura.add(gerarAumentoEstabilizacaoTemperatura(i - (buscar / 2), rand));
-			} else {
-				if (dadoAnomalo != null) {
-					dateListTemperatura.add(dadoAnomalo);
-				} else if (outlier != null) {
-					dateListTemperatura.add(outlier);
-				} else {
-					String objectId = "ObjectId('" + Integer.toHexString(rand.nextInt())
-					+ Integer.toHexString(rand.nextInt()) + Integer.toHexString(rand.nextInt())
-					+ Integer.toHexString(rand.nextInt()) + Integer.toHexString(rand.nextInt()) + "')";
-					String hora = dateFormat.format(new Date());
-					float leitura = rand.nextFloat() * (19.7f - 18.3f) + 18.3f; // Random entre 13 e 14
-					int sensor = rand.nextInt(2) + 1; // Random entre 1 e 2
-					String doc = "{_id: " + objectId + ", Hora: '" + hora + "', Leitura: " + leitura + ", Sensor: "
-					+ sensor + "}";
-					// WriteToMySQL(doc);
-					dateListTemperatura.add(doc);
-				}
-			}
-		}
-
 		writeArrayListToFile(dateListTemperatura, "DadosMongoTemperatura.txt");
-		validarFormatosTemperatura(dateListTemperatura, buscar);
+		validarFormatosTemperatura(dateListTemperatura);
 
-		ArrayList<String> dateListRatos = new ArrayList<>();
-		for (int i = 1; i <= 10; i++) {
-            salasMap.put(i, 0);
-        }
-		for (int i = 0; i<100;i++){
-			String dadoAnomalo = gerarDadoAnomaloRatos(rand);
-			if (dadoAnomalo != null) {
-				dateListRatos.add(dadoAnomalo);
-			}else{
-				String objectId = "ObjectId('" + Integer.toHexString(rand.nextInt())
-				+ Integer.toHexString(rand.nextInt()) + Integer.toHexString(rand.nextInt())
-				+ Integer.toHexString(rand.nextInt()) + Integer.toHexString(rand.nextInt()) + "')";
-				String hora = dateFormat.format(new Date());
-				int salaOrigem= rand.nextInt(10)+1;
-				int salaDestino= rand.nextInt(10)+1;
-				String dataString = "{_id: " + objectId + ", Hora: '" + hora + "', SalaOrigem: " + salaOrigem + ", SalaDestino: " + salaDestino + "}";
-				dateListRatos.add(dataString);
-			}
-		}
 		writeArrayListToFile(dateListRatos, "DadosMongoSalas.txt");
-		validarFormatosSalas(dateListRatos, buscar);
+		validarFormatosSalas(dateListRatos);
 	}
 
-	private void validarFormatosSalas(ArrayList<String> dateListRatos, int buscar) {
+	private void validarFormatosSalas(ArrayList<String> dateListRatos) {
 		ArrayList<String> dadosAnomalos = new ArrayList<String>();
 		ArrayList<String> dadosCorretos = new ArrayList<String>();
 		for (String data : dateListRatos) {
-			// if (count >= start) {
 			boolean anomalia = false; // Variável para verificar se é uma anomalia
-			if (!data.contains("Hora:") || !data.contains("SalaDestino:")  || !data.contains("SalaOrigem:")) {
+			if (!data.contains("Hora:") || !data.contains("SalaDestino:") || !data.contains("SalaOrigem:")) {
 				dadosAnomalos.add(data);
 				anomalia = true;
 			}
@@ -250,7 +197,7 @@ public class WriteMysql {
 									// System.err.println("LEITURA MAL FORMATADA");
 									anomalia = true; // Define como anomalia se Leitura estiver mal formatada
 								}
-							}else if (chave.equals("SalaOrigem")) {
+							} else if (chave.equals("SalaOrigem")) {
 								try {
 									Integer.parseInt(valor);
 								} catch (NumberFormatException e) {
@@ -264,22 +211,7 @@ public class WriteMysql {
 				if (!anomalia) // Se não for uma anomalia, adicione aos dados corretos
 					dadosCorretos.add(data);
 			}
-			/*
-			 * }
-			 * count++;
-			 */
 		}
-
-		/*
-		 * System.out.println("\n\n\n\n SERIA ENVIADO PARA A BD:\n\n");
-		 * for (String corretos : dadosCorretos)
-		 * System.out.println(corretos);
-		 * 
-		 * System.out.
-		 * println("\n\n\n\n SERIA ENVIADO PARA A ZONA DE DADOS ANOMALOS:\n\n");
-		 * for (String anomalos : dadosAnomalos)
-		 * System.out.println(anomalos);
-		 */
 
 		writeArrayListToFile(dadosCorretos, "DadosCorretosSalas.txt");
 		writeArrayListToFile(dadosAnomalos, "DadosAnomalosSalas.txt");
@@ -290,26 +222,26 @@ public class WriteMysql {
 
 	private void moverRatos(ArrayList<String> dadosCorretos) {
 		for (String data : dadosCorretos) {
-            int salaOrigem = extractRoom(data, "SalaOrigem:");
-            int salaDestino = extractRoom(data, "SalaDestino:");
+			int salaOrigem = extractRoom(data, "SalaOrigem:");
+			int salaDestino = extractRoom(data, "SalaDestino:");
 
-            // Atualiza as contagens das salas
-            salasMap.put(salaOrigem, salasMap.get(salaOrigem) - 1);
-            salasMap.put(salaDestino, salasMap.get(salaDestino) + 1);
+			// Atualiza as contagens das salas
+			salasMap.put(salaOrigem, salasMap.get(salaOrigem) - 1);
+			salasMap.put(salaDestino, salasMap.get(salaDestino) + 1);
 			if (salasMap.get(salaDestino) >= MAXRATOS) {
-                System.out.println("A sala " + salaDestino + " já está lotada. Não é possível adicionar mais ratos.");
+				System.out.println("A sala " + salaDestino + " já está lotada. Não é possível adicionar mais ratos.");
 				break;
-            }
+			}
 			if (salasMap.get(salaOrigem) < 0) {
-				//TODO
-                System.out.println("A sala " + salaOrigem + " tem valores negativos. Algo de errado ocorreu.");
-            }
-        }
-		writeMapToFile(salasMap,"DadosMapaSalas.txt");
+				// TODO
+				System.out.println("A sala " + salaOrigem + " tem valores negativos. Algo de errado ocorreu.");
+			}
+		}
+		writeMapToFile(salasMap, "DadosMapaSalas.txt");
 		System.exit(0);
-    }
+	}
 
-    public int extractRoom(String data, String key) {
+	public int extractRoom(String data, String key) {
 		String[] partes = data.split(", ");
 		for (String parte : partes)
 			if (parte.startsWith(key)) {
@@ -318,14 +250,13 @@ public class WriteMysql {
 				return Integer.parseInt(valorSala);
 			}
 		return -1;
-    }
+	}
 
-
-	public void validarFormatosTemperatura(ArrayList<String> dateListTemperatura, int buscar) {
+	public void validarFormatosTemperatura(ArrayList<String> dateListTemperatura) {
 		ArrayList<String> dadosAnomalos = new ArrayList<String>();
 		ArrayList<String> dadosCorretos = new ArrayList<String>();
 		for (String data : dateListTemperatura) {
-			// if (count >= start) {
+
 			boolean anomalia = false; // Variável para verificar se é uma anomalia
 			if (!data.contains("Hora:") || !data.contains("Leitura:")) {
 				dadosAnomalos.add(data);
@@ -364,17 +295,6 @@ public class WriteMysql {
 			 * count++;
 			 */
 		}
-
-		/*
-		 * System.out.println("\n\n\n\n SERIA ENVIADO PARA A BD:\n\n");
-		 * for (String corretos : dadosCorretos)
-		 * System.out.println(corretos);
-		 * 
-		 * System.out.
-		 * println("\n\n\n\n SERIA ENVIADO PARA A ZONA DE DADOS ANOMALOS:\n\n");
-		 * for (String anomalos : dadosAnomalos)
-		 * System.out.println(anomalos);
-		 */
 
 		writeArrayListToFile(dadosCorretos, "DadosCorretosTemperatura.txt");
 		writeArrayListToFile(dadosAnomalos, "DadosAnomalosTemperatura.txt");
@@ -515,36 +435,6 @@ public class WriteMysql {
 		}
 	}
 
-	/////////////////////////////////////////////////// MAIN////////////////////////////////////////////////////////
-	public static void main(String[] args) {
-		createWindow();
-		try {
-			Properties p = new Properties();
-			p.load(new FileInputStream("JavaMysql/WriteMysql.ini"));
-			sql_table_to = p.getProperty("sql_table_to");
-			sql_database_connection_to = p.getProperty("sql_database_connection_to");
-			sql_database_password_to = p.getProperty("sql_database_password_to");
-			sql_database_user_to = p.getProperty("sql_database_user_to");
-			mongo_user = p.getProperty("mongo_user");
-            mongo_password = p.getProperty("mongo_password");
-			mongo_address = p.getProperty("mongo_addresss");
-			mongo_database = p.getProperty("mongo_database");
-            mongo_authentication = p.getProperty("mongo_authentication");			
-            mongo_doors = p.getProperty("mongo_collection");
-            mongo_temp1 = p.getProperty("mongo_collection");
-            mongo_temp2 = p.getProperty("mongo_collection");
-			mongo_replica = p.getProperty("mongo_replica");
-
-
-		} catch (Exception e) {
-			System.out.println("Error reading WriteMysql.ini file " + e);
-			JOptionPane.showMessageDialog(null, "The WriteMysql inifile wasn't found.", "Data Migration",
-					JOptionPane.ERROR_MESSAGE);
-		}
-		new WriteMysql().connectDatabase_to();
-		new WriteMysql().ReadData();
-	}
-
 	////////////////////////////////////////////////////////////// ESCREVER EM
 	////////////////////////////////////////////////////////////// FICHEIRO PARA
 	////////////////////////////////////////////////////////////// TESTE//////////////////////////////////
@@ -562,7 +452,6 @@ public class WriteMysql {
 		}
 	}
 
-
 	public void writeHashSetToFile(Set<String> dataSet, String fileName) {
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter("JavaMysql/Anomalos/" + fileName))) {
 			for (String data : dataSet) {
@@ -577,62 +466,46 @@ public class WriteMysql {
 	}
 
 	public static void writeMapToFile(HashMap<Integer, Integer> dataMap, String fileName) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("JavaMysql/Anomalos/" + fileName))) {
-            for (Integer key : dataMap.keySet()) {
-                String data = "Sala "+ key + ": " + dataMap.get(key);
-                writer.write(data);
-                writer.newLine(); // Adiciona uma nova linha após cada conjunto de dados
-            }
-            System.out.println("Dados gravados com sucesso no arquivo: " + fileName);
-        } catch (IOException e) {
-            System.err.println("Erro ao escrever dados no arquivo: " + fileName);
-            e.printStackTrace();
-        }
-    }
-	//////////////////////////////////////////////// GERAR
-	//////////////////////////////////////////////// DADOS///////////////////////////////////////////////////////////////
-
-	// Método para gerar dados anómalos
-	private String gerarDadoAnomaloTemperatura(Random rand) {
-		// 5% dos dados são anômalos
-		if (rand.nextInt(100) < 5)
-			return "{_id: ObjectId('" + Integer.toHexString(rand.nextInt())
-					+ "'), Hora: 'Hora_anomala', Leitura: 0, Sensor: 0}";
-		else
-			return null;
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter("JavaMysql/Anomalos/" + fileName))) {
+			for (Integer key : dataMap.keySet()) {
+				String data = "Sala " + key + ": " + dataMap.get(key);
+				writer.write(data);
+				writer.newLine(); // Adiciona uma nova linha após cada conjunto de dados
+			}
+			System.out.println("Dados gravados com sucesso no arquivo: " + fileName);
+		} catch (IOException e) {
+			System.err.println("Erro ao escrever dados no arquivo: " + fileName);
+			e.printStackTrace();
+		}
 	}
 
-	private String gerarDadoAnomaloRatos(Random random) {
-		if (random.nextInt(100) < 5)
-			return "{_id: ObjectId('65f493b1f0af1672643d6af4'), Hora: '2024-03-15 18:30:08.832404', SalaDestino: 3}";
-		return null;
-	}
+	/////////////////////////////////////////////////// MAIN////////////////////////////////////////////////////////
+	public static void main(String[] args) {
+		createWindow();
+		try {
+			Properties p = new Properties();
+			p.load(new FileInputStream("JavaMysql/WriteMysql.ini"));
+			sql_table_to = p.getProperty("sql_table_to");
+			sql_database_connection_to = p.getProperty("sql_database_connection_to");
+			sql_database_password_to = p.getProperty("sql_database_password_to");
+			sql_database_user_to = p.getProperty("sql_database_user_to");
+			mongo_user = p.getProperty("mongo_user");
+			mongo_password = p.getProperty("mongo_password");
+			mongo_address = p.getProperty("mongo_addresss");
+			mongo_database = p.getProperty("mongo_database");
+			mongo_authentication = p.getProperty("mongo_authentication");
+			mongo_doors = p.getProperty("mongo_doors");
+			mongo_temp1 = p.getProperty("mongo_temp1");
+			mongo_temp2 = p.getProperty("mongo_temp2");
+			mongo_replica = p.getProperty("mongo_replica");
 
-	// Método para gerar outliers
-	private String gerarOutlier(Random rand) {
-		// 5% dos dados são outliers
-		if (rand.nextInt(100) < 5) {
-			String objectId = "ObjectId('" + Integer.toHexString(rand.nextInt()) + Integer.toHexString(rand.nextInt())
-					+ Integer.toHexString(rand.nextInt()) + Integer.toHexString(rand.nextInt())
-					+ Integer.toHexString(rand.nextInt()) + "')";
-			String hora = dateFormat.format(new Date());
-			float leitura = 100;
-			int sensor = rand.nextInt(2) + 1; // Random entre 1 e 2
-			String doc = "{_id: " + objectId + ", Hora: '" + hora + "', Leitura: " + leitura + ", Sensor: " + sensor
-					+ "}";
-			return doc;
-		} else
-			return null;
-	}
-
-	private String gerarAumentoEstabilizacaoTemperatura(int i, Random rand) {
-		String objectId = "ObjectId('" + Integer.toHexString(rand.nextInt()) + Integer.toHexString(rand.nextInt())
-				+ Integer.toHexString(rand.nextInt()) + Integer.toHexString(rand.nextInt())
-				+ Integer.toHexString(rand.nextInt()) + "')";
-		String hora = dateFormat.format(new Date());
-		float leitura = 13.5f + i * 0.5f;
-		int sensor = rand.nextInt(2) + 1; // Random entre 1 e 2
-		String doc = "{_id: " + objectId + ", Hora: '" + hora + "', Leitura: " + leitura + ", Sensor: " + sensor + "}";
-		return doc;
+		} catch (Exception e) {
+			System.out.println("Error reading WriteMysql.ini file " + e);
+			JOptionPane.showMessageDialog(null, "The WriteMysql inifile wasn't found.", "Data Migration",
+					JOptionPane.ERROR_MESSAGE);
+		}
+		new WriteMysql().connectToMongo();
+		//new WriteMysql().connectDatabase_to();
+		new WriteMysql().ReadData();
 	}
 }
