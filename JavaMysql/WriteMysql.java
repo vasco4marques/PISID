@@ -166,15 +166,18 @@ public class WriteMysql {
 					salasMap.put(salaDestino, 0);
 			}
 
+			boolean addToTemp1 = true; // Flag para alternar entre temp1 e temp2
 
-			for (DBObject t1 : temp1) {
-				String data = t1.toString();
-				dateListTemperatura.add(data);
-			}
-
-			for (DBObject t2 : temp2) {
-				String data = t2.toString();
-				dateListTemperatura.add(data);
+			// Iterar enquanto houverem elementos em temp1 ou temp2
+			while (!temp1.isEmpty() || !temp2.isEmpty()) {
+				if (addToTemp1 && !temp1.isEmpty()) {
+					String data = temp1.remove(0).toString();
+					dateListTemperatura.add(data);
+				} else if (!temp2.isEmpty()) {
+					String data = temp2.remove(0).toString();
+					dateListTemperatura.add(data);
+				}
+				addToTemp1 = !addToTemp1; // Alternar a flag
 			}
 
 			validarFormatosTemperatura(dateListTemperatura);
