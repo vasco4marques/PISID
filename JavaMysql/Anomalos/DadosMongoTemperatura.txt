@@ -1,100 +1,623 @@
-{_id: ObjectId('c265407e5d78ae494b9fbb4327b8e889974e813e'), Hora: '2024-04-16 20:07:51.938', Leitura: 13.951813, Sensor: 2}
-{_id: ObjectId('c5570716bf7ae196e1e99d4faca6b4693e8d0626'), Hora: '2024-04-16 20:07:51.944', Leitura: 13.964863, Sensor: 1}
-{_id: ObjectId('9f47c6313c0a46d2e011b5892cfa5f6ac9a620f'), Hora: '2024-04-16 20:07:51.945', Leitura: 13.446689, Sensor: 2}
-{_id: ObjectId('73d2ad1a23092177825f47b547e10aaa96347504'), Hora: '2024-04-16 20:07:51.945', Leitura: 13.9165535, Sensor: 1}
-{_id: ObjectId('6f106796a915e0c07a245255d08afdd133026aa3'), Hora: '2024-04-16 20:07:51.945', Leitura: 13.5178795, Sensor: 1}
-{_id: ObjectId('1a59588819375a32c0502ccc5d2fb36d246965c6'), Hora: '2024-04-16 20:07:51.945', Leitura: 13.762343, Sensor: 1}
-{_id: ObjectId('a6d83714'), Hora: 'Hora_anomala', Leitura: 0, Sensor: 0}
-{_id: ObjectId('8a4e80cc7a007267a5eca6f7144856ec2bda37e'), Hora: '2024-04-16 20:07:51.945', Leitura: 13.410313, Sensor: 2}
-{_id: ObjectId('e36304cfed01a8f7d57378fec5f6b272eaff927c'), Hora: '2024-04-16 20:07:51.945', Leitura: 13.249726, Sensor: 1}
-{_id: ObjectId('ece8dcf3fb990afa196304b286537e3bbe504b9'), Hora: '2024-04-16 20:07:51.945', Leitura: 13.5359535, Sensor: 1}
-{_id: ObjectId('b5b53f0aa50ab594e2b8130d36e7fe888519c7ee'), Hora: '2024-04-16 20:07:51.945', Leitura: 13.129282, Sensor: 1}
-{_id: ObjectId('7cb39982b25f27ac83833be82c621def921f6607'), Hora: '2024-04-16 20:07:51.945', Leitura: 13.791319, Sensor: 1}
-{_id: ObjectId('e5b404d562d820218d5174067faec87edd29294'), Hora: '2024-04-16 20:07:51.945', Leitura: 13.861308, Sensor: 1}
-{_id: ObjectId('5d7274ae963c3f2ac05ba6daaa142caab5790545'), Hora: '2024-04-16 20:07:51.945', Leitura: 13.631048, Sensor: 1}
-{_id: ObjectId('3a1d10f4d0978c606a1a645bac95eadef1cd9ce8'), Hora: '2024-04-16 20:07:51.945', Leitura: 13.789612, Sensor: 2}
-{_id: ObjectId('829a04cca4a342e3754bf0e7797e0f20bd6713bd'), Hora: '2024-04-16 20:07:51.945', Leitura: 13.447946, Sensor: 1}
-{_id: ObjectId('be5551c128fd5943f47711f4138595fbd90d3ca2'), Hora: '2024-04-16 20:07:51.946', Leitura: 13.900401, Sensor: 1}
-{_id: ObjectId('1d16454624785e2ff627a57f3a55c685d47894b'), Hora: '2024-04-16 20:07:51.946', Leitura: 13.041538, Sensor: 1}
-{_id: ObjectId('17c9b17bf85fa7dc92567453f123dd3bb349e998'), Hora: '2024-04-16 20:07:51.946', Leitura: 13.932323, Sensor: 2}
-{_id: ObjectId('2f5f0127a0f71f41131c388afdd57cfbb45f1f0'), Hora: '2024-04-16 20:07:51.946', Leitura: 13.713477, Sensor: 1}
-{_id: ObjectId('89364a92657b114e7d4db3d474ce22df74471e'), Hora: '2024-04-16 20:07:51.946', Leitura: 13.869611, Sensor: 2}
-{_id: ObjectId('68d8e85b87a986613fa247ce7a70654eae06cb60'), Hora: '2024-04-16 20:07:51.946', Leitura: 13.252546, Sensor: 1}
-{_id: ObjectId('c58519b2'), Hora: 'Hora_anomala', Leitura: 0, Sensor: 0}
-{_id: ObjectId('5ac6159be0c00fe4de50a19e4816a0e33c855809'), Hora: '2024-04-16 20:07:51.946', Leitura: 13.831814, Sensor: 1}
-{_id: ObjectId('b1e7dd99cd49d941fc804b5e7b5a3a4ac3597097'), Hora: '2024-04-16 20:07:51.946', Leitura: 13.422283, Sensor: 1}
-{_id: ObjectId('9f78bb7ff547945f469c0e16b34ab2d71f34837a'), Hora: '2024-04-16 20:07:51.946', Leitura: 100.0, Sensor: 2}
-{_id: ObjectId('7e3ee2046228cede4b6f7a3ddc2d525fa5e8375e'), Hora: '2024-04-16 20:07:51.946', Leitura: 13.831878, Sensor: 2}
-{_id: ObjectId('1ad507d98cfbf147798d863e70d91da35b9f71c0'), Hora: '2024-04-16 20:07:51.946', Leitura: 13.920767, Sensor: 2}
-{_id: ObjectId('1e4df3ee863149ad4bab4d1561a7cc0a43cbf403'), Hora: '2024-04-16 20:07:51.947', Leitura: 13.451526, Sensor: 2}
-{_id: ObjectId('39573c84247c4e5552490f824e475bd23cc0ceb'), Hora: '2024-04-16 20:07:51.947', Leitura: 13.07844, Sensor: 2}
-{_id: ObjectId('e8680254f3d465a42e15ac537cd1878aec721355'), Hora: '2024-04-16 20:07:51.947', Leitura: 13.543294, Sensor: 1}
-{_id: ObjectId('b72f402d2f343ce4cd60c22832562dc4f16b8ae'), Hora: '2024-04-16 20:07:51.947', Leitura: 13.661732, Sensor: 2}
-{_id: ObjectId('a64fd40692f73fce8f28804d81645132f4040627'), Hora: '2024-04-16 20:07:51.947', Leitura: 13.628849, Sensor: 1}
-{_id: ObjectId('eb319068594df73823e0558deae2742e3a614084'), Hora: '2024-04-16 20:07:51.947', Leitura: 13.338411, Sensor: 1}
-{_id: ObjectId('438ee264fea564dd7ce5f29df5d3af942775fadf'), Hora: '2024-04-16 20:07:51.947', Leitura: 13.09084, Sensor: 2}
-{_id: ObjectId('f4c053c1'), Hora: 'Hora_anomala', Leitura: 0, Sensor: 0}
-{_id: ObjectId('31a2d8bd2e898dafe117eaf3e066702eecacdd6'), Hora: '2024-04-16 20:07:51.947', Leitura: 13.89556, Sensor: 2}
-{_id: ObjectId('79af3d3710e35736ac372df43568423c31eaf466'), Hora: '2024-04-16 20:07:51.947', Leitura: 13.27365, Sensor: 2}
-{_id: ObjectId('df978a4d23d0c25216336020d510547c432fd04'), Hora: '2024-04-16 20:07:51.947', Leitura: 13.057557, Sensor: 2}
-{_id: ObjectId('776553e24ce232c5b292d2d385b08a59fe5f3d34'), Hora: '2024-04-16 20:07:51.947', Leitura: 13.871492, Sensor: 1}
-{_id: ObjectId('7fc610002fe1692293d92ac1735a411a3e9e40a'), Hora: '2024-04-16 20:07:51.947', Leitura: 13.982211, Sensor: 2}
-{_id: ObjectId('e36f66a195c6c4f83fcdc48f1e02339e5d5c5d6'), Hora: '2024-04-16 20:07:51.947', Leitura: 13.720874, Sensor: 2}
-{_id: ObjectId('3a2a50ca90ebc410c97b54e4bd842cac4c7401eb'), Hora: '2024-04-16 20:07:51.947', Leitura: 13.352459, Sensor: 1}
-{_id: ObjectId('92bef9e95d69b9163b09e4cf727b28e4c10b0ae'), Hora: '2024-04-16 20:07:51.947', Leitura: 13.516239, Sensor: 2}
-{_id: ObjectId('89f6e9ae57b208abf8071d0a8e2085577501249c'), Hora: '2024-04-16 20:07:51.947', Leitura: 13.13023, Sensor: 1}
-{_id: ObjectId('23213585689fc4cba0a24c7ddfe5bf41e33fc3da'), Hora: '2024-04-16 20:07:51.948', Leitura: 13.576744, Sensor: 1}
-{_id: ObjectId('eee33232cfc7670558f6c783be4f280cc0922f6f'), Hora: '2024-04-16 20:07:51.948', Leitura: 13.995716, Sensor: 2}
-{_id: ObjectId('49f3a237b55ef1d85104f26d4ef075212c025e1c'), Hora: '2024-04-16 20:07:51.948', Leitura: 13.737154, Sensor: 1}
-{_id: ObjectId('1914afc978f0a058f76043debe198dea121d2339'), Hora: '2024-04-16 20:07:51.948', Leitura: 13.577111, Sensor: 2}
-{_id: ObjectId('5d2d552abdced50e8c1bf3f22c2536f2ea143e2b'), Hora: '2024-04-16 20:07:51.948', Leitura: 13.912842, Sensor: 1}
-{_id: ObjectId('83ac6c49f8dec4ccf6fa21606fb0502162ae14e0'), Hora: '2024-04-16 20:07:51.948', Leitura: 19.269876, Sensor: 1}
-{_id: ObjectId('519a5b21894f50170a4cc20a7e2b479293e9754'), Hora: '2024-04-16 20:07:51.948', Leitura: 14.0, Sensor: 2}
-{_id: ObjectId('80ebdf45b88b47ddebef92bed93de0135cc1de9'), Hora: '2024-04-16 20:07:51.948', Leitura: 14.5, Sensor: 2}
-{_id: ObjectId('317e86984afb7ee4a893610b21bdc803234428b5'), Hora: '2024-04-16 20:07:51.949', Leitura: 15.0, Sensor: 2}
-{_id: ObjectId('e7b5435555da1e8952cc74b58239a1805254a08e'), Hora: '2024-04-16 20:07:51.949', Leitura: 15.5, Sensor: 2}
-{_id: ObjectId('8ae6e0f491541c1ea912fdaa9289439afbf47b60'), Hora: '2024-04-16 20:07:51.949', Leitura: 16.0, Sensor: 2}
-{_id: ObjectId('6de488a9b1f4af7b4eccec4a6e92155aecc0860a'), Hora: '2024-04-16 20:07:51.949', Leitura: 16.5, Sensor: 2}
-{_id: ObjectId('6e50d366fe3c11defed384dbe958356eb76b6ae5'), Hora: '2024-04-16 20:07:51.949', Leitura: 17.0, Sensor: 1}
-{_id: ObjectId('8afadc43bd81612e177d386de45f21d516d84ac3'), Hora: '2024-04-16 20:07:51.949', Leitura: 17.5, Sensor: 2}
-{_id: ObjectId('2572d66352c6fee9c46a5a73513bc488cae7e450'), Hora: '2024-04-16 20:07:51.949', Leitura: 18.0, Sensor: 1}
-{_id: ObjectId('4672fa9c6903723119309d359b9edfc8ec53232d'), Hora: '2024-04-16 20:07:51.949', Leitura: 19.048933, Sensor: 1}
-{_id: ObjectId('e1baf84cd690984fb5f6529656e04a6f67476768'), Hora: '2024-04-16 20:07:51.949', Leitura: 18.742094, Sensor: 2}
-{_id: ObjectId('5659f304a426d3b422ef1ea61bc2fd35b24b90'), Hora: '2024-04-16 20:07:51.949', Leitura: 19.440176, Sensor: 2}
-{_id: ObjectId('3b9155c2af50c2b7a65bf1a2235cf5c95912228'), Hora: '2024-04-16 20:07:51.949', Leitura: 18.621452, Sensor: 1}
-{_id: ObjectId('e1f52dab76e983734d5fd0ce6901d696bf3f6c2'), Hora: '2024-04-16 20:07:51.949', Leitura: 19.322643, Sensor: 1}
-{_id: ObjectId('9881ae2044cccebfa332d22fc739b8e1c481ea0'), Hora: '2024-04-16 20:07:51.949', Leitura: 19.542082, Sensor: 1}
-{_id: ObjectId('54ea3c1d'), Hora: 'Hora_anomala', Leitura: 0, Sensor: 0}
-{_id: ObjectId('80fdd34f201b697eb913715636e433d833d001cb'), Hora: '2024-04-16 20:07:51.949', Leitura: 18.982103, Sensor: 1}
-{_id: ObjectId('50a3f89377a62eb7cf1afb2c7026b36dfe435cac'), Hora: '2024-04-16 20:07:51.949', Leitura: 18.998522, Sensor: 2}
-{_id: ObjectId('a4250350c6ee1bda5e077dac1af8cc09bf6d4fa'), Hora: '2024-04-16 20:07:51.949', Leitura: 18.647558, Sensor: 1}
-{_id: ObjectId('71d0748a579a2e144d8aacc793c72fd9759493a9'), Hora: '2024-04-16 20:07:51.949', Leitura: 100.0, Sensor: 2}
-{_id: ObjectId('d39a945971caeb95b67a8dbfa619430afc5fe2e6'), Hora: '2024-04-16 20:07:51.949', Leitura: 18.736576, Sensor: 2}
-{_id: ObjectId('cfce7f025db4c6bac977b6cd95ed479e1023538c'), Hora: '2024-04-16 20:07:51.949', Leitura: 19.35806, Sensor: 2}
-{_id: ObjectId('9be1e35ea88c4e6976e80ff3b6f5e49a2591490'), Hora: '2024-04-16 20:07:51.950', Leitura: 18.445566, Sensor: 1}
-{_id: ObjectId('9ac7e263'), Hora: 'Hora_anomala', Leitura: 0, Sensor: 0}
-{_id: ObjectId('b320e90a999a24acb25fb4e2cd1543ffd1560418'), Hora: '2024-04-16 20:07:51.950', Leitura: 19.272812, Sensor: 2}
-{_id: ObjectId('28bd34f65dc0f9d5830e16baaeebe8df24a6a8b9'), Hora: '2024-04-16 20:07:51.950', Leitura: 19.041685, Sensor: 2}
-{_id: ObjectId('4c2386173e307163c3f5ffad88b60237a160516b'), Hora: '2024-04-16 20:07:51.950', Leitura: 19.00579, Sensor: 1}
-{_id: ObjectId('386a5aa59f39448b74003aa2d35db576ece21420'), Hora: '2024-04-16 20:07:51.950', Leitura: 18.42938, Sensor: 1}
-{_id: ObjectId('68684f17d7d6fdd8f5fdc07e1b04a79d82ab088'), Hora: '2024-04-16 20:07:51.950', Leitura: 18.914965, Sensor: 1}
-{_id: ObjectId('b7556a39e087773863b4f8a9591ed2f41b2490a8'), Hora: '2024-04-16 20:07:51.950', Leitura: 19.274754, Sensor: 2}
-{_id: ObjectId('cbe325d8f212e06895b423c816a756f55c8f8b46'), Hora: '2024-04-16 20:07:51.950', Leitura: 19.067232, Sensor: 1}
-{_id: ObjectId('205e3494ae3d5c57f68d40cae42bcb0c30152d5'), Hora: '2024-04-16 20:07:51.950', Leitura: 18.375957, Sensor: 2}
-{_id: ObjectId('e7f570c9bd935cc6e56adc6a79c1e0b18a4c210f'), Hora: '2024-04-16 20:07:51.950', Leitura: 18.875654, Sensor: 1}
-{_id: ObjectId('240d024c6328ae683d19ecb421628ff3dddd00f'), Hora: '2024-04-16 20:07:51.950', Leitura: 18.5165, Sensor: 1}
-{_id: ObjectId('c82584926612ecf09fa3821c67cc454fae8fdcf2'), Hora: '2024-04-16 20:07:51.950', Leitura: 19.07007, Sensor: 1}
-{_id: ObjectId('7b948c519deb2aa59c33b8d23285a980fa5c971b'), Hora: '2024-04-16 20:07:51.950', Leitura: 100.0, Sensor: 2}
-{_id: ObjectId('7b0ee8003f44eeacef2df19a04076d29d1380f3'), Hora: '2024-04-16 20:07:51.950', Leitura: 19.214642, Sensor: 1}
-{_id: ObjectId('85e77d2b64cfab6524635918a8a53da6a85819'), Hora: '2024-04-16 20:07:51.950', Leitura: 19.158615, Sensor: 1}
-{_id: ObjectId('7100e18fe55d30b6c6111f5a38886a6dc7667f1'), Hora: '2024-04-16 20:07:51.950', Leitura: 18.802715, Sensor: 1}
-{_id: ObjectId('35b3f640bf6f0abea840242282ec5066535da02a'), Hora: '2024-04-16 20:07:51.950', Leitura: 18.721977, Sensor: 2}
-{_id: ObjectId('f9d995e16fdaab6fd7750fd56cfa0c5f50a226'), Hora: '2024-04-16 20:07:51.950', Leitura: 18.894493, Sensor: 2}
-{_id: ObjectId('17d2e02f130a96b2dd5b69afef8c9369fd014bb'), Hora: '2024-04-16 20:07:51.950', Leitura: 19.697083, Sensor: 1}
-{_id: ObjectId('4613dbdb9151d70f6b9d19123f877a8f3091a38'), Hora: '2024-04-16 20:07:51.951', Leitura: 19.196075, Sensor: 1}
-{_id: ObjectId('b38f311fc548fdee850f9faee043adef0977ab'), Hora: '2024-04-16 20:07:51.951', Leitura: 18.831503, Sensor: 1}
-{_id: ObjectId('89126a627d600454b2035c26d72052c0d40ed08'), Hora: '2024-04-16 20:07:51.951', Leitura: 18.599981, Sensor: 2}
-{_id: ObjectId('f456bfeb'), Hora: 'Hora_anomala', Leitura: 0, Sensor: 0}
-{_id: ObjectId('f56502d3fdaf6b35a6eb7c5f5674f5961e7c4768'), Hora: '2024-04-16 20:07:51.951', Leitura: 18.757345, Sensor: 1}
-{_id: ObjectId('53baa0a5d1dffa16863d82564f3a399d66865267'), Hora: '2024-04-16 20:07:51.951', Leitura: 19.39151, Sensor: 2}
-{_id: ObjectId('f7c0b7aaf2670e4395a957b375f0fbd378a5e696'), Hora: '2024-04-16 20:07:51.951', Leitura: 19.264122, Sensor: 1}
+{ "_id" : { "$oid" : "65f8795f6095b74d852cec17"} , "Hora" : "2024-03-18 17:26:56.290409" , "Leitura" : 9.49999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f8795f6095b74d852cec18"} , "Hora" : "2024-03-18 17:26:56.290409" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879606095b74d852cec19"} , "Hora" : "2024-03-18 17:26:57.291180" , "Leitura" : 9.199999999999989 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879616095b74d852cec1b"} , "Hora" : "2024-03-18 17:26:58.291836" , "Leitura" : 5.3 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879616095b74d852cec1a"} , "Hora" : "2024-03-18 17:26:58.291836" , "Leitura" : 8.899999999999988 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879626095b74d852cec1d"} , "Hora" : "2024-03-18 17:26:59.292389" , "Leitura" : 5.6 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879626095b74d852cec1c"} , "Hora" : "2024-03-18 17:26:59.292389" , "Leitura" : 8.599999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879636095b74d852cec1f"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 5.8999999999999995 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879636095b74d852cec1e"} , "Hora" : "2024-03-18 17:27:00.292936" , "Leitura" : 8.299999999999986 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879656095b74d852cec22"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 6.499999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879646095b74d852cec20"} , "Hora" : "2024-03-18 17:27:01.293707" , "Leitura" : 7.999999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879666095b74d852cec24"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 6.799999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879656095b74d852cec21"} , "Hora" : "2024-03-18 17:27:02.294158" , "Leitura" : 7.999999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879676095b74d852cec26"} , "Hora" : "2024-03-18 17:27:04.295593" , "Leitura" : 7.099999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879666095b74d852cec23"} , "Hora" : "2024-03-18 17:27:03.294823" , "Leitura" : 7.999999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879696095b74d852cec29"} , "Hora" : "2024-03-18 17:27:06.296811" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879676095b74d852cec25"} , "Hora" : "2024-03-18 17:27:04.295593" , "Leitura" : 7.999999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f8796a6095b74d852cec2b"} , "Hora" : "2024-03-18 17:27:07.297352" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879686095b74d852cec27"} , "Hora" : "2024-03-18 17:27:05.296260" , "Leitura" : 7.999999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f8796b6095b74d852cec2d"} , "Hora" : "2024-03-18 17:27:08.297900" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879696095b74d852cec28"} , "Hora" : "2024-03-18 17:27:06.296811" , "Leitura" : 7.999999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f8796c6095b74d852cec2f"} , "Hora" : "2024-03-18 17:27:09.298558" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f8796a6095b74d852cec2a"} , "Hora" : "2024-03-18 17:27:07.297352" , "Leitura" : 7.999999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f8796d6095b74d852cec31"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f8796b6095b74d852cec2c"} , "Hora" : "2024-03-18 17:27:08.297900" , "Leitura" : 7.999999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f8796e6095b74d852cec33"} , "Hora" : "2024-03-18 17:27:11.299904" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f8796c6095b74d852cec2e"} , "Hora" : "2024-03-18 17:27:09.298558" , "Leitura" : 7.999999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f8796f6095b74d852cec35"} , "Hora" : "2024-03-18 17:27:12.300560" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f8796d6095b74d852cec30"} , "Hora" : "2024-03-18 17:27:10.299329" , "Leitura" : 7.999999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879706095b74d852cec37"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f8796e6095b74d852cec32"} , "Hora" : "2024-03-18 17:27:11.299904" , "Leitura" : 7.999999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879716095b74d852cec39"} , "Hora" : "2024-03-18 17:27:14.301878" , "Leitura" : 7.099999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f8796f6095b74d852cec34"} , "Hora" : "2024-03-18 17:27:12.300560" , "Leitura" : 8.299999999999986 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879726095b74d852cec3b"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 6.799999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879706095b74d852cec36"} , "Hora" : "2024-03-18 17:27:13.301217" , "Leitura" : 8.599999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879736095b74d852cec3d"} , "Hora" : "2024-03-18 17:27:16.303089" , "Leitura" : 6.499999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879716095b74d852cec38"} , "Hora" : "2024-03-18 17:27:14.301878" , "Leitura" : 8.899999999999988 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879746095b74d852cec3f"} , "Hora" : "2024-03-18 17:27:17.303644" , "Leitura" : 6.199999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879726095b74d852cec3a"} , "Hora" : "2024-03-18 17:27:15.302538" , "Leitura" : 9.199999999999989 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879756095b74d852cec41"} , "Hora" : "2024-03-18 17:27:18.304212" , "Leitura" : 5.8999999999999995 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879736095b74d852cec3c"} , "Hora" : "2024-03-18 17:27:16.303089" , "Leitura" : 9.49999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879766095b74d852cec43"} , "Hora" : "2024-03-18 17:27:19.304868" , "Leitura" : 5.6 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879746095b74d852cec3e"} , "Hora" : "2024-03-18 17:27:17.303644" , "Leitura" : 9.79999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879776095b74d852cec45"} , "Hora" : "2024-03-18 17:27:20.305539" , "Leitura" : 5.3 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879756095b74d852cec40"} , "Hora" : "2024-03-18 17:27:18.304212" , "Leitura" : 10.09999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879786095b74d852cec47"} , "Hora" : "2024-03-18 17:27:21.306100" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879766095b74d852cec42"} , "Hora" : "2024-03-18 17:27:19.304868" , "Leitura" : 10.399999999999991 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879796095b74d852cec49"} , "Hora" : "2024-03-18 17:27:22.306646" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879776095b74d852cec44"} , "Hora" : "2024-03-18 17:27:20.305539" , "Leitura" : 10.699999999999992 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f8797b6095b74d852cec4c"} , "Hora" : "2024-03-18 17:27:24.307987" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879786095b74d852cec46"} , "Hora" : "2024-03-18 17:27:21.306100" , "Leitura" : 10.999999999999993 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f8797c6095b74d852cec4e"} , "Hora" : "2024-03-18 17:27:25.308529" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879796095b74d852cec48"} , "Hora" : "2024-03-18 17:27:22.306646" , "Leitura" : 10.999999999999993 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f8797d6095b74d852cec50"} , "Hora" : "2024-03-18 17:27:26.309200" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f8797a6095b74d852cec4a"} , "Hora" : "2024-03-18 17:27:23.307320" , "Leitura" : 10.999999999999993 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f8797e6095b74d852cec52"} , "Hora" : "2024-03-18 17:27:27.309747" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f8797b6095b74d852cec4b"} , "Hora" : "2024-03-18 17:27:24.307987" , "Leitura" : 10.999999999999993 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f8797f6095b74d852cec54"} , "Hora" : "2024-03-18 17:27:28.310403" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f8797c6095b74d852cec4d"} , "Hora" : "2024-03-18 17:27:25.308529" , "Leitura" : 10.999999999999993 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879806095b74d852cec56"} , "Hora" : "2024-03-18 17:27:29.311078" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f8797d6095b74d852cec4f"} , "Hora" : "2024-03-18 17:27:26.309200" , "Leitura" : 10.999999999999993 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879826095b74d852cec59"} , "Hora" : "2024-03-18 17:27:31.312279" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f8797e6095b74d852cec51"} , "Hora" : "2024-03-18 17:27:27.309747" , "Leitura" : 10.999999999999993 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879836095b74d852cec5b"} , "Hora" : "2024-03-18 17:27:32.312961" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f8797f6095b74d852cec53"} , "Hora" : "2024-03-18 17:27:28.310403" , "Leitura" : 10.999999999999993 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879846095b74d852cec5d"} , "Hora" : "2024-03-18 17:27:33.313630" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879806095b74d852cec55"} , "Hora" : "2024-03-18 17:27:29.311078" , "Leitura" : 10.999999999999993 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879856095b74d852cec5f"} , "Hora" : "2024-03-18 17:27:34.314286" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879816095b74d852cec57"} , "Hora" : "2024-03-18 17:27:30.311738" , "Leitura" : 10.999999999999993 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879876095b74d852cec62"} , "Hora" : "2024-03-18 17:27:36.315528" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879826095b74d852cec58"} , "Hora" : "2024-03-18 17:27:31.312279" , "Leitura" : 10.999999999999993 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879886095b74d852cec64"} , "Hora" : "2024-03-18 17:27:37.316186" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879836095b74d852cec5a"} , "Hora" : "2024-03-18 17:27:32.312961" , "Leitura" : 10.699999999999992 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879896095b74d852cec66"} , "Hora" : "2024-03-18 17:27:38.316749" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879846095b74d852cec5c"} , "Hora" : "2024-03-18 17:27:33.313630" , "Leitura" : 10.399999999999991 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f8798a6095b74d852cec68"} , "Hora" : "2024-03-18 17:27:39.317520" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879856095b74d852cec5e"} , "Hora" : "2024-03-18 17:27:34.314286" , "Leitura" : 10.09999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f8798b6095b74d852cec6a"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879866095b74d852cec60"} , "Hora" : "2024-03-18 17:27:35.314958" , "Leitura" : 9.79999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f8798c6095b74d852cec6c"} , "Hora" : "2024-03-18 17:27:41.318601" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879876095b74d852cec61"} , "Hora" : "2024-03-18 17:27:36.315528" , "Leitura" : 9.49999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f8798d6095b74d852cec6e"} , "Hora" : "2024-03-18 17:27:42.319159" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879886095b74d852cec63"} , "Hora" : "2024-03-18 17:27:37.316186" , "Leitura" : 9.199999999999989 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f8798e6095b74d852cec70"} , "Hora" : "2024-03-18 17:27:43.319932" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879896095b74d852cec65"} , "Hora" : "2024-03-18 17:27:38.316749" , "Leitura" : 8.899999999999988 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f8798f6095b74d852cec72"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f8798a6095b74d852cec67"} , "Hora" : "2024-03-18 17:27:39.317520" , "Leitura" : 8.599999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879916095b74d852cec75"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f8798b6095b74d852cec69"} , "Hora" : "2024-03-18 17:27:40.318055" , "Leitura" : 8.299999999999986 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879926095b74d852cec77"} , "Hora" : "2024-03-18 17:27:47.322498" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f8798c6095b74d852cec6b"} , "Hora" : "2024-03-18 17:27:41.318601" , "Leitura" : 7.999999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879936095b74d852cec79"} , "Hora" : "2024-03-18 17:27:48.323041" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f8798d6095b74d852cec6d"} , "Hora" : "2024-03-18 17:27:42.319159" , "Leitura" : 7.999999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879946095b74d852cec7b"} , "Hora" : "2024-03-18 17:27:49.323592" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f8798e6095b74d852cec6f"} , "Hora" : "2024-03-18 17:27:43.319932" , "Leitura" : 7.999999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879956095b74d852cec7d"} , "Hora" : "2024-03-18 17:27:50.324287" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f8798f6095b74d852cec71"} , "Hora" : "2024-03-18 17:27:44.320492" , "Leitura" : 7.999999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879976095b74d852cec80"} , "Hora" : "2024-03-18 17:27:52.325484" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879906095b74d852cec73"} , "Hora" : "2024-03-18 17:27:45.321158" , "Leitura" : 7.999999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879986095b74d852cec82"} , "Hora" : "2024-03-18 17:27:53.326046" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879916095b74d852cec74"} , "Hora" : "2024-03-18 17:27:46.321819" , "Leitura" : 7.999999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879996095b74d852cec84"} , "Hora" : "2024-03-18 17:27:54.326713" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879926095b74d852cec76"} , "Hora" : "2024-03-18 17:27:47.322498" , "Leitura" : 7.999999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f8799a6095b74d852cec86"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879936095b74d852cec78"} , "Hora" : "2024-03-18 17:27:48.323041" , "Leitura" : 7.999999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f8799b6095b74d852cec88"} , "Hora" : "2024-03-18 17:27:56.327918" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879946095b74d852cec7a"} , "Hora" : "2024-03-18 17:27:49.323592" , "Leitura" : 7.999999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f8799c6095b74d852cec8a"} , "Hora" : "2024-03-18 17:27:57.328483" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879956095b74d852cec7c"} , "Hora" : "2024-03-18 17:27:50.324287" , "Leitura" : 7.999999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f8799d6095b74d852cec8c"} , "Hora" : "2024-03-18 17:27:58.329253" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879966095b74d852cec7e"} , "Hora" : "2024-03-18 17:27:51.324828" , "Leitura" : 7.999999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879a06095b74d852cec90"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879976095b74d852cec7f"} , "Hora" : "2024-03-18 17:27:52.325484" , "Leitura" : 7.699999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879a16095b74d852cec92"} , "Hora" : "2024-03-18 17:28:02.331343" , "Leitura" : 5.3 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879986095b74d852cec81"} , "Hora" : "2024-03-18 17:27:53.326046" , "Leitura" : 7.399999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879a26095b74d852cec94"} , "Hora" : "2024-03-18 17:28:03.331894" , "Leitura" : 5.6 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879996095b74d852cec83"} , "Hora" : "2024-03-18 17:27:54.326713" , "Leitura" : 7.099999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879a36095b74d852cec96"} , "Hora" : "2024-03-18 17:28:04.332553" , "Leitura" : 5.8999999999999995 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f8799a6095b74d852cec85"} , "Hora" : "2024-03-18 17:27:55.327371" , "Leitura" : 6.799999999999987 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879a46095b74d852cec98"} , "Hora" : "2024-03-18 17:28:05.333125" , "Leitura" : 6.199999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f8799b6095b74d852cec87"} , "Hora" : "2024-03-18 17:27:56.327918" , "Leitura" : 6.499999999999988 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879a56095b74d852cec9a"} , "Hora" : "2024-03-18 17:28:06.333790" , "Leitura" : 6.499999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f8799c6095b74d852cec89"} , "Hora" : "2024-03-18 17:27:57.328483" , "Leitura" : 6.199999999999988 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879a66095b74d852cec9c"} , "Hora" : "2024-03-18 17:28:07.334446" , "Leitura" : 6.799999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f8799d6095b74d852cec8b"} , "Hora" : "2024-03-18 17:27:58.329253" , "Leitura" : 5.899999999999988 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879a76095b74d852cec9e"} , "Hora" : "2024-03-18 17:28:08.335116" , "Leitura" : 7.099999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f8799e6095b74d852cec8d"} , "Hora" : "2024-03-18 17:27:59.329690" , "Leitura" : 5.599999999999988 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879a86095b74d852ceca0"} , "Hora" : "2024-03-18 17:28:09.335575" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f8799f6095b74d852cec8e"} , "Hora" : "2024-03-18 17:28:00.330246" , "Leitura" : 5.299999999999988 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879a96095b74d852ceca2"} , "Hora" : "2024-03-18 17:28:10.336119" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879a06095b74d852cec8f"} , "Hora" : "2024-03-18 17:28:01.330910" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879ab6095b74d852ceca5"} , "Hora" : "2024-03-18 17:28:12.337351" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879a16095b74d852cec91"} , "Hora" : "2024-03-18 17:28:02.331343" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879ac6095b74d852ceca7"} , "Hora" : "2024-03-18 17:28:13.338007" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879a26095b74d852cec93"} , "Hora" : "2024-03-18 17:28:03.331894" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879ad6095b74d852ceca9"} , "Hora" : "2024-03-18 17:28:14.338557" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879a36095b74d852cec95"} , "Hora" : "2024-03-18 17:28:04.332553" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879ae6095b74d852cecab"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879a46095b74d852cec97"} , "Hora" : "2024-03-18 17:28:05.333125" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879af6095b74d852cecad"} , "Hora" : "2024-03-18 17:28:16.339886" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879a56095b74d852cec99"} , "Hora" : "2024-03-18 17:28:06.333790" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879b06095b74d852cecaf"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879a66095b74d852cec9b"} , "Hora" : "2024-03-18 17:28:07.334446" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879b16095b74d852cecb1"} , "Hora" : "2024-03-18 17:28:18.341235" , "Leitura" : 7.099999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879a76095b74d852cec9d"} , "Hora" : "2024-03-18 17:28:08.335116" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879b26095b74d852cecb3"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 6.799999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879a86095b74d852cec9f"} , "Hora" : "2024-03-18 17:28:09.335575" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879b46095b74d852cecb6"} , "Hora" : "2024-03-18 17:28:21.343031" , "Leitura" : 6.199999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879a96095b74d852ceca1"} , "Hora" : "2024-03-18 17:28:10.336119" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879b66095b74d852cecb9"} , "Hora" : "2024-03-18 17:28:23.344238" , "Leitura" : 5.6 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879aa6095b74d852ceca3"} , "Hora" : "2024-03-18 17:28:11.336687" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879ba6095b74d852cecbe"} , "Hora" : "2024-03-18 17:28:27.346706" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879ab6095b74d852ceca4"} , "Hora" : "2024-03-18 17:28:12.337351" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879bb6095b74d852cecc0"} , "Hora" : "2024-03-18 17:28:28.347371" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879ac6095b74d852ceca6"} , "Hora" : "2024-03-18 17:28:13.338007" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879bc6095b74d852cecc2"} , "Hora" : "2024-03-18 17:28:29.347927" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879ad6095b74d852ceca8"} , "Hora" : "2024-03-18 17:28:14.338557" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879be6095b74d852cecc5"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879ae6095b74d852cecaa"} , "Hora" : "2024-03-18 17:28:15.339116" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879bf6095b74d852cecc7"} , "Hora" : "2024-03-18 17:28:32.349734" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879af6095b74d852cecac"} , "Hora" : "2024-03-18 17:28:16.339886" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879c06095b74d852cecc9"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879b06095b74d852cecae"} , "Hora" : "2024-03-18 17:28:17.340566" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879c16095b74d852ceccb"} , "Hora" : "2024-03-18 17:28:34.351064" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879b16095b74d852cecb0"} , "Hora" : "2024-03-18 17:28:18.341235" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879c26095b74d852ceccd"} , "Hora" : "2024-03-18 17:28:35.351521" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879b26095b74d852cecb2"} , "Hora" : "2024-03-18 17:28:19.341909" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879c36095b74d852ceccf"} , "Hora" : "2024-03-18 17:28:36.352176" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879b36095b74d852cecb4"} , "Hora" : "2024-03-18 17:28:20.342479" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879c76095b74d852cecd4"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879b46095b74d852cecb5"} , "Hora" : "2024-03-18 17:28:21.343031" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879c86095b74d852cecd6"} , "Hora" : "2024-03-18 17:28:41.355392" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879b56095b74d852cecb7"} , "Hora" : "2024-03-18 17:28:22.343692" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879c96095b74d852cecd8"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879b66095b74d852cecb8"} , "Hora" : "2024-03-18 17:28:23.344238" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879cc6095b74d852cecdc"} , "Hora" : "2024-03-18 17:28:45.357609" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879b76095b74d852cecba"} , "Hora" : "2024-03-18 17:28:24.344789" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879cd6095b74d852cecde"} , "Hora" : "2024-03-18 17:28:46.358275" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879b86095b74d852cecbb"} , "Hora" : "2024-03-18 17:28:25.345453" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879ce6095b74d852cece0"} , "Hora" : "2024-03-18 17:28:47.358872" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879b96095b74d852cecbc"} , "Hora" : "2024-03-18 17:28:26.346023" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879cf6095b74d852cece2"} , "Hora" : "2024-03-18 17:28:48.359642" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879ba6095b74d852cecbd"} , "Hora" : "2024-03-18 17:28:27.346706" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879d06095b74d852cece4"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879bb6095b74d852cecbf"} , "Hora" : "2024-03-18 17:28:28.347371" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879d16095b74d852cece6"} , "Hora" : "2024-03-18 17:28:50.360844" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879bc6095b74d852cecc1"} , "Hora" : "2024-03-18 17:28:29.347927" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879d26095b74d852cece8"} , "Hora" : "2024-03-18 17:28:51.361408" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879bd6095b74d852cecc3"} , "Hora" : "2024-03-18 17:28:30.348484" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879d46095b74d852ceceb"} , "Hora" : "2024-03-18 17:28:53.362632" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879be6095b74d852cecc4"} , "Hora" : "2024-03-18 17:28:31.349150" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879d56095b74d852ceced"} , "Hora" : "2024-03-18 17:28:54.363403" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879bf6095b74d852cecc6"} , "Hora" : "2024-03-18 17:28:32.349734" , "Leitura" : 5.3 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879d76095b74d852cecf0"} , "Hora" : "2024-03-18 17:28:56.364725" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879c06095b74d852cecc8"} , "Hora" : "2024-03-18 17:28:33.350396" , "Leitura" : 5.6 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879d86095b74d852cecf2"} , "Hora" : "2024-03-18 17:28:57.365382" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879c16095b74d852cecca"} , "Hora" : "2024-03-18 17:28:34.351064" , "Leitura" : 5.8999999999999995 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879d96095b74d852cecf4"} , "Hora" : "2024-03-18 17:28:58.365923" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879c26095b74d852ceccc"} , "Hora" : "2024-03-18 17:28:35.351521" , "Leitura" : 6.199999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879da6095b74d852cecf6"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879c36095b74d852cecce"} , "Hora" : "2024-03-18 17:28:36.352176" , "Leitura" : 6.499999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879db6095b74d852cecf8"} , "Hora" : "2024-03-18 17:29:00.367173" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879c46095b74d852cecd0"} , "Hora" : "2024-03-18 17:28:37.352832" , "Leitura" : 6.799999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879dc6095b74d852cecfa"} , "Hora" : "2024-03-18 17:29:01.367829" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879c56095b74d852cecd1"} , "Hora" : "2024-03-18 17:28:38.353380" , "Leitura" : 7.099999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879dd6095b74d852cecfc"} , "Hora" : "2024-03-18 17:29:02.368509" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879c66095b74d852cecd2"} , "Hora" : "2024-03-18 17:28:39.354046" , "Leitura" : 7.399999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879df6095b74d852cecff"} , "Hora" : "2024-03-18 17:29:04.369724" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879c76095b74d852cecd3"} , "Hora" : "2024-03-18 17:28:40.354817" , "Leitura" : 7.699999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879e06095b74d852ced01"} , "Hora" : "2024-03-18 17:29:05.370284" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879c86095b74d852cecd5"} , "Hora" : "2024-03-18 17:28:41.355392" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879e16095b74d852ced03"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 5.3 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879c96095b74d852cecd7"} , "Hora" : "2024-03-18 17:28:42.355844" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879e26095b74d852ced05"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 5.6 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879ca6095b74d852cecd9"} , "Hora" : "2024-03-18 17:28:43.356386" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879e36095b74d852ced07"} , "Hora" : "2024-03-18 17:29:08.372060" , "Leitura" : 5.8999999999999995 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879cb6095b74d852cecda"} , "Hora" : "2024-03-18 17:28:44.356944" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879e56095b74d852ced0a"} , "Hora" : "2024-03-18 17:29:10.373264" , "Leitura" : 6.499999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879cc6095b74d852cecdb"} , "Hora" : "2024-03-18 17:28:45.357609" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879e66095b74d852ced0c"} , "Hora" : "2024-03-18 17:29:11.373832" , "Leitura" : 6.799999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879cd6095b74d852cecdd"} , "Hora" : "2024-03-18 17:28:46.358275" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879e76095b74d852ced0e"} , "Hora" : "2024-03-18 17:29:12.374377" , "Leitura" : 7.099999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879ce6095b74d852cecdf"} , "Hora" : "2024-03-18 17:28:47.358872" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879e86095b74d852ced10"} , "Hora" : "2024-03-18 17:29:13.375149" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879cf6095b74d852cece1"} , "Hora" : "2024-03-18 17:28:48.359642" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879e96095b74d852ced12"} , "Hora" : "2024-03-18 17:29:14.375703" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879d06095b74d852cece3"} , "Hora" : "2024-03-18 17:28:49.360298" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879ea6095b74d852ced14"} , "Hora" : "2024-03-18 17:29:15.376251" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879d16095b74d852cece5"} , "Hora" : "2024-03-18 17:28:50.360844" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879eb6095b74d852ced16"} , "Hora" : "2024-03-18 17:29:16.377025" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879d26095b74d852cece7"} , "Hora" : "2024-03-18 17:28:51.361408" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879ec6095b74d852ced18"} , "Hora" : "2024-03-18 17:29:17.377701" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879d36095b74d852cece9"} , "Hora" : "2024-03-18 17:28:52.361959" , "Leitura" : 7.699999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879ed6095b74d852ced1a"} , "Hora" : "2024-03-18 17:29:18.378253" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879d46095b74d852cecea"} , "Hora" : "2024-03-18 17:28:53.362632" , "Leitura" : 7.399999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879ee6095b74d852ced1c"} , "Hora" : "2024-03-18 17:29:19.378909" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879d56095b74d852cecec"} , "Hora" : "2024-03-18 17:28:54.363403" , "Leitura" : 7.099999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879ef6095b74d852ced1e"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879d66095b74d852cecee"} , "Hora" : "2024-03-18 17:28:55.364059" , "Leitura" : 6.799999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879f06095b74d852ced20"} , "Hora" : "2024-03-18 17:29:21.379911" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879d76095b74d852cecef"} , "Hora" : "2024-03-18 17:28:56.364725" , "Leitura" : 6.499999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879f26095b74d852ced23"} , "Hora" : "2024-03-18 17:29:23.381118" , "Leitura" : 6.799999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879d86095b74d852cecf1"} , "Hora" : "2024-03-18 17:28:57.365382" , "Leitura" : 6.199999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879f36095b74d852ced25"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 6.499999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879d96095b74d852cecf3"} , "Hora" : "2024-03-18 17:28:58.365923" , "Leitura" : 5.8999999999999995 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879f46095b74d852ced27"} , "Hora" : "2024-03-18 17:29:25.382430" , "Leitura" : 6.199999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879da6095b74d852cecf5"} , "Hora" : "2024-03-18 17:28:59.366608" , "Leitura" : 5.6 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879f56095b74d852ced29"} , "Hora" : "2024-03-18 17:29:26.382988" , "Leitura" : 5.8999999999999995 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879db6095b74d852cecf7"} , "Hora" : "2024-03-18 17:29:00.367173" , "Leitura" : 5.3 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879f66095b74d852ced2b"} , "Hora" : "2024-03-18 17:29:27.383541" , "Leitura" : 5.6 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879dc6095b74d852cecf9"} , "Hora" : "2024-03-18 17:29:01.367829" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879f76095b74d852ced2d"} , "Hora" : "2024-03-18 17:29:28.384196" , "Leitura" : 5.3 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879dd6095b74d852cecfb"} , "Hora" : "2024-03-18 17:29:02.368509" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879f86095b74d852ced2f"} , "Hora" : "2024-03-18 17:29:29.384751" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879de6095b74d852cecfd"} , "Hora" : "2024-03-18 17:29:03.368954" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879fa6095b74d852ced32"} , "Hora" : "2024-03-18 17:29:31.386077" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879df6095b74d852cecfe"} , "Hora" : "2024-03-18 17:29:04.369724" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879fb6095b74d852ced34"} , "Hora" : "2024-03-18 17:29:32.386638" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879e06095b74d852ced00"} , "Hora" : "2024-03-18 17:29:05.370284" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879fc6095b74d852ced36"} , "Hora" : "2024-03-18 17:29:33.387193" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879e16095b74d852ced02"} , "Hora" : "2024-03-18 17:29:06.370849" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879fd6095b74d852ced38"} , "Hora" : "2024-03-18 17:29:34.387964" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879e26095b74d852ced04"} , "Hora" : "2024-03-18 17:29:07.371506" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879fe6095b74d852ced3a"} , "Hora" : "2024-03-18 17:29:35.388509" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879e36095b74d852ced06"} , "Hora" : "2024-03-18 17:29:08.372060" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f879ff6095b74d852ced3c"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879e46095b74d852ced08"} , "Hora" : "2024-03-18 17:29:09.372609" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a006095b74d852ced3e"} , "Hora" : "2024-03-18 17:29:37.389856" , "Leitura" : 5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879e56095b74d852ced09"} , "Hora" : "2024-03-18 17:29:10.373264" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a016095b74d852ced40"} , "Hora" : "2024-03-18 17:29:38.390423" , "Leitura" : 5.3 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879e66095b74d852ced0b"} , "Hora" : "2024-03-18 17:29:11.373832" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a026095b74d852ced42"} , "Hora" : "2024-03-18 17:29:39.391112" , "Leitura" : 5.6 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879e76095b74d852ced0d"} , "Hora" : "2024-03-18 17:29:12.374377" , "Leitura" : 5.3 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a046095b74d852ced45"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 6.199999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879e86095b74d852ced0f"} , "Hora" : "2024-03-18 17:29:13.375149" , "Leitura" : 5.6 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a056095b74d852ced47"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 6.499999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879e96095b74d852ced11"} , "Hora" : "2024-03-18 17:29:14.375703" , "Leitura" : 5.8999999999999995 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a066095b74d852ced49"} , "Hora" : "2024-03-18 17:29:43.393771" , "Leitura" : 6.799999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879ea6095b74d852ced13"} , "Hora" : "2024-03-18 17:29:15.376251" , "Leitura" : 6.199999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a076095b74d852ced4b"} , "Hora" : "2024-03-18 17:29:44.394442" , "Leitura" : 7.099999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879eb6095b74d852ced15"} , "Hora" : "2024-03-18 17:29:16.377025" , "Leitura" : 6.499999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a086095b74d852ced4d"} , "Hora" : "2024-03-18 17:29:45.395115" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879ec6095b74d852ced17"} , "Hora" : "2024-03-18 17:29:17.377701" , "Leitura" : 6.799999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a096095b74d852ced4f"} , "Hora" : "2024-03-18 17:29:46.395773" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879ed6095b74d852ced19"} , "Hora" : "2024-03-18 17:29:18.378253" , "Leitura" : 7.099999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a0a6095b74d852ced51"} , "Hora" : "2024-03-18 17:29:47.396443" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879ee6095b74d852ced1b"} , "Hora" : "2024-03-18 17:29:19.378909" , "Leitura" : 7.399999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a0b6095b74d852ced53"} , "Hora" : "2024-03-18 17:29:48.396981" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879ef6095b74d852ced1d"} , "Hora" : "2024-03-18 17:29:20.379360" , "Leitura" : 7.699999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a0c6095b74d852ced55"} , "Hora" : "2024-03-18 17:29:49.397638" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879f06095b74d852ced1f"} , "Hora" : "2024-03-18 17:29:21.379911" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a0d6095b74d852ced57"} , "Hora" : "2024-03-18 17:29:50.398193" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879f16095b74d852ced21"} , "Hora" : "2024-03-18 17:29:22.380567" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a0e6095b74d852ced59"} , "Hora" : "2024-03-18 17:29:51.398738" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879f26095b74d852ced22"} , "Hora" : "2024-03-18 17:29:23.381118" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a0f6095b74d852ced5b"} , "Hora" : "2024-03-18 17:29:52.399509" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879f36095b74d852ced24"} , "Hora" : "2024-03-18 17:29:24.381774" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a106095b74d852ced5d"} , "Hora" : "2024-03-18 17:29:53.400350" , "Leitura" : 7.399999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879f46095b74d852ced26"} , "Hora" : "2024-03-18 17:29:25.382430" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a126095b74d852ced60"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 7.999999999999998 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879f56095b74d852ced28"} , "Hora" : "2024-03-18 17:29:26.382988" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a136095b74d852ced62"} , "Hora" : "2024-03-18 17:29:56.402606" , "Leitura" : 8.299999999999999 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879f66095b74d852ced2a"} , "Hora" : "2024-03-18 17:29:27.383541" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a156095b74d852ced65"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 8.9 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879f76095b74d852ced2c"} , "Hora" : "2024-03-18 17:29:28.384196" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a166095b74d852ced67"} , "Hora" : "2024-03-18 17:29:59.404396" , "Leitura" : 9.200000000000001 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879f86095b74d852ced2e"} , "Hora" : "2024-03-18 17:29:29.384751" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a176095b74d852ced69"} , "Hora" : "2024-03-18 17:30:00.404964" , "Leitura" : 9.500000000000002 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879f96095b74d852ced30"} , "Hora" : "2024-03-18 17:29:30.385421" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a186095b74d852ced6b"} , "Hora" : "2024-03-18 17:30:01.405629" , "Leitura" : 9.800000000000002 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879fa6095b74d852ced31"} , "Hora" : "2024-03-18 17:29:31.386077" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a196095b74d852ced6d"} , "Hora" : "2024-03-18 17:30:02.406087" , "Leitura" : 9.800000000000002 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879fb6095b74d852ced33"} , "Hora" : "2024-03-18 17:29:32.386638" , "Leitura" : 7.699999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a1a6095b74d852ced6f"} , "Hora" : "2024-03-18 17:30:03.406743" , "Leitura" : 9.800000000000002 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879fc6095b74d852ced35"} , "Hora" : "2024-03-18 17:29:33.387193" , "Leitura" : 7.399999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a1b6095b74d852ced71"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 9.800000000000002 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879fd6095b74d852ced37"} , "Hora" : "2024-03-18 17:29:34.387964" , "Leitura" : 7.099999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a1c6095b74d852ced73"} , "Hora" : "2024-03-18 17:30:05.408075" , "Leitura" : 9.800000000000002 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879fe6095b74d852ced39"} , "Hora" : "2024-03-18 17:29:35.388509" , "Leitura" : 6.799999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a1d6095b74d852ced75"} , "Hora" : "2024-03-18 17:30:06.408731" , "Leitura" : 9.800000000000002 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f879ff6095b74d852ced3b"} , "Hora" : "2024-03-18 17:29:36.389192" , "Leitura" : 6.499999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a1e6095b74d852ced77"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 9.800000000000002 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a006095b74d852ced3d"} , "Hora" : "2024-03-18 17:29:37.389856" , "Leitura" : 6.199999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a1f6095b74d852ced79"} , "Hora" : "2024-03-18 17:30:08.409948" , "Leitura" : 9.800000000000002 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a016095b74d852ced3f"} , "Hora" : "2024-03-18 17:29:38.390423" , "Leitura" : 5.8999999999999995 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a206095b74d852ced7b"} , "Hora" : "2024-03-18 17:30:09.410612" , "Leitura" : 9.800000000000002 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a026095b74d852ced41"} , "Hora" : "2024-03-18 17:29:39.391112" , "Leitura" : 5.6 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a216095b74d852ced7d"} , "Hora" : "2024-03-18 17:30:10.411153" , "Leitura" : 10.100000000000003 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a036095b74d852ced43"} , "Hora" : "2024-03-18 17:29:40.391883" , "Leitura" : 5.3 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a236095b74d852ced80"} , "Hora" : "2024-03-18 17:30:12.412255" , "Leitura" : 10.700000000000005 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a046095b74d852ced44"} , "Hora" : "2024-03-18 17:29:41.392567" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a246095b74d852ced82"} , "Hora" : "2024-03-18 17:30:13.412917" , "Leitura" : 11.000000000000005 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a056095b74d852ced46"} , "Hora" : "2024-03-18 17:29:42.393226" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a256095b74d852ced84"} , "Hora" : "2024-03-18 17:30:14.413355" , "Leitura" : 11.300000000000006 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a066095b74d852ced48"} , "Hora" : "2024-03-18 17:29:43.393771" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a266095b74d852ced86"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 11.600000000000007 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a076095b74d852ced4a"} , "Hora" : "2024-03-18 17:29:44.394442" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a2a6095b74d852ced8b"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 12.200000000000008 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a086095b74d852ced4c"} , "Hora" : "2024-03-18 17:29:45.395115" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a2b6095b74d852ced8d"} , "Hora" : "2024-03-18 17:30:20.416899" , "Leitura" : 12.200000000000008 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a096095b74d852ced4e"} , "Hora" : "2024-03-18 17:29:46.395773" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a2c6095b74d852ced8f"} , "Hora" : "2024-03-18 17:30:21.417563" , "Leitura" : 12.200000000000008 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a0a6095b74d852ced50"} , "Hora" : "2024-03-18 17:29:47.396443" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a2d6095b74d852ced91"} , "Hora" : "2024-03-18 17:30:22.418229" , "Leitura" : 12.200000000000008 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a0b6095b74d852ced52"} , "Hora" : "2024-03-18 17:29:48.396981" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a2e6095b74d852ced93"} , "Hora" : "2024-03-18 17:30:23.418796" , "Leitura" : 12.200000000000008 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a0c6095b74d852ced54"} , "Hora" : "2024-03-18 17:29:49.397638" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a2f6095b74d852ced95"} , "Hora" : "2024-03-18 17:30:24.419458" , "Leitura" : 12.200000000000008 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a0d6095b74d852ced56"} , "Hora" : "2024-03-18 17:29:50.398193" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a306095b74d852ced97"} , "Hora" : "2024-03-18 17:30:25.420232" , "Leitura" : 12.200000000000008 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a0e6095b74d852ced58"} , "Hora" : "2024-03-18 17:29:51.398738" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a316095b74d852ced99"} , "Hora" : "2024-03-18 17:30:26.420802" , "Leitura" : 11.900000000000007 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a0f6095b74d852ced5a"} , "Hora" : "2024-03-18 17:29:52.399509" , "Leitura" : 5.3 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a326095b74d852ced9b"} , "Hora" : "2024-03-18 17:30:27.421481" , "Leitura" : 11.600000000000007 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a106095b74d852ced5c"} , "Hora" : "2024-03-18 17:29:53.400350" , "Leitura" : 5.6 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a336095b74d852ced9d"} , "Hora" : "2024-03-18 17:30:28.422137" , "Leitura" : 11.300000000000006 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a116095b74d852ced5e"} , "Hora" : "2024-03-18 17:29:54.401016" , "Leitura" : 5.8999999999999995 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a346095b74d852ced9f"} , "Hora" : "2024-03-18 17:30:29.422710" , "Leitura" : 11.000000000000005 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a126095b74d852ced5f"} , "Hora" : "2024-03-18 17:29:55.401682" , "Leitura" : 6.199999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a356095b74d852ceda1"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 10.700000000000005 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a136095b74d852ced61"} , "Hora" : "2024-03-18 17:29:56.402606" , "Leitura" : 6.499999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a366095b74d852ceda3"} , "Hora" : "2024-03-18 17:30:31.423917" , "Leitura" : 10.400000000000004 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a146095b74d852ced63"} , "Hora" : "2024-03-18 17:29:57.403167" , "Leitura" : 6.799999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a376095b74d852ceda5"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 10.100000000000003 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a156095b74d852ced64"} , "Hora" : "2024-03-18 17:29:58.403722" , "Leitura" : 7.099999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a396095b74d852ceda8"} , "Hora" : "2024-03-18 17:30:34.425700" , "Leitura" : 9.800000000000002 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a166095b74d852ced66"} , "Hora" : "2024-03-18 17:29:59.404396" , "Leitura" : 7.399999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a3b6095b74d852cedab"} , "Hora" : "2024-03-18 17:30:36.427044" , "Leitura" : 9.800000000000002 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a176095b74d852ced68"} , "Hora" : "2024-03-18 17:30:00.404964" , "Leitura" : 7.699999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a3c6095b74d852cedad"} , "Hora" : "2024-03-18 17:30:37.427815" , "Leitura" : 9.800000000000002 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a186095b74d852ced6a"} , "Hora" : "2024-03-18 17:30:01.405629" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a3d6095b74d852cedaf"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 9.800000000000002 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a196095b74d852ced6c"} , "Hora" : "2024-03-18 17:30:02.406087" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a3e6095b74d852cedb1"} , "Hora" : "2024-03-18 17:30:39.429045" , "Leitura" : 9.800000000000002 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a1a6095b74d852ced6e"} , "Hora" : "2024-03-18 17:30:03.406743" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a3f6095b74d852cedb3"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 9.800000000000002 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a1b6095b74d852ced70"} , "Hora" : "2024-03-18 17:30:04.407513" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a406095b74d852cedb5"} , "Hora" : "2024-03-18 17:30:41.430473" , "Leitura" : 9.800000000000002 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a1c6095b74d852ced72"} , "Hora" : "2024-03-18 17:30:05.408075" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a416095b74d852cedb7"} , "Hora" : "2024-03-18 17:30:42.431029" , "Leitura" : 10.100000000000003 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a1d6095b74d852ced74"} , "Hora" : "2024-03-18 17:30:06.408731" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a426095b74d852cedb9"} , "Hora" : "2024-03-18 17:30:43.431686" , "Leitura" : 10.400000000000004 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a1e6095b74d852ced76"} , "Hora" : "2024-03-18 17:30:07.409393" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a436095b74d852cedbb"} , "Hora" : "2024-03-18 17:30:44.432377" , "Leitura" : 10.700000000000005 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a1f6095b74d852ced78"} , "Hora" : "2024-03-18 17:30:08.409948" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a446095b74d852cedbd"} , "Hora" : "2024-03-18 17:30:45.433033" , "Leitura" : 11.000000000000005 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a206095b74d852ced7a"} , "Hora" : "2024-03-18 17:30:09.410612" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a466095b74d852cedc0"} , "Hora" : "2024-03-18 17:30:47.434354" , "Leitura" : 11.600000000000007 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a216095b74d852ced7c"} , "Hora" : "2024-03-18 17:30:10.411153" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a476095b74d852cedc2"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 11.900000000000007 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a226095b74d852ced7e"} , "Hora" : "2024-03-18 17:30:11.411708" , "Leitura" : 7.999999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a486095b74d852cedc4"} , "Hora" : "2024-03-18 17:30:49.435579" , "Leitura" : 12.200000000000008 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a236095b74d852ced7f"} , "Hora" : "2024-03-18 17:30:12.412255" , "Leitura" : 7.699999999999998 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a496095b74d852cedc6"} , "Hora" : "2024-03-18 17:30:50.436150" , "Leitura" : 12.200000000000008 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a246095b74d852ced81"} , "Hora" : "2024-03-18 17:30:13.412917" , "Leitura" : 7.399999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a4a6095b74d852cedc8"} , "Hora" : "2010-02-30 16:17:45" , "Leitura" : 12.200000000000008 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a256095b74d852ced83"} , "Hora" : "2024-03-18 17:30:14.413355" , "Leitura" : 7.099999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a4b6095b74d852cedca"} , "Hora" : "2024-03-18 17:30:52.437471" , "Leitura" : 12.200000000000008 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a266095b74d852ced85"} , "Hora" : "2024-03-18 17:30:15.413904" , "Leitura" : 6.799999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "65f87a4c6095b74d852cedcc"} , "Hora" : "2024-03-18 17:30:53.438028" , "Leitura" : 12.200000000000008 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a276095b74d852ced87"} , "Hora" : "2024-03-18 17:30:16.414455" , "Leitura" : 6.499999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb07b35d2f7148c56f70"} , "Hora" : "2024-04-16 18:53:11.280424" , "Leitura" : 9 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a286095b74d852ced88"} , "Hora" : "2024-03-18 17:30:17.414909" , "Leitura" : 6.199999999999999 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb08b35d2f7148c56f72"} , "Hora" : "2024-04-16 18:53:12.561377" , "Leitura" : 10 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a296095b74d852ced89"} , "Hora" : "2024-03-18 17:30:18.415565" , "Leitura" : 5.8999999999999995 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb09b35d2f7148c56f74"} , "Hora" : "2024-04-16 18:53:13.577294" , "Leitura" : 11 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a2a6095b74d852ced8a"} , "Hora" : "2024-03-18 17:30:19.416336" , "Leitura" : 5.6 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb0ab35d2f7148c56f76"} , "Hora" : "2024-04-16 18:53:14.595332" , "Leitura" : 12 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a2b6095b74d852ced8c"} , "Hora" : "2024-03-18 17:30:20.416899" , "Leitura" : 5.3 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb0bb35d2f7148c56f78"} , "Hora" : "2024-04-16 18:53:15.612180" , "Leitura" : 13 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a2c6095b74d852ced8e"} , "Hora" : "2024-03-18 17:30:21.417563" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb0cb35d2f7148c56f7a"} , "Hora" : "2024-04-16 18:53:16.615427" , "Leitura" : 14 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a2d6095b74d852ced90"} , "Hora" : "2024-03-18 17:30:22.418229" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb0db35d2f7148c56f7c"} , "Hora" : "2024-04-16 18:53:17.618743" , "Leitura" : 15 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a2e6095b74d852ced92"} , "Hora" : "2024-03-18 17:30:23.418796" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb0eb35d2f7148c56f7e"} , "Hora" : "2024-04-16 18:53:18.621387" , "Leitura" : 16 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a2f6095b74d852ced94"} , "Hora" : "2024-03-18 17:30:24.419458" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb0fb35d2f7148c56f80"} , "Hora" : "2024-04-16 18:53:19.623999" , "Leitura" : 17 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a306095b74d852ced96"} , "Hora" : "2024-03-18 17:30:25.420232" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb10b35d2f7148c56f82"} , "Hora" : "2024-04-16 18:53:20.642542" , "Leitura" : 18 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a316095b74d852ced98"} , "Hora" : "2024-03-18 17:30:26.420802" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb11b35d2f7148c56f84"} , "Hora" : "2024-04-16 18:53:21.653393" , "Leitura" : 19 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a326095b74d852ced9a"} , "Hora" : "2024-03-18 17:30:27.421481" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb12b35d2f7148c56f86"} , "Hora" : "2024-04-16 18:53:22.675609" , "Leitura" : 20 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a336095b74d852ced9c"} , "Hora" : "2024-03-18 17:30:28.422137" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb13b35d2f7148c56f88"} , "Hora" : "2024-04-16 18:53:23.705552" , "Leitura" : 21 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a346095b74d852ced9e"} , "Hora" : "2024-03-18 17:30:29.422710" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb14b35d2f7148c56f8a"} , "Hora" : "2024-04-16 18:53:24.707865" , "Leitura" : 22 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a356095b74d852ceda0"} , "Hora" : "2024-03-18 17:30:30.423252" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb15b35d2f7148c56f8c"} , "Hora" : "2024-04-16 18:53:25.709288" , "Leitura" : 23 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a366095b74d852ceda2"} , "Hora" : "2024-03-18 17:30:31.423917" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb16b35d2f7148c56f8e"} , "Hora" : "2024-04-16 18:53:26.714734" , "Leitura" : 24 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a376095b74d852ceda4"} , "Hora" : "2024-03-18 17:30:32.424597" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb17b35d2f7148c56f90"} , "Hora" : "2024-04-16 18:53:27.717501" , "Leitura" : 25 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a386095b74d852ceda6"} , "Hora" : "2024-03-18 17:30:33.425035" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb18b35d2f7148c56f92"} , "Hora" : "2024-04-16 18:53:28.724143" , "Leitura" : 26 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a396095b74d852ceda7"} , "Hora" : "2024-03-18 17:30:34.425700" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb19b35d2f7148c56f94"} , "Hora" : "2024-04-16 18:53:29.726599" , "Leitura" : 27 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a3a6095b74d852ceda9"} , "Hora" : "2024-03-18 17:30:35.426375" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb1ab35d2f7148c56f96"} , "Hora" : "2024-04-16 18:53:30.727818" , "Leitura" : 28 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a3b6095b74d852cedaa"} , "Hora" : "2024-03-18 17:30:36.427044" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb1bb35d2f7148c56f98"} , "Hora" : "2024-04-16 18:53:31.734196" , "Leitura" : 29 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a3c6095b74d852cedac"} , "Hora" : "2024-03-18 17:30:37.427815" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb1cb35d2f7148c56f9a"} , "Hora" : "2024-04-16 18:53:32.741174" , "Leitura" : 30 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a3d6095b74d852cedae"} , "Hora" : "2024-03-18 17:30:38.428495" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb1db35d2f7148c56f9c"} , "Hora" : "2024-04-16 18:53:33.744215" , "Leitura" : 31 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a3e6095b74d852cedb0"} , "Hora" : "2024-03-18 17:30:39.429045" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb1eb35d2f7148c56f9e"} , "Hora" : "2024-04-16 18:53:34.745604" , "Leitura" : 32 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a3f6095b74d852cedb2"} , "Hora" : "2024-03-18 17:30:40.429816" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb1fb35d2f7148c56fa0"} , "Hora" : "2024-04-16 18:53:35.747724" , "Leitura" : 33 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a406095b74d852cedb4"} , "Hora" : "2024-03-18 17:30:41.430473" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb20b35d2f7148c56fa2"} , "Hora" : "2024-04-16 18:53:36.749633" , "Leitura" : 34 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a416095b74d852cedb6"} , "Hora" : "2024-03-18 17:30:42.431029" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb22b35d2f7148c56fa4"} , "Hora" : "2024-04-16 18:53:37.858806" , "Leitura" : 35 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a426095b74d852cedb8"} , "Hora" : "2024-03-18 17:30:43.431686" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb23b35d2f7148c56fa6"} , "Hora" : "2024-04-16 18:53:38.876559" , "Leitura" : 36 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a436095b74d852cedba"} , "Hora" : "2024-03-18 17:30:44.432377" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb24b35d2f7148c56fa8"} , "Hora" : "2024-04-16 18:53:40.125530" , "Leitura" : 37 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a446095b74d852cedbc"} , "Hora" : "2024-03-18 17:30:45.433033" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb25b35d2f7148c56faa"} , "Hora" : "2024-04-16 18:53:41.427449" , "Leitura" : 38 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a456095b74d852cedbe"} , "Hora" : "2024-03-18 17:30:46.433689" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb26b35d2f7148c56fac"} , "Hora" : "2024-04-16 18:53:42.440675" , "Leitura" : 39 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a466095b74d852cedbf"} , "Hora" : "2024-03-18 17:30:47.434354" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb27b35d2f7148c56fae"} , "Hora" : "2024-04-16 18:53:43.446148" , "Leitura" : 40 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a476095b74d852cedc1"} , "Hora" : "2024-03-18 17:30:48.434922" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb28b35d2f7148c56fb0"} , "Hora" : "2024-04-16 18:53:44.449395" , "Leitura" : 41 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a486095b74d852cedc3"} , "Hora" : "2024-03-18 17:30:49.435579" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb29b35d2f7148c56fb2"} , "Hora" : "2024-04-16 18:53:45.455644" , "Leitura" : 42 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a496095b74d852cedc5"} , "Hora" : "2024-03-18 17:30:50.436150" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb2bb35d2f7148c56fb4"} , "Hora" : "2024-04-16 18:53:46.941753" , "Leitura" : 43 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a4a6095b74d852cedc7"} , "Hora" : "2024-03-18 17:30:51.436815" , "Leitura" : 5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb2cb35d2f7148c56fb6"} , "Hora" : "2024-04-16 18:53:48.228784" , "Leitura" : 44 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a4b6095b74d852cedc9"} , "Hora" : "2024-03-18 17:30:52.437471" , "Leitura" : 5.3 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb2db35d2f7148c56fb8"} , "Hora" : "2024-04-16 18:53:49.267645" , "Leitura" : 45 , "Sensor" : 2}
+{ "_id" : { "$oid" : "65f87a4c6095b74d852cedcb"} , "Hora" : "2024-03-18 17:30:53.438028" , "Leitura" : 5.6 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb2eb35d2f7148c56fba"} , "Hora" : "2024-04-16 18:53:50.269857" , "Leitura" : 46 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb08b35d2f7148c56f71"} , "Hora" : "2024-04-16 18:53:12.561377" , "Leitura" : 9 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb2fb35d2f7148c56fbc"} , "Hora" : "2024-04-16 18:53:51.274305" , "Leitura" : 47 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb09b35d2f7148c56f73"} , "Hora" : "2024-04-16 18:53:13.577294" , "Leitura" : 10 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb30b35d2f7148c56fbe"} , "Hora" : "2024-04-16 18:53:52.276585" , "Leitura" : 48 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb0ab35d2f7148c56f75"} , "Hora" : "2024-04-16 18:53:14.587353" , "Leitura" : 11 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb31b35d2f7148c56fc0"} , "Hora" : "2024-04-16 18:53:53.306518" , "Leitura" : 49 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb0bb35d2f7148c56f77"} , "Hora" : "2024-04-16 18:53:15.612180" , "Leitura" : 12 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb32b35d2f7148c56fc2"} , "Hora" : "2024-04-16 18:53:54.325723" , "Leitura" : 50 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb0cb35d2f7148c56f79"} , "Hora" : "2024-04-16 18:53:16.615427" , "Leitura" : 13 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb33b35d2f7148c56fc4"} , "Hora" : "2024-04-16 18:53:55.327479" , "Leitura" : -49 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb0db35d2f7148c56f7b"} , "Hora" : "2024-04-16 18:53:17.617746" , "Leitura" : 14 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb34b35d2f7148c56fc6"} , "Hora" : "2024-04-16 18:53:56.337742" , "Leitura" : -48 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb0eb35d2f7148c56f7d"} , "Hora" : "2024-04-16 18:53:18.621387" , "Leitura" : 15 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb35b35d2f7148c56fc8"} , "Hora" : "2024-04-16 18:53:57.655521" , "Leitura" : -47 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb0fb35d2f7148c56f7f"} , "Hora" : "2024-04-16 18:53:19.623001" , "Leitura" : 16 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb36b35d2f7148c56fca"} , "Hora" : "2024-04-16 18:53:58.695650" , "Leitura" : -46 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb10b35d2f7148c56f81"} , "Hora" : "2024-04-16 18:53:20.640487" , "Leitura" : 17 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb38b35d2f7148c56fcc"} , "Hora" : "2024-04-16 18:53:59.919647" , "Leitura" : -45 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb11b35d2f7148c56f83"} , "Hora" : "2024-04-16 18:53:21.652397" , "Leitura" : 18 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb39b35d2f7148c56fce"} , "Hora" : "2024-04-16 18:54:01.095576" , "Leitura" : -44 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb12b35d2f7148c56f85"} , "Hora" : "2024-04-16 18:53:22.661646" , "Leitura" : 19 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb3ab35d2f7148c56fd0"} , "Hora" : "2024-04-16 18:54:02.106498" , "Leitura" : -43 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb13b35d2f7148c56f87"} , "Hora" : "2024-04-16 18:53:23.696575" , "Leitura" : 20 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb3bb35d2f7148c56fd2"} , "Hora" : "2024-04-16 18:54:03.160421" , "Leitura" : -42 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb14b35d2f7148c56f89"} , "Hora" : "2024-04-16 18:53:24.707865" , "Leitura" : 21 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb3db35d2f7148c56fd4"} , "Hora" : "2024-04-16 18:54:04.610059" , "Leitura" : -41 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb15b35d2f7148c56f8b"} , "Hora" : "2024-04-16 18:53:25.709288" , "Leitura" : 22 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb3eb35d2f7148c56fd6"} , "Hora" : "2024-04-16 18:54:06.210129" , "Leitura" : -40 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb16b35d2f7148c56f8d"} , "Hora" : "2024-04-16 18:53:26.714734" , "Leitura" : 23 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb3fb35d2f7148c56fd8"} , "Hora" : "2024-04-16 18:54:07.288749" , "Leitura" : -39 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb17b35d2f7148c56f8f"} , "Hora" : "2024-04-16 18:53:27.717501" , "Leitura" : 24 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb40b35d2f7148c56fda"} , "Hora" : "2024-04-16 18:54:08.377540" , "Leitura" : -38 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb18b35d2f7148c56f91"} , "Hora" : "2024-04-16 18:53:28.720157" , "Leitura" : 25 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb41b35d2f7148c56fdc"} , "Hora" : "2024-04-16 18:54:09.521528" , "Leitura" : -37 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb19b35d2f7148c56f93"} , "Hora" : "2024-04-16 18:53:29.726599" , "Leitura" : 26 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb42b35d2f7148c56fde"} , "Hora" : "2024-04-16 18:54:10.790672" , "Leitura" : -36 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb1ab35d2f7148c56f95"} , "Hora" : "2024-04-16 18:53:30.727818" , "Leitura" : 27 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb43b35d2f7148c56fe0"} , "Hora" : "2024-04-16 18:54:11.793382" , "Leitura" : -35 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb1bb35d2f7148c56f97"} , "Hora" : "2024-04-16 18:53:31.729212" , "Leitura" : 28 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb44b35d2f7148c56fe2"} , "Hora" : "2024-04-16 18:54:12.804968" , "Leitura" : -34 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb1cb35d2f7148c56f99"} , "Hora" : "2024-04-16 18:53:32.740177" , "Leitura" : 29 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb46b35d2f7148c56fe4"} , "Hora" : "2024-04-16 18:54:13.926083" , "Leitura" : -33 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb1db35d2f7148c56f9b"} , "Hora" : "2024-04-16 18:53:33.744215" , "Leitura" : 30 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb47b35d2f7148c56fe6"} , "Hora" : "2024-04-16 18:54:15.174104" , "Leitura" : -32 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb1eb35d2f7148c56f9d"} , "Hora" : "2024-04-16 18:53:34.745604" , "Leitura" : 31 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb48b35d2f7148c56fe8"} , "Hora" : "2024-04-16 18:54:16.220208" , "Leitura" : -31 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb1fb35d2f7148c56f9f"} , "Hora" : "2024-04-16 18:53:35.747724" , "Leitura" : 32 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb49b35d2f7148c56fea"} , "Hora" : "2024-04-16 18:54:17.227693" , "Leitura" : -30 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb20b35d2f7148c56fa1"} , "Hora" : "2024-04-16 18:53:36.749633" , "Leitura" : 33 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb4ab35d2f7148c56fec"} , "Hora" : "2024-04-16 18:54:18.256807" , "Leitura" : -29 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb21b35d2f7148c56fa3"} , "Hora" : "2024-04-16 18:53:37.857809" , "Leitura" : 34 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb4bb35d2f7148c56fee"} , "Hora" : "2024-04-16 18:54:19.273826" , "Leitura" : -28 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb22b35d2f7148c56fa5"} , "Hora" : "2024-04-16 18:53:38.876559" , "Leitura" : 35 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb4cb35d2f7148c56ff0"} , "Hora" : "2024-04-16 18:54:20.275717" , "Leitura" : -27 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb24b35d2f7148c56fa7"} , "Hora" : "2024-04-16 18:53:40.124533" , "Leitura" : 36 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb4db35d2f7148c56ff2"} , "Hora" : "2024-04-16 18:54:21.277322" , "Leitura" : -26 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb25b35d2f7148c56fa9"} , "Hora" : "2024-04-16 18:53:41.427449" , "Leitura" : 37 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb4eb35d2f7148c56ff4"} , "Hora" : "2024-04-16 18:54:22.280590" , "Leitura" : -25 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb26b35d2f7148c56fab"} , "Hora" : "2024-04-16 18:53:42.439666" , "Leitura" : 38 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb50b35d2f7148c56ff5"} , "Hora" : "2024-04-16 18:54:23.286799" , "Leitura" : -24 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb27b35d2f7148c56fad"} , "Hora" : "2024-04-16 18:53:43.446148" , "Leitura" : 39 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb50b35d2f7148c56ff7"} , "Hora" : "2024-04-16 18:54:24.288661" , "Leitura" : -23 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb28b35d2f7148c56faf"} , "Hora" : "2024-04-16 18:53:44.448398" , "Leitura" : 40 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb51b35d2f7148c56ffa"} , "Hora" : "2024-04-16 18:54:25.291101" , "Leitura" : -22 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb29b35d2f7148c56fb1"} , "Hora" : "2024-04-16 18:53:45.453650" , "Leitura" : 41 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb52b35d2f7148c56ffc"} , "Hora" : "2024-04-16 18:54:26.291793" , "Leitura" : -21 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb2bb35d2f7148c56fb3"} , "Hora" : "2024-04-16 18:53:46.940755" , "Leitura" : 42 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb53b35d2f7148c56ffe"} , "Hora" : "2024-04-16 18:54:27.295645" , "Leitura" : -20 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb2cb35d2f7148c56fb5"} , "Hora" : "2024-04-16 18:53:48.227788" , "Leitura" : 43 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb54b35d2f7148c57000"} , "Hora" : "2024-04-16 18:54:28.341325" , "Leitura" : -19 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb2db35d2f7148c56fb7"} , "Hora" : "2024-04-16 18:53:49.267645" , "Leitura" : 44 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb55b35d2f7148c57002"} , "Hora" : "2024-04-16 18:54:29.357675" , "Leitura" : -18 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb2eb35d2f7148c56fb9"} , "Hora" : "2024-04-16 18:53:50.269857" , "Leitura" : 45 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb56b35d2f7148c57004"} , "Hora" : "2024-04-16 18:54:30.417564" , "Leitura" : -17 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb2fb35d2f7148c56fbb"} , "Hora" : "2024-04-16 18:53:51.273085" , "Leitura" : 46 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb58b35d2f7148c57006"} , "Hora" : "2024-04-16 18:54:31.575945" , "Leitura" : -16 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb30b35d2f7148c56fbd"} , "Hora" : "2024-04-16 18:53:52.276585" , "Leitura" : 47 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb59b35d2f7148c57008"} , "Hora" : "2024-04-16 18:54:32.827337" , "Leitura" : -15 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb31b35d2f7148c56fbf"} , "Hora" : "2024-04-16 18:53:53.278080" , "Leitura" : 48 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb5ab35d2f7148c5700a"} , "Hora" : "2024-04-16 18:54:34.070748" , "Leitura" : -14 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb32b35d2f7148c56fc1"} , "Hora" : "2024-04-16 18:53:54.325723" , "Leitura" : 49 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb5bb35d2f7148c5700c"} , "Hora" : "2024-04-16 18:54:35.154347" , "Leitura" : -13 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb33b35d2f7148c56fc3"} , "Hora" : "2024-04-16 18:53:55.327479" , "Leitura" : -50 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb5cb35d2f7148c5700e"} , "Hora" : "2024-04-16 18:54:36.253029" , "Leitura" : -12 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb34b35d2f7148c56fc5"} , "Hora" : "2024-04-16 18:53:56.335747" , "Leitura" : -49 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb5db35d2f7148c57010"} , "Hora" : "2024-04-16 18:54:37.269294" , "Leitura" : -11 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb35b35d2f7148c56fc7"} , "Hora" : "2024-04-16 18:53:57.653526" , "Leitura" : -48 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb5eb35d2f7148c57012"} , "Hora" : "2024-04-16 18:54:38.294944" , "Leitura" : -10 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb36b35d2f7148c56fc9"} , "Hora" : "2024-04-16 18:53:58.695650" , "Leitura" : -47 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb5fb35d2f7148c57014"} , "Hora" : "2024-04-16 18:54:39.591998" , "Leitura" : -9 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb37b35d2f7148c56fcb"} , "Hora" : "2024-04-16 18:53:59.918651" , "Leitura" : -46 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb60b35d2f7148c57016"} , "Hora" : "2024-04-16 18:54:40.664916" , "Leitura" : -8 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb39b35d2f7148c56fcd"} , "Hora" : "2024-04-16 18:54:01.095576" , "Leitura" : -45 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb61b35d2f7148c57018"} , "Hora" : "2024-04-16 18:54:41.671620" , "Leitura" : -7 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb3ab35d2f7148c56fcf"} , "Hora" : "2024-04-16 18:54:02.106498" , "Leitura" : -44 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb62b35d2f7148c5701a"} , "Hora" : "2024-04-16 18:54:42.675124" , "Leitura" : -6 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb3bb35d2f7148c56fd1"} , "Hora" : "2024-04-16 18:54:03.159424" , "Leitura" : -43 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb63b35d2f7148c5701c"} , "Hora" : "2024-04-16 18:54:43.680650" , "Leitura" : -5 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb3cb35d2f7148c56fd3"} , "Hora" : "2024-04-16 18:54:04.610059" , "Leitura" : -42 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb64b35d2f7148c5701e"} , "Hora" : "2024-04-16 18:54:44.706754" , "Leitura" : -4 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb3eb35d2f7148c56fd5"} , "Hora" : "2024-04-16 18:54:06.206139" , "Leitura" : -41 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb65b35d2f7148c57020"} , "Hora" : "2024-04-16 18:54:45.714696" , "Leitura" : -3 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb3fb35d2f7148c56fd7"} , "Hora" : "2024-04-16 18:54:07.287751" , "Leitura" : -40 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb66b35d2f7148c57022"} , "Hora" : "2024-04-16 18:54:46.740558" , "Leitura" : -2 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb40b35d2f7148c56fd9"} , "Hora" : "2024-04-16 18:54:08.377540" , "Leitura" : -39 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb68b35d2f7148c57024"} , "Hora" : "2024-04-16 18:54:47.852016" , "Leitura" : -1 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb41b35d2f7148c56fdb"} , "Hora" : "2024-04-16 18:54:09.520529" , "Leitura" : -38 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb69b35d2f7148c57026"} , "Hora" : "2024-04-16 18:54:48.884313" , "Leitura" : 0 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb42b35d2f7148c56fdd"} , "Hora" : "2024-04-16 18:54:10.790672" , "Leitura" : -37 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb6ab35d2f7148c57028"} , "Hora" : "2024-04-16 18:54:49.939562" , "Leitura" : 1 , "Sensor" : 2}
+{ "_id" : { "$oid" : "661ebb43b35d2f7148c56fdf"} , "Hora" : "2024-04-16 18:54:11.792385" , "Leitura" : -36 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb44b35d2f7148c56fe1"} , "Hora" : "2024-04-16 18:54:12.803976" , "Leitura" : -35 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb45b35d2f7148c56fe3"} , "Hora" : "2024-04-16 18:54:13.926083" , "Leitura" : -34 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb47b35d2f7148c56fe5"} , "Hora" : "2024-04-16 18:54:15.174104" , "Leitura" : -33 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb48b35d2f7148c56fe7"} , "Hora" : "2024-04-16 18:54:16.219210" , "Leitura" : -32 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb49b35d2f7148c56fe9"} , "Hora" : "2024-04-16 18:54:17.226697" , "Leitura" : -31 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb4ab35d2f7148c56feb"} , "Hora" : "2024-04-16 18:54:18.256807" , "Leitura" : -30 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb4bb35d2f7148c56fed"} , "Hora" : "2024-04-16 18:54:19.272831" , "Leitura" : -29 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb4cb35d2f7148c56fef"} , "Hora" : "2024-04-16 18:54:20.275717" , "Leitura" : -28 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb4db35d2f7148c56ff1"} , "Hora" : "2024-04-16 18:54:21.277322" , "Leitura" : -27 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb4eb35d2f7148c56ff3"} , "Hora" : "2024-04-16 18:54:22.280590" , "Leitura" : -26 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb50b35d2f7148c56ff6"} , "Hora" : "2024-04-16 18:54:23.286799" , "Leitura" : -25 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb50b35d2f7148c56ff8"} , "Hora" : "2024-04-16 18:54:24.288661" , "Leitura" : -24 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb51b35d2f7148c56ff9"} , "Hora" : "2024-04-16 18:54:25.290100" , "Leitura" : -23 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb52b35d2f7148c56ffb"} , "Hora" : "2024-04-16 18:54:26.291793" , "Leitura" : -22 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb53b35d2f7148c56ffd"} , "Hora" : "2024-04-16 18:54:27.293652" , "Leitura" : -21 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb54b35d2f7148c56fff"} , "Hora" : "2024-04-16 18:54:28.338333" , "Leitura" : -20 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb55b35d2f7148c57001"} , "Hora" : "2024-04-16 18:54:29.357675" , "Leitura" : -19 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb56b35d2f7148c57003"} , "Hora" : "2024-04-16 18:54:30.416565" , "Leitura" : -18 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb57b35d2f7148c57005"} , "Hora" : "2024-04-16 18:54:31.574948" , "Leitura" : -17 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb58b35d2f7148c57007"} , "Hora" : "2024-04-16 18:54:32.825342" , "Leitura" : -16 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb5ab35d2f7148c57009"} , "Hora" : "2024-04-16 18:54:34.069753" , "Leitura" : -15 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb5bb35d2f7148c5700b"} , "Hora" : "2024-04-16 18:54:35.154347" , "Leitura" : -14 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb5cb35d2f7148c5700d"} , "Hora" : "2024-04-16 18:54:36.247956" , "Leitura" : -13 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb5db35d2f7148c5700f"} , "Hora" : "2024-04-16 18:54:37.268294" , "Leitura" : -12 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb5eb35d2f7148c57011"} , "Hora" : "2024-04-16 18:54:38.289957" , "Leitura" : -11 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb5fb35d2f7148c57013"} , "Hora" : "2024-04-16 18:54:39.591001" , "Leitura" : -10 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb60b35d2f7148c57015"} , "Hora" : "2024-04-16 18:54:40.663916" , "Leitura" : -9 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb61b35d2f7148c57017"} , "Hora" : "2024-04-16 18:54:41.670624" , "Leitura" : -8 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb62b35d2f7148c57019"} , "Hora" : "2024-04-16 18:54:42.674128" , "Leitura" : -7 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb63b35d2f7148c5701b"} , "Hora" : "2024-04-16 18:54:43.679652" , "Leitura" : -6 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb64b35d2f7148c5701d"} , "Hora" : "2024-04-16 18:54:44.705758" , "Leitura" : -5 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb65b35d2f7148c5701f"} , "Hora" : "2024-04-16 18:54:45.709669" , "Leitura" : -4 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb66b35d2f7148c57021"} , "Hora" : "2024-04-16 18:54:46.737566" , "Leitura" : -3 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb67b35d2f7148c57023"} , "Hora" : "2024-04-16 18:54:47.850022" , "Leitura" : -2 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb68b35d2f7148c57025"} , "Hora" : "2024-04-16 18:54:48.884313" , "Leitura" : -1 , "Sensor" : 1}
+{ "_id" : { "$oid" : "661ebb69b35d2f7148c57027"} , "Hora" : "2024-04-16 18:54:49.938560" , "Leitura" : 0 , "Sensor" : 1}

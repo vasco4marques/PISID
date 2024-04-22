@@ -1,6 +1,0 @@
-{_id: ObjectId('a6d83714'), Hora: 'Hora_anomala', Leitura: 0, Sensor: 0}
-{_id: ObjectId('c58519b2'), Hora: 'Hora_anomala', Leitura: 0, Sensor: 0}
-{_id: ObjectId('f4c053c1'), Hora: 'Hora_anomala', Leitura: 0, Sensor: 0}
-{_id: ObjectId('54ea3c1d'), Hora: 'Hora_anomala', Leitura: 0, Sensor: 0}
-{_id: ObjectId('9ac7e263'), Hora: 'Hora_anomala', Leitura: 0, Sensor: 0}
-{_id: ObjectId('f456bfeb'), Hora: 'Hora_anomala', Leitura: 0, Sensor: 0}
