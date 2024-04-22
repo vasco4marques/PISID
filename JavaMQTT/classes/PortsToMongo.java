@@ -22,14 +22,19 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.bson.Document;
 import com.mongodb.*;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.util.JSON;
+
 
 public class PortsToMongo implements MqttCallback {
     MqttClient mqttclient;
     static MongoClient mongoClient;
-    static DB db;
-    static DBCollection mongocol;
+    static MongoDatabase db;
+    static MongoCollection mongocol;
 	static String mongo_user = new String();
 	static String mongo_password = new String();
 	static String mongo_address = new String();
@@ -41,8 +46,7 @@ public class PortsToMongo implements MqttCallback {
     static String mongo_collection = new String();
 	static String mongo_authentication = new String();
 	static JTextArea documentLabel = new JTextArea();
-
-
+   
     private static void createWindow(String name, JTextArea label) {      	
 	    JFrame frame = new JFrame(name);    
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);       
@@ -62,6 +66,21 @@ public class PortsToMongo implements MqttCallback {
 	    		System.exit(0);
 	    	}
 	    });
+    }
+
+    public int getNextSequence(String sequenceName) {
+        Document filter = new Document("_id", sequenceName);
+        Document update = new Document("$inc", new Document("seq", 1));
+        FindOneAndUpdateOptions options = new FindOneAndUpdateOptions().returnDocument(com.mongodb.client.model.ReturnDocument.AFTER);
+        Document sequenceDocument = db.getCollection("counters").findOneAndUpdate(filter, update, options);
+
+        if (sequenceDocument == null) {
+            // Initialize the counter if it doesn't exist
+            db.getCollection("counters").insertOne(new Document("_id", sequenceName).append("seq", 1));
+            return 1;
+        }
+
+        return sequenceDocument.getInteger("seq");
     }
 
 
@@ -109,8 +128,8 @@ public class PortsToMongo implements MqttCallback {
 		else
 			if (mongo_authentication.equals("true")) mongoURI = mongoURI  + "/?authSource=admin";			
 		MongoClient mongoClient = new MongoClient(new MongoClientURI(mongoURI));						
-		db = mongoClient.getDB(mongo_database);
-        mongocol = db.getCollection(mongo_collection);		
+		db = mongoClient.getDatabase(mongo_database);
+        mongocol = db.getCollection(mongo_collection);
     }
 
     @Override
@@ -119,7 +138,12 @@ public class PortsToMongo implements MqttCallback {
         try {
                 DBObject document_json;
                 document_json = (DBObject) JSON.parse(c.toString());
-                mongocol.insert(document_json);     	
+                Document doc = Document.parse(document_json.toString());
+    
+                int nextID = getNextSequence("portsSeqID");
+                doc.append("id",nextID);
+                mongocol.insertOne(doc);     	
+                System.out.println(doc);
 				documentLabel.append(c.toString()+"\n");				
         } catch (Exception e) {
             System.out.println(e);

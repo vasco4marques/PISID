@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
 import java.util.Random;
@@ -21,16 +22,19 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-
+import org.bson.Document;
 import com.mongodb.*;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.util.JSON;
 
 public class TempsToMongo implements MqttCallback  {
     MqttClient mqttclient;
     static MongoClient mongoClient;
-    static DB db;
-    static DBCollection mongocol1;
-    static DBCollection mongocol2;
+    static MongoDatabase db;
+    static MongoCollection mongocol1;
+    static MongoCollection mongocol2;
 	static String mongo_user = new String();
 	static String mongo_password = new String();
 	static String mongo_address = new String();
@@ -71,6 +75,23 @@ public class TempsToMongo implements MqttCallback  {
 	    		System.exit(0);
 	    	}
 	    });
+    }
+
+
+
+     public int getNextSequence(String sequenceName) {
+        Document filter = new Document("_id", sequenceName);
+        Document update = new Document("$inc", new Document("seq", 1));
+        FindOneAndUpdateOptions options = new FindOneAndUpdateOptions().returnDocument(com.mongodb.client.model.ReturnDocument.AFTER);
+        Document sequenceDocument = db.getCollection("counters").findOneAndUpdate(filter, update, options);
+
+        if (sequenceDocument == null) {
+            // Initialize the counter if it doesn't exist
+            db.getCollection("counters").insertOne(new Document("_id", sequenceName).append("seq", 1));
+            return 1;
+        }
+
+        return sequenceDocument.getInteger("seq");
     }
 
     public static void readDocument(){
@@ -117,9 +138,9 @@ public class TempsToMongo implements MqttCallback  {
                 else mongoURI = mongoURI + "/?replicaSet=" + mongo_replica;		
             else
                 if (mongo_authentication.equals("true")) mongoURI = mongoURI  + "/?authSource=admin";			
-            MongoClient mongoClient = new MongoClient(new MongoClientURI(mongoURI));						
-            db = mongoClient.getDB(mongo_database);
-            mongocol1 = db.getCollection(mongo_collection1);
+            MongoClient mongoClient = new MongoClient(new MongoClientURI(mongoURI));				
+            db = mongoClient.getDatabase(mongo_database);
+            mongocol1 = db.getCollection(mongo_collection1);		
             mongocol2 = db.getCollection(mongo_collection2);
         }
 	
@@ -129,11 +150,17 @@ public class TempsToMongo implements MqttCallback  {
         try {
                 DBObject document_json;
                 document_json = (DBObject) JSON.parse(c.toString());
+                Document doc = Document.parse(document_json.toString());
                 if((int)(document_json.get("Sensor")) == 1){
-                    mongocol1.insert(document_json);                 
+                    int nextID = getNextSequence("temps1ID");
+                    doc.append("id",nextID);
+                    mongocol1.insertOne(doc);                
                 }else{
-                    mongocol2.insert(document_json);   
+                    int nextID = getNextSequence("temps2ID");
+                    doc.append("id",nextID);
+                    mongocol2.insertOne(doc);   
                 }
+                System.out.println(doc);
 				documentLabel.append(c.toString()+"\n");				
         } catch (Exception e) {
             System.out.println(e);
