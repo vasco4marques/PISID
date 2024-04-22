@@ -123,15 +123,40 @@ public class WriteMysql {
 		colTemp2 = db.getCollection(mongo_temp2);
 	}
 
+	private Map<String, Integer> readLastProcessedIds(String filePath) {
+		File file = new File(filePath);
+		Map<String, Integer> ids = new HashMap<>();
+		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				String[] parts = line.split(": ");
+				if (parts.length == 2) {
+					ids.put(parts[0].trim(), Integer.parseInt(parts[1].trim()));
+				}
+			}
+		} catch (IOException e) {
+			System.err.println("Failed to read the backup file: " + e.getMessage());
+		}
+		return ids;
+	}	
+
 	// Lê a coleção dada como parâmetro e retorna uma lista de DBObjects
 	// Para leres estes objetos podes usar o .get(key) que ele retorna o value
-	public List<DBObject> readFromMongo(DBCollection col) {
-		List<DBObject> results = null;
-
-		// query = new BasicDBObject("i", new BasicDBObject("$gt", 52));
-
-		try (DBCursor resultado = col.find()) {
-			results = resultado.toArray();
+	public List<DBObject> readFromMongo(DBCollection col, String collectionName) {
+		List<DBObject> results = new ArrayList<>();
+		Map<String, Integer> lastIds = readLastProcessedIds("JavaMysql/backup.txt");
+		
+		// Cria uma query para ter apenas os documentos que têm um _id maior que o
+		// último guardado no ficheiro de backup
+		BasicDBObject query = new BasicDBObject();
+		if (lastIds.containsKey(collectionName)) {
+			query.put("_id", new BasicDBObject("$gt", lastIds.get(collectionName)));
+		}
+	
+		try (DBCursor cursor = col.find(query)) {
+			while (cursor.hasNext()) {
+				results.add(cursor.next());
+			}
 		}
 		return results;
 	}
@@ -160,7 +185,7 @@ public class WriteMysql {
 				encontradoSequencia = true;
 				if (!comecar) {
 					comecar = true;
-					salasMap.put(1,100);
+					salasMap.put(1, 100);
 				} else {
 					break; // Se comecar for true, significa que já começamos, então não adicionamos mais
 							// dados e saímos do loop
@@ -209,7 +234,6 @@ public class WriteMysql {
 		}
 
 		i++;
-		// }
 
 	}
 
@@ -254,20 +278,17 @@ public class WriteMysql {
 							}
 					}
 				}
-				if (!anomalia) // Se não for uma anomalia, adicione aos dados corretos
+				if (!anomalia) {
+					// Se não for uma anomalia, adicione aos dados corretos
 					dadosCorretos.add(data);
+					updateBackupFile("salas", data);
+				}
 			}
 		}
-
-		/* for (String data : dadosCorretos) {
-			WriteToMySQL(com.mongodb.util.JSON.serialize(data));
-			// TODO: Salvar data no ficheiro txt para backup
-		} */
 
 		writeArrayListToFile(dadosCorretos, "DadosCorretosSalas.txt");
 		writeArrayListToFile(dadosAnomalos, "DadosAnomalosSalas.txt");
 
-		// System.out.println("\n\n\n\n A DETETAR OUTLIERS:\n\n");
 		moverRatos(dadosCorretos);
 	}
 
@@ -310,6 +331,45 @@ public class WriteMysql {
 		return -1;
 	}
 
+	public static void updateBackupFile(String searchKey, String newContent) {
+        File file = new File("JavaMysql/backup.txt");
+        String[] lines = new String[3];
+        int indexToUpdate = -1;
+
+        try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
+
+			// Lê as 3 linhas do ficheiro
+            for (int i = 0; i < 3; i++) {
+                lines[i] = raf.readLine();
+                if (lines[i] != null && lines[i].contains(searchKey)) {
+                    indexToUpdate = i;
+                }
+            }
+
+			// Se não encontrar o id, retorna
+            if (indexToUpdate == -1) {
+                System.out.println("Erro ao encontrar id no ficheiro backup.");
+                return;
+            }
+
+			// Volta ao início do ficheiro e limpa o conteúdo
+            raf.seek(0);
+            raf.setLength(0);
+
+            // Res escreve o ficheiro com a nova linha
+            for (int i = 0; i < 3; i++) {
+                if (i == indexToUpdate) {
+                    raf.writeBytes(newContent + "\n");
+                } else {
+                    raf.writeBytes(lines[i] + "\n");
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error accessing the file: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
 	public void validarFormatosTemperatura(ArrayList<String> dateListTemperatura) {
 		ArrayList<String> dadosAnomalos = new ArrayList<String>();
 		ArrayList<String> dadosCorretos = new ArrayList<String>();
@@ -345,26 +405,16 @@ public class WriteMysql {
 							}
 					}
 				}
-				if (!anomalia) // Se não for uma anomalia, adicione aos dados corretos
+				if (!anomalia) {
 					dadosCorretos.add(data);
+					updateBackupFile("temp1", data);
+				}
 			}
-			/*
-			 * }
-			 * count++;
-			 */
 		}
 
 		writeArrayListToFile(dadosCorretos, "DadosCorretosTemperatura.txt");
 		writeArrayListToFile(dadosAnomalos, "DadosAnomalosTemperatura.txt");
 
-		/*
-		 * for (String data : dadosCorretos) {
-		 * WriteToMySQL(com.mongodb.util.JSON.serialize(data));
-		 * // TODO: Salvar data no ficheiro txt para backup
-		 * }
-		 */
-
-		// System.out.println("\n\n\n\n A DETETAR OUTLIERS:\n\n");
 		detetarOutliers(dadosCorretos);
 	}
 
