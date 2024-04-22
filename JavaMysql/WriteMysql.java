@@ -118,10 +118,6 @@ public class WriteMysql {
 		MongoClient mongoClient = new MongoClient(new MongoClientURI(mongoURI));
 		db = mongoClient.getDB(mongo_database);
 		// 3 coleções que precisas
-		System.out.println(mongo_doors);
-		System.out.println(mongo_temp1);
-		System.out.println(mongo_temp2);
-		System.out.println(db);
 		colDoors = db.getCollection(mongo_doors);
 		colTemp1 = db.getCollection(mongo_temp1);
 		colTemp2 = db.getCollection(mongo_temp2);
@@ -146,17 +142,31 @@ public class WriteMysql {
 		// e se sala origem e destino for 0
 
 		int i = 0;
-		while (i < 10000) {
-			float now = System.nanoTime();
+		// while (i < 10000) {
+		float now = System.nanoTime();
 
-			ArrayList<String> dateListTemperatura = new ArrayList<String>();
-			ArrayList<String> dateListRatos = new ArrayList<>();
-			List<DBObject> sensors = readFromMongo(colDoors);
-			List<DBObject> temp1 = readFromMongo(colTemp1);
-			List<DBObject> temp2 = readFromMongo(colTemp2);
+		ArrayList<String> dateListTemperatura = new ArrayList<String>();
+		ArrayList<String> dateListRatos = new ArrayList<>();
+		List<DBObject> sensors = readFromMongo(colDoors);
+		List<DBObject> temp1 = readFromMongo(colTemp1);
+		List<DBObject> temp2 = readFromMongo(colTemp2);
 
-			for (DBObject sensor : sensors) {
-				String data = sensor.toString();
+		boolean comecar = false;
+		boolean encontradoSequencia = false;
+
+		for (DBObject sensor : sensors) {
+			String data = sensor.toString();
+			if (data.contains("2000-01-01 00:00:00")) {
+				encontradoSequencia = true;
+				if (!comecar) {
+					comecar = true;
+					salasMap.put(1,100);
+				} else {
+					break; // Se comecar for true, significa que já começamos, então não adicionamos mais
+							// dados e saímos do loop
+				}
+			}
+			if (comecar) {
 				dateListRatos.add(data);
 				int salaOrigem = (int) sensor.get("SalaOrigem");
 				int salaDestino = (int) sensor.get("SalaDestino");
@@ -165,40 +175,41 @@ public class WriteMysql {
 				if (!salasMap.containsKey(salaDestino))
 					salasMap.put(salaDestino, 0);
 			}
-
-			boolean addToTemp1 = true; // Flag para alternar entre temp1 e temp2
-
-			// Iterar enquanto houverem elementos em temp1 ou temp2
-			while (!temp1.isEmpty() || !temp2.isEmpty()) {
-				if (addToTemp1 && !temp1.isEmpty()) {
-					String data = temp1.remove(0).toString();
-					dateListTemperatura.add(data);
-				} else if (!temp2.isEmpty()) {
-					String data = temp2.remove(0).toString();
-					dateListTemperatura.add(data);
-				}
-				addToTemp1 = !addToTemp1; // Alternar a flag
-			}
-
-			validarFormatosTemperatura(dateListTemperatura);
-			validarFormatosSalas(dateListRatos);
-
-			writeArrayListToFile(dateListTemperatura, "DadosMongoTemperatura.txt");
-			writeArrayListToFile(dateListRatos, "DadosMongoSalas.txt");
-
-			float end = System.nanoTime();
-			float time = (end - now) / 1000000000;
-
-			if (time >= 0 && time <= 3000) {
-				try {
-					Thread.sleep(3000 - (long) time);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-
-			i++;
 		}
+
+		boolean addToTemp1 = true; // Flag para alternar entre temp1 e temp2
+
+		// Iterar enquanto houverem elementos em temp1 ou temp2
+		while (!temp1.isEmpty() || !temp2.isEmpty()) {
+			if (addToTemp1 && !temp1.isEmpty()) {
+				String data = temp1.remove(0).toString();
+				dateListTemperatura.add(data);
+			} else if (!temp2.isEmpty()) {
+				String data = temp2.remove(0).toString();
+				dateListTemperatura.add(data);
+			}
+			addToTemp1 = !addToTemp1; // Alternar a flag
+		}
+
+		validarFormatosTemperatura(dateListTemperatura);
+		validarFormatosSalas(dateListRatos);
+
+		writeArrayListToFile(dateListTemperatura, "DadosMongoTemperatura.txt");
+		writeArrayListToFile(dateListRatos, "DadosMongoSalas.txt");
+
+		float end = System.nanoTime();
+		float time = (end - now) / 1000000000;
+
+		if (time >= 0 && time <= 3000) {
+			try {
+				Thread.sleep(3000 - (long) time);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
+		i++;
+		// }
 
 	}
 
@@ -248,10 +259,10 @@ public class WriteMysql {
 			}
 		}
 
-		for (String data : dadosCorretos) {
+		/* for (String data : dadosCorretos) {
 			WriteToMySQL(com.mongodb.util.JSON.serialize(data));
 			// TODO: Salvar data no ficheiro txt para backup
-		}
+		} */
 
 		writeArrayListToFile(dadosCorretos, "DadosCorretosSalas.txt");
 		writeArrayListToFile(dadosAnomalos, "DadosAnomalosSalas.txt");
@@ -346,10 +357,12 @@ public class WriteMysql {
 		writeArrayListToFile(dadosCorretos, "DadosCorretosTemperatura.txt");
 		writeArrayListToFile(dadosAnomalos, "DadosAnomalosTemperatura.txt");
 
-		for (String data : dadosCorretos) {
-			WriteToMySQL(com.mongodb.util.JSON.serialize(data));
-			// TODO: Salvar data no ficheiro txt para backup
-		}
+		/*
+		 * for (String data : dadosCorretos) {
+		 * WriteToMySQL(com.mongodb.util.JSON.serialize(data));
+		 * // TODO: Salvar data no ficheiro txt para backup
+		 * }
+		 */
 
 		// System.out.println("\n\n\n\n A DETETAR OUTLIERS:\n\n");
 		detetarOutliers(dadosCorretos);
