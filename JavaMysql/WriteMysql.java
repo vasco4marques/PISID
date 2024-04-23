@@ -28,6 +28,7 @@ import java.sql.ResultSetMetaData;
 import java.util.regex.Pattern;
 import com.mongodb.*;
 import com.mongodb.util.JSON;
+import org.bson.Document;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 public class WriteMysql {
@@ -123,6 +124,20 @@ public class WriteMysql {
 		colTemp1 = db.getCollection(mongo_temp1);
 		colTemp2 = db.getCollection(mongo_temp2);
 	}
+
+	// private void writeInMongoBackupValue(String collectionName, int newValue){
+	// 	Document filter = new Document("collection", collectionName);
+	// 	Document update = new Document("$inc", new Document("lastInsertedID",newValue));
+
+	// 	FindOneAndUpdateOptions options = new FindOneAndUpdateOptions().returnDocument(com.mongodb.client.model.ReturnDocument.AFTER);
+    //     Document sequenceDocument = db.getCollection("counters").findOneAndUpdate(filter, update, options);
+
+    //     if (sequenceDocument == null) {
+    //         // Initialize the counter if it doesn't exist
+    //         db.getCollection("counters").insertOne(new Document("_id", sequenceName).append("seq", 1));
+    //         return 1;
+    //     }
+	// }
 
 	private Map<String, Integer> readLastProcessedIds(String filePath) {
 		File file = new File(filePath);
