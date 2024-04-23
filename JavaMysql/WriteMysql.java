@@ -10,6 +10,7 @@
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.*;
 import java.util.List;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -138,21 +139,21 @@ public class WriteMysql {
 			System.err.println("Failed to read the backup file: " + e.getMessage());
 		}
 		return ids;
-	}	
+	}
 
 	// Lê a coleção dada como parâmetro e retorna uma lista de DBObjects
 	// Para leres estes objetos podes usar o .get(key) que ele retorna o value
 	public List<DBObject> readFromMongo(DBCollection col, String collectionName) {
 		List<DBObject> results = new ArrayList<>();
 		Map<String, Integer> lastIds = readLastProcessedIds("JavaMysql/backup.txt");
-		
+
 		// Cria uma query para ter apenas os documentos que têm um _id maior que o
 		// último guardado no ficheiro de backup
 		BasicDBObject query = new BasicDBObject();
 		if (lastIds.containsKey(collectionName)) {
 			query.put("_id", new BasicDBObject("$gt", lastIds.get(collectionName)));
 		}
-	
+
 		try (DBCursor cursor = col.find(query)) {
 			while (cursor.hasNext()) {
 				results.add(cursor.next());
@@ -172,11 +173,10 @@ public class WriteMysql {
 
 		ArrayList<String> dateListTemperatura = new ArrayList<String>();
 		ArrayList<String> dateListRatos = new ArrayList<>();
-		//TODO
-		//Sao aqueles parametros no readFromMongo???
-		List<DBObject> sensors = readFromMongo(colDoors,mongo_doors);
-		List<DBObject> temp1 = readFromMongo(colTemp1,mongo_temp1);
-		List<DBObject> temp2 = readFromMongo(colTemp2,mongo_temp1);
+
+		List<DBObject> sensors = readFromMongo(colDoors, mongo_doors);
+		List<DBObject> temp1 = readFromMongo(colTemp1, mongo_temp1);
+		List<DBObject> temp2 = readFromMongo(colTemp2, mongo_temp1);
 
 		boolean comecar = false;
 
@@ -202,27 +202,39 @@ public class WriteMysql {
 			}
 		}
 
-		boolean addToTemp1 = true; // Flag para alternar entre temp1 e temp2
+		ArrayList<String> temp1Total = new ArrayList<>();
+		for (DBObject temp : temp1) {
+			temp1Total.add(temp.toString());
+		}
+		ArrayList<String> temp2Total = new ArrayList<>();
+		for (DBObject temp : temp2) {
+            temp2Total.add(temp.toString());
+        }
 
+		ArrayList<String> temp1Validada=validarFormatosTemperatura(temp1Total);
+		ArrayList<String> temp2Validada=validarFormatosTemperatura(temp2Total);
+
+		writeArrayListToFile(dateListRatos, "DadosMongoSalas.txt");
+		
 		// Iterar enquanto houverem elementos em temp1 ou temp2
+		boolean addToTemp1 = true; // Flag para alternar entre temp1 e temp2
 		while (!temp1.isEmpty() || !temp2.isEmpty()) {
 			if (addToTemp1 && !temp1.isEmpty()) {
-				String data = temp1.remove(0).toString();
+				String data = temp1Validada.remove(0).toString();
+				updateBackupFile("Temp1.txt", data);
 				dateListTemperatura.add(data);
 			} else if (!temp2.isEmpty()) {
-				String data = temp2.remove(0).toString();
+				String data = temp2Validada.remove(0).toString();
+				updateBackupFile("Temp2.txt", data);
 				dateListTemperatura.add(data);
 			}
 			addToTemp1 = !addToTemp1; // Alternar a flag
 		}
-
 		writeArrayListToFile(dateListTemperatura, "DadosMongoTemperatura.txt");
-		writeArrayListToFile(dateListRatos, "DadosMongoSalas.txt");
+		detetarOutliers(dateListTemperatura);
 		
-		validarFormatosTemperatura(dateListTemperatura);
 		validarFormatosSalas(dateListRatos);
-
-
+		
 		float end = System.nanoTime();
 		float time = (end - now) / 1000000000;
 
@@ -254,7 +266,7 @@ public class WriteMysql {
 					if (partes.length == 2) {
 						String chave = partes[0].trim();
 						String valor = partes[1].trim();
-						if (chave.equals("Hora"))
+						if (chave.equals("Hora")) {
 							if (!Pattern.matches("'\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3,}'", valor)) {
 								// System.err.println("VALOR "+valor);
 								dadosAnomalos.add(data);
@@ -277,12 +289,13 @@ public class WriteMysql {
 									anomalia = true; // Define como anomalia se Leitura estiver mal formatada
 								}
 							}
+						}
 					}
 				}
 				if (!anomalia) {
 					// Se não for uma anomalia, adicione aos dados corretos
 					dadosCorretos.add(data);
-					updateBackupFile("salas", data);
+					updateBackupFile("Salas.txt", data);
 				}
 			}
 		}
@@ -332,46 +345,19 @@ public class WriteMysql {
 		return -1;
 	}
 
-	public static void updateBackupFile(String searchKey, String newContent) {
-        File file = new File("JavaMysql/backup.txt");
-        String[] lines = new String[3];
-        int indexToUpdate = -1;
+	public static void updateBackupFile(String fileName, String newContent) {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter("JavaMysql/Backups/" + fileName))) {
+			Matcher matcher = Pattern.compile("id:\\s*(\\d+)").matcher(newContent);
+			// Extrai o valor do campo "id:" usando expressão regular e imprime
+			String idValue = matcher.find() ? matcher.group(1) : "Campo 'id' não encontrado.";
+			writer.write(idValue);
+		} catch (IOException e) {
+			System.err.println("Error accessing the file: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
 
-        try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
-
-			// Lê as 3 linhas do ficheiro
-            for (int i = 0; i < 3; i++) {
-                lines[i] = raf.readLine();
-                if (lines[i] != null && lines[i].contains(searchKey)) {
-                    indexToUpdate = i;
-                }
-            }
-
-			// Se não encontrar o id, retorna
-            if (indexToUpdate == -1) {
-                System.out.println("Erro ao encontrar id no ficheiro backup.");
-                return;
-            }
-
-			// Volta ao início do ficheiro e limpa o conteúdo
-            raf.seek(0);
-            raf.setLength(0);
-
-            // Res escreve o ficheiro com a nova linha
-            for (int i = 0; i < 3; i++) {
-                if (i == indexToUpdate) {
-                    raf.writeBytes(newContent + "\n");
-                } else {
-                    raf.writeBytes(lines[i] + "\n");
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Error accessing the file: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-	public void validarFormatosTemperatura(ArrayList<String> dateListTemperatura) {
+	public ArrayList<String> validarFormatosTemperatura(ArrayList<String> dateListTemperatura) {
 		ArrayList<String> dadosAnomalos = new ArrayList<String>();
 		ArrayList<String> dadosCorretos = new ArrayList<String>();
 		for (String data : dateListTemperatura) {
@@ -408,15 +394,14 @@ public class WriteMysql {
 				}
 				if (!anomalia) {
 					dadosCorretos.add(data);
-					updateBackupFile("temp1", data);
+					//
 				}
 			}
 		}
 
 		writeArrayListToFile(dadosCorretos, "DadosCorretosTemperatura.txt");
 		writeArrayListToFile(dadosAnomalos, "DadosAnomalosTemperatura.txt");
-
-		detetarOutliers(dadosCorretos);
+		return dadosCorretos;
 	}
 
 	private void detetarOutliers(ArrayList<String> dadosCorretos) {
