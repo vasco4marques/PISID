@@ -172,17 +172,17 @@ public class WriteMysql {
 
 		ArrayList<String> dateListTemperatura = new ArrayList<String>();
 		ArrayList<String> dateListRatos = new ArrayList<>();
-		List<DBObject> sensors = readFromMongo(colDoors);
-		List<DBObject> temp1 = readFromMongo(colTemp1);
-		List<DBObject> temp2 = readFromMongo(colTemp2);
+		//TODO
+		//Sao aqueles parametros no readFromMongo???
+		List<DBObject> sensors = readFromMongo(colDoors,mongo_doors);
+		List<DBObject> temp1 = readFromMongo(colTemp1,mongo_temp1);
+		List<DBObject> temp2 = readFromMongo(colTemp2,mongo_temp1);
 
 		boolean comecar = false;
-		boolean encontradoSequencia = false;
 
 		for (DBObject sensor : sensors) {
 			String data = sensor.toString();
 			if (data.contains("2000-01-01 00:00:00")) {
-				encontradoSequencia = true;
 				if (!comecar) {
 					comecar = true;
 					salasMap.put(1, 100);
@@ -216,11 +216,12 @@ public class WriteMysql {
 			addToTemp1 = !addToTemp1; // Alternar a flag
 		}
 
+		writeArrayListToFile(dateListTemperatura, "DadosMongoTemperatura.txt");
+		writeArrayListToFile(dateListRatos, "DadosMongoSalas.txt");
+		
 		validarFormatosTemperatura(dateListTemperatura);
 		validarFormatosSalas(dateListRatos);
 
-		writeArrayListToFile(dateListTemperatura, "DadosMongoTemperatura.txt");
-		writeArrayListToFile(dateListRatos, "DadosMongoSalas.txt");
 
 		float end = System.nanoTime();
 		float time = (end - now) / 1000000000;
