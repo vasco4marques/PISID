@@ -1,3 +1,4 @@
-
+JavaMQTT/OpenMongoDBAndreplics.bat
 JavaMQTT/PortToMongo.ini
-JavaMQTT/PortToMongo.ini
+JavaMQTT/TempsToMongo.ini
+JavaMQTT/updateDBReplicasIP.bat
