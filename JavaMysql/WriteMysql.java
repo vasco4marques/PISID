@@ -1,30 +1,17 @@
 //(c) ISCTE-IUL, Pedro Ramos, 2022
 
-//import org.bson.Document;
-//import org.bson.*;
-//import org.bson.conversions.*;
-
-//import org.json.JSONArray;
-//import org.json.JSONObject;
-//import org.json.JSONException;
-
 import java.io.*;
 import java.util.*;
-///////////////////////////////////////////////////////////////////IMPORTES PARA TESTE////////////////////////////////////////////////////////////////
 import java.util.regex.*;
 import java.util.List;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.concurrent.*;
 import java.sql.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
-import javax.swing.text.BadLocationException;
 
 import com.mongodb.*;
-import com.mongodb.util.JSON;
-import org.bson.Document;
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 public class WriteMysql {
@@ -64,6 +51,7 @@ public class WriteMysql {
 	HashMap<Integer, Integer> salasMap = new HashMap<>();
 	private final static int MAXRATOS = 10;
 
+	//janela para aparecer informacoes de mongo o sql
 	private static void createWindow() {
 		JFrame frame = new JFrame("Data Bridge");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -86,6 +74,8 @@ public class WriteMysql {
 		});
 	}
 
+	//////////////////////////////////////////////CONECOES A MONGO E BASE DE DADOS//////////////////////////////////////////
+	//Conectar a base de dados 
 	public void connectDatabase_to() {
 		try {
 			Class.forName("org.mariadb.jdbc.Driver");
@@ -121,22 +111,18 @@ public class WriteMysql {
 	}
 
 	// private void writeInMongoBackupValue(String collectionName, int newValue){
-	// Document filter = new Document("collection", collectionName);
-	// Document update = new Document("$inc", new
-	// Document("lastInsertedID",newValue));
-
-	// FindOneAndUpdateOptions options = new
-	// FindOneAndUpdateOptions().returnDocument(com.mongodb.client.model.ReturnDocument.AFTER);
-	// Document sequenceDocument =
-	// db.getCollection("counters").findOneAndUpdate(filter, update, options);
-
-	// if (sequenceDocument == null) {
-	// // Initialize the counter if it doesn't exist
-	// db.getCollection("counters").insertOne(new Document("_id",
-	// sequenceName).append("seq", 1));
-	// return 1;
+	// 	Document filter = new Document("collection", collectionName);
+	// 	Document update = new Document("$inc", new Document("lastInsertedID", newValue));
+	
+	// 	FindOneAndUpdateOptions options = new FindOneAndUpdateOptions().returnDocument(com.mongodb.client.model.ReturnDocument.AFTER);
+	// 	Document sequenceDocument = db.getCollection("counters").findOneAndUpdate(filter, update, options);
+	
+	// 	if (sequenceDocument == null) {
+	// 		// Inicialize o contador se ele não existir
+	// 		db.getCollection("counters").insertOne(new Document("_id", collectionName).append("lastInsertedID", newValue));
+	// 	}
 	// }
-	// }
+	
 
 	private Map<String, Integer> readLastProcessedIds(String filePath) {
 		File file = new File(filePath);
@@ -176,13 +162,26 @@ public class WriteMysql {
 		return results;
 	}
 
+	public static void updateBackupFile(String fileName, String newContent) {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter("JavaMysql/Backups/" + fileName))) {
+			Matcher matcher = Pattern.compile("id:\\s*(\\d+)").matcher(newContent);
+			// Extrai o valor do campo "id:" usando expressão regular e imprime
+			String idValue = matcher.find() ? matcher.group(1) : "Campo 'id' não encontrado.";
+			writer.write(idValue);
+		} catch (IOException e) {
+			System.err.println("Error accessing the file: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////FUNCAO  PRINCIPAL DE DE X EM X SEGUNDOS VAI BUSCAR AO MONGO E ENVIA PRA O SQL//////////////////////////////////////////////
+
 	public void ReadData() {
 		// Começa e acaba quando:
 		// Hora ser 2000-01-01 00:00:00.000
 		// e se sala origem e destino for 0
 
-		int i = 0;
-		// while (i < 10000) {
 		float now = System.nanoTime();
 
 		ArrayList<String> dateListTemperatura = new ArrayList<String>();
@@ -237,12 +236,10 @@ public class WriteMysql {
 				String data = temp1Validada.remove(0).toString();
 				updateBackupFile("Temp1.txt", data);
 				dateListTemperatura.add(data);
-				WriteToMySQL(data, "medicoes_temperatura");
 			} else if (!temp2.isEmpty()) {
 				String data = temp2Validada.remove(0).toString();
 				updateBackupFile("Temp2.txt", data);
 				dateListTemperatura.add(data);
-				WriteToMySQL(data, "medicoes_temperatura");
 			}
 			addToTemp1 = !addToTemp1; // Alternar a flag
 		}
@@ -261,10 +258,10 @@ public class WriteMysql {
 				e.printStackTrace();
 			}
 		}
-
-		i++;
-
 	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////FUNCOES RELACIONADAS COM AS SALAS////////////////////////////////////////////////////////////////////////////////////////////
 
 	private void validarFormatosSalas(ArrayList<String> dateListRatos) {
 		ArrayList<String> dadosAnomalos = new ArrayList<String>();
@@ -333,10 +330,11 @@ public class WriteMysql {
 			if (salasMap.get(salaDestino) >= MAXRATOS) {
 				System.out.println("A sala " + salaDestino + " já está lotada. Não é possível adicionar mais ratos.");
 				break;
-			}
-			if (salasMap.get(salaOrigem) < 0) {
+			}else if (salasMap.get(salaOrigem) < 0) {
 				// TODO
 				System.out.println("A sala " + salaOrigem + " tem valores negativos. Algo de errado ocorreu.");
+			}else{
+				writeToMySQL(data, "medicoes_passagens");
 			}
 		}
 		writeMapToFile(salasMap, "DadosMapaSalas.txt");
@@ -361,18 +359,8 @@ public class WriteMysql {
 		return -1;
 	}
 
-	public static void updateBackupFile(String fileName, String newContent) {
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter("JavaMysql/Backups/" + fileName))) {
-			Matcher matcher = Pattern.compile("id:\\s*(\\d+)").matcher(newContent);
-			// Extrai o valor do campo "id:" usando expressão regular e imprime
-			String idValue = matcher.find() ? matcher.group(1) : "Campo 'id' não encontrado.";
-			writer.write(idValue);
-		} catch (IOException e) {
-			System.err.println("Error accessing the file: " + e.getMessage());
-			e.printStackTrace();
-		}
-	}
-
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////FUNCOES RELACIONADAS COM AS TEMPERATURAS ////////////////////////////////////////////////////////////////////////////////
 	public ArrayList<String> validarFormatosTemperatura(ArrayList<String> dateListTemperatura) {
 		ArrayList<String> dadosAnomalos = new ArrayList<String>();
 		ArrayList<String> dadosCorretos = new ArrayList<String>();
@@ -445,6 +433,7 @@ public class WriteMysql {
 				} else {
 					// Se não for um outlier, insere no conjunto de dados
 					dadoSet.add(dadosCorretos.get(i));
+					writeToMySQL(dadosCorretos.get(i), "medicoes_temperatura");
 					// System.out.println("Temperatura NÃO É um outlier: " + temperatura);
 				}
 			} else
@@ -485,17 +474,17 @@ public class WriteMysql {
 
 			int tamanho = temp.size();
 			if (quartile == 1) {
+				int index = tamanho / 4;
 				if (OUTLIERS % 2 == 0)
-					return (extrairValorLeitura(temp.get(tamanho / 4))
-							+ extrairValorLeitura(temp.get((tamanho / 4) + 1))) / 2f;
+					return (extrairValorLeitura(temp.get(index)) + extrairValorLeitura(temp.get(index + 1))) / 2f;
 				else
-					return extrairValorLeitura(temp.get(tamanho / 4));
+					return extrairValorLeitura(temp.get(index));
 			} else {
+				int index = 3 * tamanho / 4;
 				if (OUTLIERS % 2 == 0)
-					return (extrairValorLeitura(temp.get(3 * tamanho / 4))
-							+ extrairValorLeitura(temp.get((3 * tamanho / 4) + 1))) / 2f;
+					return (extrairValorLeitura(temp.get(index)) + extrairValorLeitura(temp.get(index + 1))) / 2f;
 				else
-					return extrairValorLeitura(temp.get(3 * tamanho / 4));
+					return extrairValorLeitura(temp.get(index));
 			}
 		}
 	}
@@ -510,7 +499,10 @@ public class WriteMysql {
 		return Float.NEGATIVE_INFINITY;
 	}
 
-	public void WriteToMySQL(String c, String tabela) {
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////FUNCAO PARA ESCREVER NO SQL////////////////////////////////////////////////////////////////////////////////////////////
+
+	public void writeToMySQL(String c, String tabela) {
 		String SqlCommando = "";
 		switch (tabela) {
 			case "medicoes_temperatura":
@@ -613,7 +605,9 @@ public class WriteMysql {
 		}
 	}
 
-	/////////////////////////////////////////////////// MAIN////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////// MAIN//////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	public static void main(String[] args) {
 		createWindow();
 		try {
