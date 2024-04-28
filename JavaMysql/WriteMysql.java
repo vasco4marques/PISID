@@ -10,6 +10,7 @@
 
 import java.io.*;
 import java.util.*;
+///////////////////////////////////////////////////////////////////IMPORTES PARA TESTE////////////////////////////////////////////////////////////////
 import java.util.regex.*;
 import java.util.List;
 import java.text.SimpleDateFormat;
@@ -20,12 +21,7 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 import javax.swing.text.BadLocationException;
-import java.sql.SQLException;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 
-///////////////////////////////////////////////////////////////////IMPORTES PARA TESTE////////////////////////////////////////////////////////////////
-import java.util.regex.Pattern;
 import com.mongodb.*;
 import com.mongodb.util.JSON;
 import org.bson.Document;
@@ -49,7 +45,7 @@ public class WriteMysql {
 	static String sql_database_connection_to = new String();
 	static String sql_database_password_to = new String();
 	static String sql_database_user_to = new String();
-	static String sql_table_to = new String();
+	// static String sql_table_to = new String();
 
 	// Dados mongo do ficheiro ini
 	static String mongo_user = new String();
@@ -93,8 +89,7 @@ public class WriteMysql {
 	public void connectDatabase_to() {
 		try {
 			Class.forName("org.mariadb.jdbc.Driver");
-			connTo = DriverManager.getConnection(sql_database_connection_to, sql_database_user_to,
-					sql_database_password_to);
+			connTo = DriverManager.getConnection(sql_database_connection_to, sql_database_user_to, "");
 			documentLabel.append("SQl Connection:" + sql_database_connection_to + "\n");
 			documentLabel
 					.append("Connection To MariaDB Destination " + sql_database_connection_to + " Suceeded" + "\n");
@@ -126,17 +121,21 @@ public class WriteMysql {
 	}
 
 	// private void writeInMongoBackupValue(String collectionName, int newValue){
-	// 	Document filter = new Document("collection", collectionName);
-	// 	Document update = new Document("$inc", new Document("lastInsertedID",newValue));
+	// Document filter = new Document("collection", collectionName);
+	// Document update = new Document("$inc", new
+	// Document("lastInsertedID",newValue));
 
-	// 	FindOneAndUpdateOptions options = new FindOneAndUpdateOptions().returnDocument(com.mongodb.client.model.ReturnDocument.AFTER);
-    //     Document sequenceDocument = db.getCollection("counters").findOneAndUpdate(filter, update, options);
+	// FindOneAndUpdateOptions options = new
+	// FindOneAndUpdateOptions().returnDocument(com.mongodb.client.model.ReturnDocument.AFTER);
+	// Document sequenceDocument =
+	// db.getCollection("counters").findOneAndUpdate(filter, update, options);
 
-    //     if (sequenceDocument == null) {
-    //         // Initialize the counter if it doesn't exist
-    //         db.getCollection("counters").insertOne(new Document("_id", sequenceName).append("seq", 1));
-    //         return 1;
-    //     }
+	// if (sequenceDocument == null) {
+	// // Initialize the counter if it doesn't exist
+	// db.getCollection("counters").insertOne(new Document("_id",
+	// sequenceName).append("seq", 1));
+	// return 1;
+	// }
 	// }
 
 	private Map<String, Integer> readLastProcessedIds(String filePath) {
@@ -223,14 +222,14 @@ public class WriteMysql {
 		}
 		ArrayList<String> temp2Total = new ArrayList<>();
 		for (DBObject temp : temp2) {
-            temp2Total.add(temp.toString());
-        }
+			temp2Total.add(temp.toString());
+		}
 
-		ArrayList<String> temp1Validada=validarFormatosTemperatura(temp1Total);
-		ArrayList<String> temp2Validada=validarFormatosTemperatura(temp2Total);
+		ArrayList<String> temp1Validada = validarFormatosTemperatura(temp1Total);
+		ArrayList<String> temp2Validada = validarFormatosTemperatura(temp2Total);
 
 		writeArrayListToFile(dateListRatos, "DadosMongoSalas.txt");
-		
+
 		// Iterar enquanto houverem elementos em temp1 ou temp2
 		boolean addToTemp1 = true; // Flag para alternar entre temp1 e temp2
 		while (!temp1.isEmpty() || !temp2.isEmpty()) {
@@ -238,18 +237,20 @@ public class WriteMysql {
 				String data = temp1Validada.remove(0).toString();
 				updateBackupFile("Temp1.txt", data);
 				dateListTemperatura.add(data);
+				WriteToMySQL(data, "medicoes_temperatura");
 			} else if (!temp2.isEmpty()) {
 				String data = temp2Validada.remove(0).toString();
 				updateBackupFile("Temp2.txt", data);
 				dateListTemperatura.add(data);
+				WriteToMySQL(data, "medicoes_temperatura");
 			}
 			addToTemp1 = !addToTemp1; // Alternar a flag
 		}
 		writeArrayListToFile(dateListTemperatura, "DadosMongoTemperatura.txt");
 		detetarOutliers(dateListTemperatura);
-		
+
 		validarFormatosSalas(dateListRatos);
-		
+
 		float end = System.nanoTime();
 		float time = (end - now) / 1000000000;
 
@@ -509,33 +510,30 @@ public class WriteMysql {
 		return Float.NEGATIVE_INFINITY;
 	}
 
-	public void WriteToMySQL(String c) {
-		String convertedjson = new String();
-		convertedjson = c;
-		String fields = new String();
-		String values = new String();
-		String SqlCommando = new String();
-		String column_database = new String();
-		fields = "";
-		values = "";
-		column_database = " ";
-		String x = convertedjson.toString();
-		String[] splitArray = x.split(",");
-		for (int i = 0; i < splitArray.length; i++) {
-			String[] splitArray2 = splitArray[i].split(":");
-			if (i == 0)
-				fields = splitArray2[0];
-			else
-				fields = fields + ", " + splitArray2[0];
-			if (i == 0)
-				values = splitArray2[1];
-			else
-				values = values + ", " + splitArray2[1];
+	public void WriteToMySQL(String c, String tabela) {
+		String SqlCommando = "";
+		switch (tabela) {
+			case "medicoes_temperatura":
+				String horaTemp = extractValue(c, "Hora");
+				String leitura = extractValue(c, "Leitura");
+				String sensor = extractValue(c, "Sensor");
+				SqlCommando = "Insert into medicoes_temperatura" + " (" + "hora, leitura, sensor" + ") values ("
+						+ "'" + horaTemp + "', " + leitura + ", " + sensor + ");";
+
+				break;
+
+			case "medicoes_passagens":
+				String horaSala = extractValue(c, "Hora");
+				String salaOrigem = extractValue(c, "SalaOrigem");
+				String salaDestino = extractValue(c, "SalaDestino");
+				String idExp = "1";
+				SqlCommando = "Insert into medicoes_passagens" + " (" + "id_ex, hora, sala_origem, sala_destino"
+						+ ") values ("
+						+ idExp + ", '" + horaSala + "', " + salaOrigem + ", " + salaDestino + ");";
+				break;
+			default:
+				break;
 		}
-		fields = fields.replace("\"", "");
-		SqlCommando = "Insert into " + sql_table_to + " (" + fields.substring(1, fields.length()) + ") values ("
-				+ values.substring(0, values.length() - 1) + ");";
-		// System.out.println(SqlCommando);
 		try {
 			documentLabel.append(SqlCommando.toString() + "\n");
 		} catch (Exception e) {
@@ -549,6 +547,26 @@ public class WriteMysql {
 			System.out.println("Error Inserting in the database . " + e);
 			System.out.println(SqlCommando);
 		}
+	}
+
+	public static String extractValue(String data, String field) {
+		int index = data.indexOf("'" + field + "'");
+		if (index != -1) {
+			index = data.indexOf(":", index + field.length() + 2); // Adiciona 2 para pular os dois pontos e um espaço
+			if (index != -1) {
+				int start = index + 1;
+				while (start < data.length()
+						&& (Character.isWhitespace(data.charAt(start)) || data.charAt(start) == '\'')) {
+					start++;
+				}
+				int end = start;
+				while (end < data.length() && data.charAt(end) != ',' && data.charAt(end) != '}') {
+					end++;
+				}
+				return data.substring(start, end).trim().replace("'", "");
+			}
+		}
+		return null;
 	}
 
 	////////////////////////////////////////////////////////////// ESCREVER EM
@@ -601,7 +619,7 @@ public class WriteMysql {
 		try {
 			Properties p = new Properties();
 			p.load(new FileInputStream("JavaMysql/WriteMysql.ini"));
-			sql_table_to = p.getProperty("sql_table_to");
+			// sql_table_to = p.getProperty("sql_table_to");
 			sql_database_connection_to = p.getProperty("sql_database_connection_to");
 			sql_database_password_to = p.getProperty("sql_database_password_to");
 			sql_database_user_to = p.getProperty("sql_database_user_to");
@@ -621,7 +639,7 @@ public class WriteMysql {
 					JOptionPane.ERROR_MESSAGE);
 		}
 		new WriteMysql().connectToMongo();
-		// new WriteMysql().connectDatabase_to();
+		new WriteMysql().connectDatabase_to();
 		new WriteMysql().ReadData();
 	}
 }
