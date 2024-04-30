@@ -10,7 +10,12 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 
+import org.bson.Document;
 import com.mongodb.*;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
+import com.mongodb.util.JSON;
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -22,6 +27,9 @@ public class WriteMysql {
 	static DBCollection colDoors;
 	static DBCollection colTemp1;
 	static DBCollection colTemp2;
+	static DBCollection  lastInsertedId;
+
+	static MongoDatabase db2;
 
 	// Objeto SQL
 	static Connection connTo;
@@ -104,40 +112,54 @@ public class WriteMysql {
 			mongoURI = mongoURI + "/?authSource=admin";
 		MongoClient mongoClient = new MongoClient(new MongoClientURI(mongoURI));
 		db = mongoClient.getDB(mongo_database);
+		db2 = mongoClient.getDatabase(mongo_database);
 		// 3 coleções que precisas
 		colDoors = db.getCollection(mongo_doors);
 		colTemp1 = db.getCollection(mongo_temp1);
 		colTemp2 = db.getCollection(mongo_temp2);
+		lastInsertedId = db.getCollection("lastInsertedIds");
 	}
 
-	// private void writeInMongoBackupValue(String collectionName, int newValue){
-	// 	Document filter = new Document("collection", collectionName);
-	// 	Document update = new Document("$inc", new Document("lastInsertedID", newValue));
+	private void writeInMongoBackupValue(String colIdUpdate,int newValue){
+		Document filter = new Document("name", colIdUpdate);
+		Document update = new Document("id", new Document("id", newValue));
+		FindOneAndUpdateOptions options = new FindOneAndUpdateOptions().returnDocument(com.mongodb.client.model.ReturnDocument.AFTER);
+		Document sequenceDocument = db2.getCollection("lastInsertedIds").findOneAndUpdate(filter, update, options);
 	
-	// 	FindOneAndUpdateOptions options = new FindOneAndUpdateOptions().returnDocument(com.mongodb.client.model.ReturnDocument.AFTER);
-	// 	Document sequenceDocument = db.getCollection("counters").findOneAndUpdate(filter, update, options);
-	
-	// 	if (sequenceDocument == null) {
-	// 		// Inicialize o contador se ele não existir
-	// 		db.getCollection("counters").insertOne(new Document("_id", collectionName).append("lastInsertedID", newValue));
-	// 	}
-	// }
+		if (sequenceDocument == null) {
+			db2.getCollection("lastInsertedIds").insertOne(new Document("name", colIdUpdate).append("lastInsertedID", newValue));
+		}
+
+		// Demorei 4 minutos e 23 segundos a fazer isto
+	}
 	
 
-	private Map<String, Integer> readLastProcessedIds(String filePath) {
-		File file = new File(filePath);
+	private Map<String, Integer> readLastProcessedIds(DBCollection col) {
+		// File file = new File(filePath);
 		Map<String, Integer> ids = new HashMap<>();
-		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				String[] parts = line.split(": ");
-				if (parts.length == 2) {
-					ids.put(parts[0].trim(), Integer.parseInt(parts[1].trim()));
-				}
+
+		try (DBCursor cursor = col.find()) {
+			while (cursor.hasNext()) {
+				ids.put((String)(cursor.next().get("name")),(int)(cursor.next().get("id")));
 			}
-		} catch (IOException e) {
-			System.err.println("Failed to read the backup file: " + e.getMessage());
 		}
+		
+		for( String a : ids.keySet()){
+			System.out.println(a + " " + ids.get(a));
+		}
+		
+		
+		// try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+		// 	String line;
+		// 	while ((line = reader.readLine()) != null) {
+		// 		String[] parts = line.split(": ");
+		// 		if (parts.length == 2) {
+		// 			ids.put(parts[0].trim(), Integer.parseInt(parts[1].trim()));
+		// 		}
+		// 	}
+		// } catch (IOException e) {
+		// 	System.err.println("Failed to read the backup file: " + e.getMessage());
+		// }
 		return ids;
 	}
 
@@ -145,7 +167,7 @@ public class WriteMysql {
 	// Para leres estes objetos podes usar o .get(key) que ele retorna o value
 	public List<DBObject> readFromMongo(DBCollection col, String collectionName) {
 		List<DBObject> results = new ArrayList<>();
-		Map<String, Integer> lastIds = readLastProcessedIds("JavaMysql/backup.txt");
+		Map<String, Integer> lastIds = readLastProcessedIds(lastInsertedId);
 
 		// Cria uma query para ter apenas os documentos que têm um _id maior que o
 		// último guardado no ficheiro de backup
@@ -178,7 +200,7 @@ public class WriteMysql {
 	//////////////////////////////////////////////FUNCAO  PRINCIPAL DE DE X EM X SEGUNDOS VAI BUSCAR AO MONGO E ENVIA PRA O SQL//////////////////////////////////////////////
 
 	public void ReadData() {
-		// Começa e acaba quando:
+		// Começa e acaba quando
 		// Hora ser 2000-01-01 00:00:00.000
 		// e se sala origem e destino for 0
 
@@ -264,6 +286,7 @@ public class WriteMysql {
 	//////////////////////////////////////////////FUNCOES RELACIONADAS COM AS SALAS////////////////////////////////////////////////////////////////////////////////////////////
 
 	private void validarFormatosSalas(ArrayList<String> dateListRatos) {
+		String collectionName = "sensoresPortas";
 		ArrayList<String> dadosAnomalos = new ArrayList<String>();
 		ArrayList<String> dadosCorretos = new ArrayList<String>();
 		for (String data : dateListRatos) {
@@ -500,25 +523,35 @@ public class WriteMysql {
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////FUNCAO PARA ESCREVER NO SQL////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////FUNCAO PARA ESCREVER E LER NO SQL////////////////////////////////////////////////////////////////////////////////////////////
 
 	public void writeToMySQL(String c, String tabela) {
 		String SqlCommando = "";
+		String horaTemp = "";
+		String leitura = "";
+		String sensor = "";
+		String horaSala = "";
+		String salaOrigem = "";
+		String salaDestino = "";
+		String id = "";
+	
 		switch (tabela) {
 			case "medicoes_temperatura":
-				String horaTemp = extractValue(c, "Hora");
-				String leitura = extractValue(c, "Leitura");
-				String sensor = extractValue(c, "Sensor");
+				horaTemp = extractValue(c, "Hora");
+				leitura = extractValue(c, "Leitura");
+				sensor = extractValue(c, "Sensor");
+				id = extractValue(c, "id");
 				SqlCommando = "Insert into medicoes_temperatura" + " (" + "hora, leitura, sensor" + ") values ("
 						+ "'" + horaTemp + "', " + leitura + ", " + sensor + ");";
-
+	
 				break;
-
+	
 			case "medicoes_passagens":
-				String horaSala = extractValue(c, "Hora");
-				String salaOrigem = extractValue(c, "SalaOrigem");
-				String salaDestino = extractValue(c, "SalaDestino");
-				String idExp = "1";
+				horaSala = extractValue(c, "Hora");
+				salaOrigem = extractValue(c, "SalaOrigem");
+				salaDestino = extractValue(c, "SalaDestino");
+				id = extractValue(c, "id");
+				int idExp = idExperienciaFromSQL();
 				SqlCommando = "Insert into medicoes_passagens" + " (" + "id_ex, hora, sala_origem, sala_destino"
 						+ ") values ("
 						+ idExp + ", '" + horaSala + "', " + salaOrigem + ", " + salaDestino + ");";
@@ -526,22 +559,73 @@ public class WriteMysql {
 			default:
 				break;
 		}
-		try {
-			documentLabel.append(SqlCommando.toString() + "\n");
-		} catch (Exception e) {
-			System.out.println(e);
-		}
-		try {
-			Statement s = connTo.createStatement();
-			int result = new Integer(s.executeUpdate(SqlCommando));
-			s.close();
-		} catch (Exception e) {
-			System.out.println("Error Inserting in the database . " + e);
-			System.out.println(SqlCommando);
+	
+		boolean commandExecutedSuccessfully = false;
+		while (!commandExecutedSuccessfully) {
+			try {
+				documentLabel.append(SqlCommando.toString() + "\n");
+				Statement s = connTo.createStatement();
+				int result = s.executeUpdate(SqlCommando);
+				if (tabela.equals("medicoes_passagens")) {
+					writeInMongoBackupValue("sensoresPortas", Integer.parseInt(id));
+				} else {
+					if (sensor.equals("1"))
+						writeInMongoBackupValue("sensoresTemp1", Integer.parseInt(id));
+					else
+						writeInMongoBackupValue("sensoresTemp2", Integer.parseInt(id));
+				}
+				s.close();
+				commandExecutedSuccessfully = true; // Define como verdadeiro se a execução foi bem-sucedida
+			} catch (Exception e) {
+				System.out.println("Error Inserting in the database . " + e);
+				System.out.println(SqlCommando);
+				// Em caso de falha, aguarde antes de tentar novamente
+				try {
+					Thread.sleep(1000); // Aguarda por 1 segundo antes de tentar novamente
+				} catch (InterruptedException ex) {
+					ex.printStackTrace();
+				}
+			}
 		}
 	}
+	
 
-	public static String extractValue(String data, String field) {
+	public int idExperienciaFromSQL() {
+		int maxIdExperiencia = -1;
+		String SqlCommando = "SELECT MAX(id_ex) FROM experiencia;";
+		try {
+			Statement s = connTo.createStatement();
+			ResultSet rs = s.executeQuery(SqlCommando);
+			if (rs.next()) {
+				maxIdExperiencia = rs.getInt(1); // Obtém o valor máximo da coluna id_experiencia
+				// Use o valor maxIdExperiencia conforme necessário
+				System.out.println("Maior valor de id_experiencia: " + maxIdExperiencia);
+			}
+			s.close();
+		} catch (Exception e) {
+			System.out.println("Erro ao buscar o maior valor de id_experiencia: " + e);
+		}
+		return maxIdExperiencia;
+	}
+	
+
+	public int experienciaAtiva(){
+		int idExperiencia = -1;
+		String SqlCommando = "SELECT id FROM experiencia WHERE data_hora_fim IS NULL ORDER BY data_hora_inicio DESC LIMIT 1;";
+		try {
+			Statement s = connTo.createStatement();
+			ResultSet rs = s.executeQuery(SqlCommando);
+			if (rs.next()) {
+				idExperiencia = rs.getInt(1);
+			}
+			s.close();
+		} catch (Exception e) {
+			idExperiencia = -1;
+		}
+		return idExperiencia;
+	}
+
+	public String extractValue(String data, String field) {
 		int index = data.indexOf("'" + field + "'");
 		if (index != -1) {
 			index = data.indexOf(":", index + field.length() + 2); // Adiciona 2 para pular os dois pontos e um espaço
