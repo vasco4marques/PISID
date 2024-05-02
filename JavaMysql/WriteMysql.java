@@ -10,7 +10,8 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 
-import org.bson.Document;
+import org.bson.*;
+
 import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -27,7 +28,7 @@ public class WriteMysql {
 	static DBCollection colDoors;
 	static DBCollection colTemp1;
 	static DBCollection colTemp2;
-	static DBCollection  lastInsertedId;
+	static DBCollection lastInsertedIds;
 
 	static MongoDatabase db2;
 
@@ -117,7 +118,8 @@ public class WriteMysql {
 		colDoors = db.getCollection(mongo_doors);
 		colTemp1 = db.getCollection(mongo_temp1);
 		colTemp2 = db.getCollection(mongo_temp2);
-		lastInsertedId = db.getCollection("lastInsertedIds");
+		lastInsertedIds = db.getCollection("lastInsertedIds");
+
 	}
 
 	private void writeInMongoBackupValue(String colIdUpdate,int newValue){
@@ -134,32 +136,24 @@ public class WriteMysql {
 	}
 	
 
-	private Map<String, Integer> readLastProcessedIds(DBCollection col) {
+	private Map<String, Integer> readLastProcessedIds() {
 		// File file = new File(filePath);
 		Map<String, Integer> ids = new HashMap<>();
-
-		try (DBCursor cursor = col.find()) {
+		System.out.println("Cursor " +  lastInsertedIds.find());
+		try (DBCursor cursor = lastInsertedIds.find()) {
 			while (cursor.hasNext()) {
-				ids.put((String)(cursor.next().get("name")),(int)(cursor.next().get("id")));
+				DBObject nextElement = cursor.next();
+				ids.put((String)(nextElement.get("name")),(int)(nextElement.get("id")));
+				// System.out.println(cursor.next());
 			}
 		}
+		
+        
 		
 		for( String a : ids.keySet()){
 			System.out.println(a + " " + ids.get(a));
 		}
 		
-		
-		// try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-		// 	String line;
-		// 	while ((line = reader.readLine()) != null) {
-		// 		String[] parts = line.split(": ");
-		// 		if (parts.length == 2) {
-		// 			ids.put(parts[0].trim(), Integer.parseInt(parts[1].trim()));
-		// 		}
-		// 	}
-		// } catch (IOException e) {
-		// 	System.err.println("Failed to read the backup file: " + e.getMessage());
-		// }
 		return ids;
 	}
 
@@ -167,13 +161,13 @@ public class WriteMysql {
 	// Para leres estes objetos podes usar o .get(key) que ele retorna o value
 	public List<DBObject> readFromMongo(DBCollection col, String collectionName) {
 		List<DBObject> results = new ArrayList<>();
-		Map<String, Integer> lastIds = readLastProcessedIds(lastInsertedId);
+		Map<String, Integer> lastIds = readLastProcessedIds();
 
 		// Cria uma query para ter apenas os documentos que têm um _id maior que o
 		// último guardado no ficheiro de backup
 		BasicDBObject query = new BasicDBObject();
 		if (lastIds.containsKey(collectionName)) {
-			query.put("_id", new BasicDBObject("$gt", lastIds.get(collectionName)));
+			query.put("id", new BasicDBObject("$gt", lastIds.get(collectionName)));
 		}
 
 		try (DBCursor cursor = col.find(query)) {
@@ -181,6 +175,7 @@ public class WriteMysql {
 				results.add(cursor.next());
 			}
 		}
+		System.out.println(results);
 		return results;
 	}
 
@@ -210,6 +205,7 @@ public class WriteMysql {
 		ArrayList<String> dateListRatos = new ArrayList<>();
 
 		List<DBObject> sensors = readFromMongo(colDoors, mongo_doors);
+
 		List<DBObject> temp1 = readFromMongo(colTemp1, mongo_temp1);
 		List<DBObject> temp2 = readFromMongo(colTemp2, mongo_temp1);
 
@@ -696,7 +692,10 @@ public class WriteMysql {
 		createWindow();
 		try {
 			Properties p = new Properties();
+			// LINHA PARA OS RESTANTES
 			p.load(new FileInputStream("JavaMysql/WriteMysql.ini"));
+			// Linha para funcionar no VASCO
+			// p.load(new FileInputStream("E:\\3ºAno\\2ºSemestre\\PISID\\PISID\\JavaMysql\\WriteMysql.ini"));
 			// sql_table_to = p.getProperty("sql_table_to");
 			sql_database_connection_to = p.getProperty("sql_database_connection_to");
 			sql_database_password_to = p.getProperty("sql_database_password_to");
