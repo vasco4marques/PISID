@@ -18,7 +18,6 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.util.JSON;
 
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 public class WriteMysql {
 
@@ -55,12 +54,14 @@ public class WriteMysql {
 	static String mongo_authentication = new String();
 
 	LinkedHashSet<String> dadoSet = new LinkedHashSet<>();
-	private final static int OUTLIERS = 16;
 	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	HashMap<Integer, Integer> salasMap = new HashMap<>();
-	private final static int MAXRATOS = 10;
+	private final static int OUTLIERS = 16;
+	private static int MAXRATOS;
+	private static int MAXTIMEPARADOS;
+	private final static int TIMELOOP = 3000;
 
-	//janela para aparecer informacoes de mongo o sql
+	// janela para aparecer informacoes de mongo o sql
 	private static void createWindow() {
 		JFrame frame = new JFrame("Data Bridge");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -83,8 +84,9 @@ public class WriteMysql {
 		});
 	}
 
-	//////////////////////////////////////////////CONECOES A MONGO E BASE DE DADOS//////////////////////////////////////////
-	//Conectar a base de dados 
+	////////////////////////////////////////////// CONECOES A MONGO E BASE DE
+	////////////////////////////////////////////// DADOS//////////////////////////////////////////
+	// Conectar a base de dados
 	public void connectDatabase_to() {
 		try {
 			Class.forName("org.mariadb.jdbc.Driver");
@@ -122,38 +124,36 @@ public class WriteMysql {
 
 	}
 
-	private void writeInMongoBackupValue(String colIdUpdate,int newValue){
+	private void writeInMongoBackupValue(String colIdUpdate, int newValue) {
 		Document filter = new Document("name", colIdUpdate);
 		Document update = new Document("id", new Document("id", newValue));
-		FindOneAndUpdateOptions options = new FindOneAndUpdateOptions().returnDocument(com.mongodb.client.model.ReturnDocument.AFTER);
+		FindOneAndUpdateOptions options = new FindOneAndUpdateOptions()
+				.returnDocument(com.mongodb.client.model.ReturnDocument.AFTER);
 		Document sequenceDocument = db2.getCollection("lastInsertedIds").findOneAndUpdate(filter, update, options);
-	
+
 		if (sequenceDocument == null) {
-			db2.getCollection("lastInsertedIds").insertOne(new Document("name", colIdUpdate).append("lastInsertedID", newValue));
+			db2.getCollection("lastInsertedIds")
+					.insertOne(new Document("name", colIdUpdate).append("lastInsertedID", newValue));
 		}
 
-		// Demorei 4 minutos e 23 segundos a fazer isto
 	}
-	
 
 	private Map<String, Integer> readLastProcessedIds() {
 		// File file = new File(filePath);
 		Map<String, Integer> ids = new HashMap<>();
-		System.out.println("Cursor " +  lastInsertedIds.find());
+		System.out.println("Cursor " + lastInsertedIds.find());
 		try (DBCursor cursor = lastInsertedIds.find()) {
 			while (cursor.hasNext()) {
 				DBObject nextElement = cursor.next();
-				ids.put((String)(nextElement.get("name")),(int)(nextElement.get("id")));
+				ids.put((String) (nextElement.get("name")), (int) (nextElement.get("id")));
 				// System.out.println(cursor.next());
 			}
 		}
-		
-        
-		
-		for( String a : ids.keySet()){
+
+		for (String a : ids.keySet()) {
 			System.out.println(a + " " + ids.get(a));
 		}
-		
+
 		return ids;
 	}
 
@@ -192,94 +192,99 @@ public class WriteMysql {
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////FUNCAO  PRINCIPAL DE DE X EM X SEGUNDOS VAI BUSCAR AO MONGO E ENVIA PRA O SQL//////////////////////////////////////////////
-
+	////////////////////////////////////////////// FUNCAO PRINCIPAL DE DE X EM X SEGUNDOS VAI BUSCAR AO MONGO E ENVIA PRA O SQL//////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public void ReadData() {
 		// Começa e acaba quando
 		// Hora ser 2000-01-01 00:00:00.000
 		// e se sala origem e destino for 0
+		while (true) {
+			MAXRATOS=numMaxRatos();
+			MAXTIMEPARADOS=tempoParadosPorSala();
 
-		float now = System.nanoTime();
+			float start = System.nanoTime();
 
-		ArrayList<String> dateListTemperatura = new ArrayList<String>();
-		ArrayList<String> dateListRatos = new ArrayList<>();
+			ArrayList<String> dateListTemperatura = new ArrayList<String>();
+			ArrayList<String> dateListRatos = new ArrayList<>();
 
-		List<DBObject> sensors = readFromMongo(colDoors, mongo_doors);
+			List<DBObject> sensors = readFromMongo(colDoors, mongo_doors);
 
-		List<DBObject> temp1 = readFromMongo(colTemp1, mongo_temp1);
-		List<DBObject> temp2 = readFromMongo(colTemp2, mongo_temp1);
+			List<DBObject> temp1 = readFromMongo(colTemp1, mongo_temp1);
+			List<DBObject> temp2 = readFromMongo(colTemp2, mongo_temp1);
 
-		boolean comecar = false;
+			boolean comecar = false;
 
-		for (DBObject sensor : sensors) {
-			String data = sensor.toString();
-			if (data.contains("2000-01-01 00:00:00")) {
-				if (!comecar) {
-					comecar = true;
-					salasMap.put(1, 100);
-				} else {
-					break; // Se comecar for true, significa que já começamos, então não adicionamos mais
-							// dados e saímos do loop
+			for (DBObject sensor : sensors) {
+				String data = sensor.toString();
+				if (data.contains("2000-01-01 00:00:00")) {
+					if (!comecar) {
+						comecar = true;
+						salasMap.put(1, inicialNumRatos());
+					} else {
+						break; // Se comecar for true, significa que já começamos, então não adicionamos mais
+								// dados e saímos do loop
+					}
+				}
+				if (comecar) {
+					dateListRatos.add(data);
+					int salaOrigem = (int) sensor.get("SalaOrigem");
+					int salaDestino = (int) sensor.get("SalaDestino");
+					if (!salasMap.containsKey(salaOrigem))
+						salasMap.put(salaOrigem, 0);
+					if (!salasMap.containsKey(salaDestino))
+						salasMap.put(salaDestino, 0);
 				}
 			}
-			if (comecar) {
-				dateListRatos.add(data);
-				int salaOrigem = (int) sensor.get("SalaOrigem");
-				int salaDestino = (int) sensor.get("SalaDestino");
-				if (!salasMap.containsKey(salaOrigem))
-					salasMap.put(salaOrigem, 0);
-				if (!salasMap.containsKey(salaDestino))
-					salasMap.put(salaDestino, 0);
+
+			ArrayList<String> temp1Total = new ArrayList<>();
+			for (DBObject temp : temp1) {
+				temp1Total.add(temp.toString());
 			}
-		}
-
-		ArrayList<String> temp1Total = new ArrayList<>();
-		for (DBObject temp : temp1) {
-			temp1Total.add(temp.toString());
-		}
-		ArrayList<String> temp2Total = new ArrayList<>();
-		for (DBObject temp : temp2) {
-			temp2Total.add(temp.toString());
-		}
-
-		ArrayList<String> temp1Validada = validarFormatosTemperatura(temp1Total);
-		ArrayList<String> temp2Validada = validarFormatosTemperatura(temp2Total);
-
-		writeArrayListToFile(dateListRatos, "DadosMongoSalas.txt");
-
-		// Iterar enquanto houverem elementos em temp1 ou temp2
-		boolean addToTemp1 = true; // Flag para alternar entre temp1 e temp2
-		while (!temp1.isEmpty() || !temp2.isEmpty()) {
-			if (addToTemp1 && !temp1.isEmpty()) {
-				String data = temp1Validada.remove(0).toString();
-				updateBackupFile("Temp1.txt", data);
-				dateListTemperatura.add(data);
-			} else if (!temp2.isEmpty()) {
-				String data = temp2Validada.remove(0).toString();
-				updateBackupFile("Temp2.txt", data);
-				dateListTemperatura.add(data);
+			ArrayList<String> temp2Total = new ArrayList<>();
+			for (DBObject temp : temp2) {
+				temp2Total.add(temp.toString());
 			}
-			addToTemp1 = !addToTemp1; // Alternar a flag
-		}
-		writeArrayListToFile(dateListTemperatura, "DadosMongoTemperatura.txt");
-		detetarOutliers(dateListTemperatura);
 
-		validarFormatosSalas(dateListRatos);
+			ArrayList<String> temp1Validada = validarFormatosTemperatura(temp1Total);
+			ArrayList<String> temp2Validada = validarFormatosTemperatura(temp2Total);
 
-		float end = System.nanoTime();
-		float time = (end - now) / 1000000000;
+			writeArrayListToFile(dateListRatos, "DadosMongoSalas.txt");
 
-		if (time >= 0 && time <= 3000) {
-			try {
-				Thread.sleep(3000 - (long) time);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			// Iterar enquanto houverem elementos em temp1 ou temp2
+			boolean addToTemp1 = true; // Flag para alternar entre temp1 e temp2
+			while (!temp1.isEmpty() || !temp2.isEmpty()) {
+				if (addToTemp1 && !temp1.isEmpty()) {
+					String data = temp1Validada.remove(0).toString();
+					updateBackupFile("Temp1.txt", data);
+					dateListTemperatura.add(data);
+				} else if (!temp2.isEmpty()) {
+					String data = temp2Validada.remove(0).toString();
+					updateBackupFile("Temp2.txt", data);
+					dateListTemperatura.add(data);
+				}
+				addToTemp1 = !addToTemp1; // Alternar a flag
+			}
+			writeArrayListToFile(dateListTemperatura, "DadosMongoTemperatura.txt");
+			detetarOutliers(dateListTemperatura);
+
+			validarFormatosSalas(dateListRatos);
+
+			float end = System.nanoTime();
+			float time = (end - start) / 1000000000;
+
+			if (time >= 0 && time <= TIMELOOP) {
+				try {
+					Thread.sleep(3000 - (long) time);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////FUNCOES RELACIONADAS COM AS SALAS////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////// FUNCOES RELACIONADAS COM AS
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// SALAS////////////////////////////////////////////////////////////////////////////////////////////
 
 	private void validarFormatosSalas(ArrayList<String> dateListRatos) {
 		String collectionName = "sensoresPortas";
@@ -349,10 +354,10 @@ public class WriteMysql {
 			if (salasMap.get(salaDestino) >= MAXRATOS) {
 				System.out.println("A sala " + salaDestino + " já está lotada. Não é possível adicionar mais ratos.");
 				break;
-			}else if (salasMap.get(salaOrigem) < 0) {
+			} else if (salasMap.get(salaOrigem) < 0) {
 				// TODO
 				System.out.println("A sala " + salaOrigem + " tem valores negativos. Algo de errado ocorreu.");
-			}else{
+			} else {
 				writeToMySQL(data, "medicoes_passagens");
 			}
 		}
@@ -379,7 +384,8 @@ public class WriteMysql {
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////FUNCOES RELACIONADAS COM AS TEMPERATURAS ////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////// FUNCOES RELACIONADAS COM AS TEMPERATURAS ////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
 	public ArrayList<String> validarFormatosTemperatura(ArrayList<String> dateListTemperatura) {
 		ArrayList<String> dadosAnomalos = new ArrayList<String>();
 		ArrayList<String> dadosCorretos = new ArrayList<String>();
@@ -519,8 +525,8 @@ public class WriteMysql {
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////FUNCAO PARA ESCREVER E LER NO SQL////////////////////////////////////////////////////////////////////////////////////////////
-
+	////////////////////////////////////////////// FUNCAO PARA ESCREVER E LER NO SQL////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public void writeToMySQL(String c, String tabela) {
 		String SqlCommando = "";
 		String horaTemp = "";
@@ -530,7 +536,7 @@ public class WriteMysql {
 		String salaOrigem = "";
 		String salaDestino = "";
 		String id = "";
-	
+
 		switch (tabela) {
 			case "medicoes_temperatura":
 				horaTemp = extractValue(c, "Hora");
@@ -539,9 +545,9 @@ public class WriteMysql {
 				id = extractValue(c, "id");
 				SqlCommando = "Insert into medicoes_temperatura" + " (" + "hora, leitura, sensor" + ") values ("
 						+ "'" + horaTemp + "', " + leitura + ", " + sensor + ");";
-	
+
 				break;
-	
+
 			case "medicoes_passagens":
 				horaSala = extractValue(c, "Hora");
 				salaOrigem = extractValue(c, "SalaOrigem");
@@ -555,7 +561,7 @@ public class WriteMysql {
 			default:
 				break;
 		}
-	
+
 		boolean commandExecutedSuccessfully = false;
 		while (!commandExecutedSuccessfully) {
 			try {
@@ -584,7 +590,6 @@ public class WriteMysql {
 			}
 		}
 	}
-	
 
 	public int idExperienciaFromSQL() {
 		int maxIdExperiencia = -1;
@@ -603,9 +608,8 @@ public class WriteMysql {
 		}
 		return maxIdExperiencia;
 	}
-	
 
-	public int experienciaAtiva(){
+	public int experienciaAtiva() {
 		int idExperiencia = -1;
 		String SqlCommando = "SELECT id FROM experiencia WHERE data_hora_fim IS NULL ORDER BY data_hora_inicio DESC LIMIT 1;";
 		try {
@@ -621,6 +625,54 @@ public class WriteMysql {
 		return idExperiencia;
 	}
 
+	public int inicialNumRatos() {
+		int numRatos = -1;
+		String SqlCommando = "SELECT num_ratos FROM experiencia WHERE data_hora_fim IS NULL ORDER BY data_hora_inicio DESC LIMIT 1;";
+		try {
+			Statement s = connTo.createStatement();
+			ResultSet rs = s.executeQuery(SqlCommando);
+			if (rs.next()) {
+				numRatos = rs.getInt(1);
+			}
+			s.close();
+		} catch (Exception e) {
+			numRatos = -1;
+		}
+		return numRatos;
+	}
+
+	public int numMaxRatos(){
+		int numMaxRatos = -1;
+		String SqlCommando = "SELECT LimiteRatosNumaSala AS maximo_de_ratos_por_sala FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
+		try {
+			Statement s = connTo.createStatement();
+			ResultSet rs = s.executeQuery(SqlCommando);
+			if (rs.next()) {
+				numMaxRatos = rs.getInt(1);
+			}
+			s.close();
+		} catch (Exception e) {
+			numMaxRatos = -1;
+		}
+		return numMaxRatos;
+	}
+
+
+	public int tempoParadosPorSala(){
+		int tempo = -1;
+		String SqlCommando = "SELECT LimiteRatosNumaSala AS maximo_de_ratos_por_sala FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
+		try {
+			Statement s = connTo.createStatement();
+			ResultSet rs = s.executeQuery(SqlCommando);
+			if (rs.next()) {
+				tempo = rs.getInt(1);
+			}
+			s.close();
+		} catch (Exception e) {
+			tempo = -1;
+		}
+		return tempo;
+	}
 	public String extractValue(String data, String field) {
 		int index = data.indexOf("'" + field + "'");
 		if (index != -1) {
@@ -641,10 +693,10 @@ public class WriteMysql {
 		return null;
 	}
 
-	////////////////////////////////////////////////////////////// ESCREVER EM
-	////////////////////////////////////////////////////////////// FICHEIRO PARA
-	////////////////////////////////////////////////////////////// TESTE//////////////////////////////////
-
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////// ESCREVER EM FICHEIRO PARA TESTE//////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	public void writeArrayListToFile(ArrayList<String> dataList, String fileName) {
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter("JavaMysql/Anomalos/" + fileName))) {
 			for (String data : dataList) {
@@ -695,7 +747,8 @@ public class WriteMysql {
 			// LINHA PARA OS RESTANTES
 			p.load(new FileInputStream("JavaMysql/WriteMysql.ini"));
 			// Linha para funcionar no VASCO
-			// p.load(new FileInputStream("E:\\3ºAno\\2ºSemestre\\PISID\\PISID\\JavaMysql\\WriteMysql.ini"));
+			// p.load(new
+			// FileInputStream("E:\\3ºAno\\2ºSemestre\\PISID\\PISID\\JavaMysql\\WriteMysql.ini"));
 			// sql_table_to = p.getProperty("sql_table_to");
 			sql_database_connection_to = p.getProperty("sql_database_connection_to");
 			sql_database_password_to = p.getProperty("sql_database_password_to");
