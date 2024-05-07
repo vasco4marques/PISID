@@ -1,0 +1,13 @@
+COPIAR TODOS OS COMANDOS ABAIXO, COLAR E ENTER
+
+db.sensoresPortas.deleteMany({})
+db.sensoresTemp1.deleteMany({})
+db.sensoresTemp2.deleteMany({})
+db.counters.deleteMany({})
+db.lastInsertedIds.deleteMany({})
+
+----
+
+COLAR ESTE SOZINHO
+
+db.lastInsertedIds.insertMany([{name:"sensoresPortas",id:0},{name:"sensoresTemp2",id:0},{name:"sensoresTemp1",id:0}])
