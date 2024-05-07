@@ -86,7 +86,9 @@ public class PortsToMongo implements MqttCallback {
     public static void readDocument(){
         try {
             Properties p = new Properties();
-            p.load(new FileInputStream("./JavaMQTT/PortToMongo.ini"));
+            p.load(new FileInputStream("E:\\3ºAno\\2ºSemestre\\PISID\\PISID\\JavaMQTT\\PortsToMongo.ini"));
+            // p.load(new FileInputStream("./JavaMQTT/PortsToMongo.ini"));
+// 
 			mongo_address = p.getProperty("mongo_address");
             mongo_user = p.getProperty("mongo_user");
             mongo_password = p.getProperty("mongo_password");						

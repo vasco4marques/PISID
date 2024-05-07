@@ -126,7 +126,7 @@ public class WriteMysql {
 
 	private void writeInMongoBackupValue(String colIdUpdate, int newValue) {
 		Document filter = new Document("name", colIdUpdate);
-		Document update = new Document("id", new Document("id", newValue));
+		Document update = new Document("$inc", new Document("id", newValue));
 		FindOneAndUpdateOptions options = new FindOneAndUpdateOptions()
 				.returnDocument(com.mongodb.client.model.ReturnDocument.AFTER);
 		Document sequenceDocument = db2.getCollection("lastInsertedIds").findOneAndUpdate(filter, update, options);
@@ -175,18 +175,6 @@ public class WriteMysql {
 		return results;
 	}
 
-	public static void updateBackupFile(String fileName, String newContent) {
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter("JavaMysql/Backups/" + fileName))) {
-			Matcher matcher = Pattern.compile("id:\\s*(\\d+)").matcher(newContent);
-			// Extrai o valor do campo "id:" usando expressão regular e imprime
-			String idValue = matcher.find() ? matcher.group(1) : "Campo 'id' não encontrado.";
-			writer.write(idValue);
-		} catch (IOException e) {
-			System.err.println("Error accessing the file: " + e.getMessage());
-			e.printStackTrace();
-		}
-	}
-
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// FUNCAO PRINCIPAL DE DE X EM X
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// SEGUNDOS
@@ -202,105 +190,102 @@ public class WriteMysql {
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public void ReadData() {
 		System.out.println("Vou começar a leitura");
-		
+
 		// Começa e acaba quando
 		// Hora ser 2000-01-01 00:00:00.000
 		// e se sala origem e destino for 0
-		// while (true) {
-		MAXRATOS = numMaxRatos();
-		MAXTIMEPARADOS = tempoParadosPorSala();
+		while (true) {
+			MAXRATOS = numMaxRatos();
+			MAXTIMEPARADOS = tempoParadosPorSala();
 
-		float start = System.nanoTime();
+			float start = System.nanoTime();
 
-		ArrayList<String> dateListTemperatura = new ArrayList<String>();
-		ArrayList<String> dateListRatos = new ArrayList<>();
+			ArrayList<String> dateListTemperatura = new ArrayList<String>();
+			ArrayList<String> dateListRatos = new ArrayList<>();
 
-		List<DBObject> sensors = readFromMongo(colDoors, mongo_doors);
-		System.out.println("Li sensoresPortas " + sensors.size());
-		List<DBObject> temp1 = readFromMongo(colTemp1, mongo_temp1);
-		System.out.println(
-			"Li sensoresTemp1 " + temp1.size()
-		);
-		List<DBObject> temp2 = readFromMongo(colTemp2, mongo_temp1);
-		System.out.println(
-			"Li sensoresTemp2 " + temp2.size()
-		);
-		boolean comecar = false;
+			List<DBObject> sensors = readFromMongo(colDoors, mongo_doors);
+			List<DBObject> temp1 = readFromMongo(colTemp1, mongo_temp1);
+			List<DBObject> temp2 = readFromMongo(colTemp2, mongo_temp1);
 
-		// for (DBObject sensor : sensors) {
-		// 	String data = sensor.toString();
-		// 	if (data.contains("2000-01-01 00:00:00")) {
-		// 		if (!comecar) {
-		// 			comecar = true;
-		// 			salasMap.put(1, inicialNumRatos());
-		// 		} else {
-		// 			break; // Se comecar for true, significa que já começamos, então não adicionamos mais
-		// 					// dados e saímos do loop
-		// 		}
-		// 	}
-		// 	if (comecar) {
-		// 		dateListRatos.add(data);
-		// 		int salaOrigem = (int) sensor.get("SalaOrigem");
-		// 		int salaDestino = (int) sensor.get("SalaDestino");
-		// 		if (!salasMap.containsKey(salaOrigem))
-		// 			salasMap.put(salaOrigem, 0);
-		// 		if (!salasMap.containsKey(salaDestino))
-		// 			salasMap.put(salaDestino, 0);
-		// 	}
-		// }
+			boolean comecar = false;
 
-		ArrayList<String> temp1Total = new ArrayList<>();
-		for (DBObject temp : temp1) {
-			temp1Total.add(temp.toString());
-		}
-		ArrayList<String> temp2Total = new ArrayList<>();
-		for (DBObject temp : temp2) {
-			temp2Total.add(temp.toString());
-		}
+			// for (DBObject sensor : sensors) {
+			// String data = sensor.toString();
+			// if (data.contains("2000-01-01 00:00:00")) {
+			// if (!comecar) {
+			// comecar = true;
+			// salasMap.put(1, inicialNumRatos());
+			// } else {
+			// break; // Se comecar for true, significa que já começamos, então não
+			// adicionamos mais
+			// // dados e saímos do loop
+			// }
+			// }
+			// if (comecar) {
+			// dateListRatos.add(data);
+			// int salaOrigem = (int) sensor.get("SalaOrigem");
+			// int salaDestino = (int) sensor.get("SalaDestino");
+			// if (!salasMap.containsKey(salaOrigem))
+			// salasMap.put(salaOrigem, 0);
+			// if (!salasMap.containsKey(salaDestino))
+			// salasMap.put(salaDestino, 0);
+			// }
+			// }
 
-		ArrayList<String> temp1Validada = validarFormatosTemperatura(temp1Total);
-		ArrayList<String> temp2Validada = validarFormatosTemperatura(temp2Total);
-		System.out.println("Validei formatos");
-		writeArrayListToFile(dateListRatos, "DadosMongoSalas.txt");
-		System.out.println("escrevi os ratos");
-
-		// Iterar enquanto houverem elementos em temp1 ou temp2
-		boolean addToTemp1 = true; // Flag para alternar entre temp1 e temp2
-		while (!temp1Validada.isEmpty() || !temp2Validada.isEmpty()) {
-			if (addToTemp1 && !temp1Validada.isEmpty()) {
-				String data = temp1Validada.remove(0).toString();
-				updateBackupFile("Temp1.txt", data);
-				dateListTemperatura.add(data);
-			} else if (!temp2Validada.isEmpty()) {
-				String data = temp2Validada.remove(0).toString();
-				updateBackupFile("Temp2.txt", data);
-				dateListTemperatura.add(data);
+			ArrayList<String> temp1Total = new ArrayList<>();
+			for (DBObject temp : temp1) {
+				temp1Total.add(temp.toString());
 			}
-			addToTemp1 = !addToTemp1; // Alternar a flag
-		}
-		writeArrayListToFile(dateListTemperatura, "DadosMongoTemperatura.txt");
-		detetarOutliers(dateListTemperatura);
+			ArrayList<String> temp2Total = new ArrayList<>();
+			for (DBObject temp : temp2) {
+				temp2Total.add(temp.toString());
+			}
 
-		validarFormatosSalas(dateListRatos);
+			ArrayList<String> temp1Validada = validarFormatosTemperatura(temp1Total);
+			ArrayList<String> temp2Validada = validarFormatosTemperatura(temp2Total);
+			System.out.println("Temp1 " + temp1Validada.size());
+			System.out.println("Temp2 " + temp2Validada.size());
 
-		float end = System.nanoTime();
-		float time = (end - start) / 1000000000;
+			System.out.println("Validei formatos");
+			// writeArrayListToFile(dateListRatos, "DadosMongoSalas.txt");
+			System.out.println("escrevi os ratos");
 
-		if (time >= 0 && time <= TIMELOOP) {
-			try {
-				Thread.sleep(3000 - (long) time);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			// Iterar enquanto houverem elementos em temp1 ou temp2
+			boolean addToTemp1 = true; // Flag para alternar entre temp1 e temp2
+			while (!temp1Validada.isEmpty() || !temp2Validada.isEmpty()) {
+				if (addToTemp1 && !temp1Validada.isEmpty()) {
+					String data = temp1Validada.remove(0).toString();
+					dateListTemperatura.add(data);
+				} else if (!temp2Validada.isEmpty()) {
+					String data = temp2Validada.remove(0).toString();
+					dateListTemperatura.add(data);
+				}
+				addToTemp1 = !addToTemp1; // Alternar a flag
+			}
+			// writeArrayListToFile(dateListTemperatura, "DadosMongoTemperatura.txt");
+			detetarOutliers(dateListTemperatura);
+
+			ArrayList<String> salasVerificadas = validarFormatosSalas(dateListRatos);
+			moverRatos(salasVerificadas);
+
+			float end = System.nanoTime();
+			float time = (end - start) / 1000000000;
+
+			if (time >= 0 && time <= TIMELOOP) {
+				try {
+					Thread.sleep(3000 - (long) time);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}
-		// }
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// FUNCOES RELACIONADAS COM AS
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// SALAS////////////////////////////////////////////////////////////////////////////////////////////
 
-	private void validarFormatosSalas(ArrayList<String> dateListRatos) {
+	private ArrayList<String> validarFormatosSalas(ArrayList<String> dateListRatos) {
 		String collectionName = "sensoresPortas";
 		ArrayList<String> dadosAnomalos = new ArrayList<String>();
 		ArrayList<String> dadosCorretos = new ArrayList<String>();
@@ -317,12 +302,17 @@ public class WriteMysql {
 					if (partes.length == 2) {
 						String chave = partes[0].trim();
 						String valor = partes[1].trim();
-						if (chave.equals("Hora")) {
+						if (chave.equals("\"Hora\"")) {
 							if (!Pattern.matches("'\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3,}'", valor)) {
 								// System.err.println("VALOR "+valor);
 								dadosAnomalos.add(data);
 								// System.err.println("HORA MAL FORMATADA");
 								anomalia = true; // Define como anomalia se Hora estiver mal formatada
+
+							} else if (!isValidDate(valor)) {
+								dadosAnomalos.add(data);
+								anomalia = true;
+
 							} else if (chave.equals("SalaDestino")) {
 								try {
 									Integer.parseInt(valor);
@@ -343,18 +333,58 @@ public class WriteMysql {
 						}
 					}
 				}
+				System.out.println("Anomalia " + anomalia);
 				if (!anomalia) {
 					// Se não for uma anomalia, adicione aos dados corretos
 					dadosCorretos.add(data);
-					updateBackupFile("Salas.txt", data);
 				}
+
 			}
 		}
 
-		writeArrayListToFile(dadosCorretos, "DadosCorretosSalas.txt");
-		writeArrayListToFile(dadosAnomalos, "DadosAnomalosSalas.txt");
+		// writeArrayListToFile(dadosCorretos, "DadosCorretosSalas.txt");
+		// writeArrayListToFile(dadosAnomalos, "DadosAnomalosSalas.txt");
 
-		moverRatos(dadosCorretos);
+		return dadosCorretos;
+	}
+
+	private boolean isValidDate(String valor) {
+		// System.out.println("Validating value " + valor + "\n");
+		System.out.println("AQUi");
+		String[] fullData = valor.split(" ");
+
+		String[] data = fullData[0].replace("\"", "").split("-"); // ano - mês - dia
+		Boolean leapYear = false;// Ano bissexto
+		if (Integer.parseInt(data[0]) % 400 == 0 && Integer.parseInt(data[0]) % 100 == 0) {
+			leapYear = true;
+		} else if (Integer.parseInt(data[0]) % 100 != 0 && Integer.parseInt(data[0]) % 4 == 0) {
+			leapYear = true;
+		}
+
+		if (data[1] == "02" && leapYear && Integer.parseInt(data[2]) > 29) {
+			return false;
+		} else if (data[1] == "02" && !leapYear && Integer.parseInt(data[2]) > 28) {
+			return false;
+		}
+
+		if (Integer.parseInt(data[1]) <= 7) {
+			if (Integer.parseInt(data[1]) % 2 == 0) {
+				if (Integer.parseInt(data[2]) > 30)
+					return false;
+			} else {
+				if (Integer.parseInt(data[2]) > 31)
+					return false;
+			}
+		} else {
+			if (Integer.parseInt(data[1]) % 2 == 0) {
+				if (Integer.parseInt(data[2]) > 31)
+					return false;
+			} else {
+				if (Integer.parseInt(data[2]) > 30)
+					return false;
+			}
+		}
+		return true;
 	}
 
 	private void moverRatos(ArrayList<String> dadosCorretos) {
@@ -375,7 +405,7 @@ public class WriteMysql {
 				writeToMySQL(data, "medicoes_passagens");
 			}
 		}
-		writeMapToFile(salasMap, "DadosMapaSalas.txt");
+		// writeMapToFile(salasMap, "DadosMapaSalas.txt");
 	}
 
 	public int extractRoom(String data, String key) {
@@ -403,16 +433,18 @@ public class WriteMysql {
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public ArrayList<String> validarFormatosTemperatura(ArrayList<String> dateListTemperatura) {
+		System.out.println("lista " + dateListTemperatura.size());
+
 		ArrayList<String> dadosAnomalos = new ArrayList<String>();
 		ArrayList<String> dadosCorretos = new ArrayList<String>();
 		for (String data : dateListTemperatura) {
-			// System.out.println(data);
 			boolean anomalia = false; // Variável para verificar se é uma anomalia
 			if (!data.contains("Hora") || !data.contains("Leitura")) {
 				dadosAnomalos.add(data);
 				// System.err.println("HORA OU LEITURA NÃO ENCONTRADOS");
 				anomalia = true; // Define como anomalia se Hora ou Leitura não forem encontrados
 			}
+
 			if (!anomalia) { // Se não for uma anomalia
 				String[] campos = data.split(", ");
 				for (String campo : campos) {
@@ -420,32 +452,38 @@ public class WriteMysql {
 					if (partes.length == 2) {
 						String chave = partes[0].trim();
 						String valor = partes[1].trim();
-						if (chave.equals("Hora"))
-							if (!Pattern.matches("'\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3,}'", valor)) {
-								// System.err.println("VALOR "+valor);
+						if (chave.equals("\"Hora\"")) {
+							if (!Pattern.matches("\"\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3,}\"", valor)) {
 								dadosAnomalos.add(data);
-								// System.err.println("HORA MAL FORMATADA");
+								System.err.println("Data MAL FORMATADA " + valor);
 								anomalia = true; // Define como anomalia se Hora estiver mal formatada
-							} else if (chave.equals("Leitura")) {
+
+							} else if (!isValidDate(valor)) {
+								System.err.println("Data inválida");
+								dadosAnomalos.add(data);
+								anomalia = true;
+
+							} else if (chave.equals("\"Leitura\"")) {
 								try {
 									Float.parseFloat(valor);
 								} catch (NumberFormatException e) {
 									dadosAnomalos.add(data);
-									// System.err.println("LEITURA MAL FORMATADA");
-									anomalia = true; // Define como anomalia se Leitura estiver mal formatada
+									System.err.println("LEITURA MAL FORMATADA");
+									anomalia = true;
 								}
 							}
+						}
 					}
 				}
 				if (!anomalia) {
+					// System.out.println("ESTE DADO ESTAVA BEM");
 					dadosCorretos.add(data);
-					//
 				}
 			}
 		}
 
-		writeArrayListToFile(dadosCorretos, "DadosCorretosTemperatura.txt");
-		writeArrayListToFile(dadosAnomalos, "DadosAnomalosTemperatura.txt");
+		// writeArrayListToFile(dadosCorretos, "DadosCorretosTemperatura.txt");
+		// writeArrayListToFile(dadosAnomalos, "DadosAnomalosTemperatura.txt");
 		return dadosCorretos;
 	}
 
@@ -456,10 +494,9 @@ public class WriteMysql {
 			// Calcula o IQR
 			float Q1 = calculatePercentile(1);
 			float Q3 = calculatePercentile(2);
-			System.out.println("Q1,Q3" + Q1 +" " +  Q3);
 
 			if (Q1 != Float.NEGATIVE_INFINITY && Q3 != Float.NEGATIVE_INFINITY) {
-				
+
 				float IQR = Q3 - Q1;
 
 				// Define os limites
@@ -469,13 +506,11 @@ public class WriteMysql {
 				float temperatura = extrairValorLeitura(dadosCorretos.get(i));
 				// Verifica se a temperatura é um outlier
 				if (temperatura < lowerLimit || temperatura > upperLimit) {
-					System.out.println("Outlier");
 					outliers.add(dadosCorretos.get(i));
 					// como e outlier vai buscar o ultimo valido
 					dadoSet.add(dadosCorretos.get(i));
 					// System.out.println("Temperatura É um outlier: " + temperatura);
 				} else {
-					System.out.println("não out");
 					// Se não for um outlier, insere no conjunto de dados
 					dadoSet.add(dadosCorretos.get(i));
 					writeToMySQL(dadosCorretos.get(i), "medicoes_temperatura");
@@ -491,8 +526,8 @@ public class WriteMysql {
 		 * for (String dadoOutlier : outliers)
 		 * System.out.println(dadoOutlier);
 		 */
-		writeArrayListToFile(outliers, "DadosOutliersTemperatura.txt");
-		writeHashSetToFile(dadoSet, "DadoSetTemperatura.txt");
+		// writeArrayListToFile(outliers, "DadosOutliersTemperatura.txt");
+		// writeHashSetToFile(dadoSet, "DadoSetTemperatura.txt");
 	}
 
 	public float calculatePercentile(float quartile) {
@@ -536,7 +571,7 @@ public class WriteMysql {
 
 	private float extrairValorLeitura(String data) {
 		String[] partes = data.split(", ");
-		for (String parte : partes){
+		for (String parte : partes) {
 			if (parte.startsWith("\"Leitura\" :")) {
 				String valorLeitura = parte.substring("\"Leitura\" : ".length());
 				return Float.parseFloat(valorLeitura);
@@ -546,39 +581,45 @@ public class WriteMysql {
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////// FUNCAO PARA ESCREVER E LER NO SQL////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////// FUNCAO PARA ESCREVER E LER NO
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// SQL////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public void writeToMySQL(String c, String tabela) {
-		System.out.println("Vou escrever algo");
 		String SqlCommando = "";
-		String horaTemp = "";
+		String hora = "";
 		String leitura = "";
 		String sensor = "";
-		String horaSala = "";
 		String salaOrigem = "";
 		String salaDestino = "";
 		String id = "";
 
 		switch (tabela) {
 			case "medicoes_temperatura":
-				horaTemp = extractValue(c, "Hora");
+				hora = extractValue(c, "Hora");
+				if (hora.length() == 19) {
+					hora += ".075649";
+				}
 				leitura = extractValue(c, "Leitura");
 				sensor = extractValue(c, "Sensor");
 				id = extractValue(c, "id");
-				SqlCommando = "Insert into medicoes_temperatura" + " (" + "id_ex, hora, leitura, sensor" + ") values ("+3
-						+ ",'" + horaTemp + "', " + leitura + ", " + sensor + ");";
-				System.out.println("OLA" + SqlCommando);
+				SqlCommando = "Insert into medicoes_temperatura" + " (" + "id_ex, hora, leitura, sensor" + ") values ("
+						+ 3
+						+ ",'" + hora + "', " + leitura + ", " + sensor + ");";
+
 				break;
 
 			case "medicoes_passagens":
-				horaSala = extractValue(c, "Hora");
+				hora = extractValue(c, "Hora");
+				if (hora.length() == 19) {
+					hora += ".075649";
+				}
 				salaOrigem = extractValue(c, "SalaOrigem");
 				salaDestino = extractValue(c, "SalaDestino");
 				id = extractValue(c, "id");
 				int idExp = idExperienciaFromSQL();
 				SqlCommando = "Insert into medicoes_passagens" + " (" + "id_ex, hora, sala_origem, sala_destino"
-						+ ") values ("+ 
-						+ 3 + ", '" + horaSala + "', " + salaOrigem + ", " + salaDestino + ");";
+						+ ") values (" +
+						+3 + ", '" + hora + "', " + salaOrigem + ", " + salaDestino + ");";
 				break;
 			default:
 				break;
@@ -589,12 +630,12 @@ public class WriteMysql {
 			try {
 				documentLabel.append(SqlCommando.toString() + "\n");
 				Statement s = connTo.createStatement();
-				System.out.println("estou aqui" + SqlCommando);
 				int result = s.executeUpdate(SqlCommando);
-				System.out.println("PASSEI");
+				System.out.println("Inseri " + result + "\n");
 				if (tabela.equals("medicoes_passagens")) {
 					writeInMongoBackupValue("sensoresPortas", Integer.parseInt(id));
 				} else {
+
 					if (sensor.equals("1"))
 						writeInMongoBackupValue("sensoresTemp1", Integer.parseInt(id));
 					else
@@ -603,9 +644,11 @@ public class WriteMysql {
 				s.close();
 				commandExecutedSuccessfully = true; // Define como verdadeiro se a execução foi bem-sucedida
 			} catch (Exception e) {
-				new WriteMysql().connectDatabase_to();
+				if (e instanceof java.sql.SQLNonTransientConnectionException) {
+					new WriteMysql().connectDatabase_to();
+				}
+
 				System.out.println("Error Inserting in the database . " + e);
-				System.out.println(SqlCommando);
 				// Em caso de falha, aguarde antes de tentar novamente
 				try {
 					Thread.sleep(1000); // Aguarda por 1 segundo antes de tentar novamente
@@ -717,7 +760,6 @@ public class WriteMysql {
 		}
 		return null;
 	}
-	
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////// ESCREVER EM
@@ -774,10 +816,9 @@ public class WriteMysql {
 		try {
 			Properties p = new Properties();
 			// LINHA PARA OS RESTANTES
-			p.load(new FileInputStream("JavaMysql/WriteMysql.ini"));
+			// p.load(new FileInputStream("JavaMysql/WriteMysql.ini"));
 			// Linha para funcionar no VASCO
-			// p.load(new
-			// FileInputStream("E:\\3ºAno\\2ºSemestre\\PISID\\PISID\\JavaMysql\\WriteMysql.ini"));
+			p.load(new FileInputStream("E:\\3ºAno\\2ºSemestre\\PISID\\PISID\\JavaMysql\\WriteMysql.ini"));
 			// sql_table_to = p.getProperty("sql_table_to");
 			sql_database_connection_to = p.getProperty("sql_database_connection_to");
 			sql_database_password_to = p.getProperty("sql_database_password_to");
@@ -800,6 +841,7 @@ public class WriteMysql {
 		new WriteMysql().connectToMongo();
 		new WriteMysql().connectDatabase_to();
 		new WriteMysql().ReadData();
+
 		// while (true) {
 		// String sql = "Insert into medicoes_passagens( id_ex, sala_origem,
 		// sala_destino) values ("

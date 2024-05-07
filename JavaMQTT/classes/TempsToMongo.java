@@ -96,7 +96,9 @@ public class TempsToMongo implements MqttCallback  {
     public static void readDocument(){
         try {
             Properties p = new Properties();
-            p.load(new FileInputStream("./JavaMQTT/TempsToMongo.ini"));
+            // p.load(new FileInputStream("./JavaMQTT/TempsToMongo.ini"));
+            p.load(new FileInputStream("E:\\3ºAno\\2ºSemestre\\PISID\\PISID\\JavaMQTT\\TempsToMongo.ini"));
+
 			mongo_address = p.getProperty("mongo_address");
             mongo_user = p.getProperty("mongo_user");
             mongo_password = p.getProperty("mongo_password");						

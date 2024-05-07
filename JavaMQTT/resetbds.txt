@@ -1,5 +1,6 @@
 COPIAR TODOS OS COMANDOS ABAIXO, COLAR E ENTER
 
+use sensoresDB
 db.sensoresPortas.deleteMany({})
 db.sensoresTemp1.deleteMany({})
 db.sensoresTemp2.deleteMany({})
