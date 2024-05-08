@@ -42,6 +42,11 @@ public class WriteMysql {
 	static String sql_database_user_to = new String();
 	// static String sql_table_to = new String();
 
+	// SQL do stor
+	static String sql_storDatabase_connection_to = new String();
+	static String sql_storDatabase_password_to = new String();
+	static String sql_storDatabase_user_to = new String();
+
 	// Dados mongo do ficheiro ini
 	static String mongo_user = new String();
 	static String mongo_password = new String();
@@ -96,6 +101,18 @@ public class WriteMysql {
 					.append("Connection To MariaDB Destination " + sql_database_connection_to + " Suceeded" + "\n");
 		} catch (Exception e) {
 			System.out.println("Mysql Server Destination down, unable to make the connection. " + e);
+		}
+
+		try {
+			Class.forName("org.mariadb.jdbc.Driver");
+			connTo = DriverManager.getConnection(sql_storDatabase_connection_to, sql_storDatabase_user_to,
+					sql_storDatabase_password_to);
+			documentLabel.append("SQl Connection:" + sql_storDatabase_connection_to + "\n");
+			documentLabel
+					.append("Connection To MariaDB Destination " + sql_storDatabase_connection_to + " Suceeded" + "\n");
+
+		} catch (Exception e) {
+			System.out.println("Stor Mysql Server Destination down, unable to make the connection. " + e);
 		}
 	}
 
@@ -399,7 +416,7 @@ public class WriteMysql {
 				System.out.println("A sala " + salaDestino + " já está lotada. Não é possível adicionar mais ratos.");
 				break;
 			} else if (salasMap.get(salaOrigem) < 0) {
-				// TODO
+
 				System.out.println("A sala " + salaOrigem + " tem valores negativos. Algo de errado ocorreu.");
 			} else {
 				writeToMySQL(data, "medicoes_passagens");
@@ -823,6 +840,11 @@ public class WriteMysql {
 			sql_database_connection_to = p.getProperty("sql_database_connection_to");
 			sql_database_password_to = p.getProperty("sql_database_password_to");
 			sql_database_user_to = p.getProperty("sql_database_user_to");
+
+			sql_storDatabase_connection_to = p.getProperty("sql_storDatabase_connection_to");
+			sql_storDatabase_password_to = p.getProperty("sql_storDatabase_password_to");
+			sql_storDatabase_user_to = p.getProperty("sql_storDatabase_user_to");
+
 			mongo_user = p.getProperty("mongo_user");
 			mongo_password = p.getProperty("mongo_password");
 			mongo_address = p.getProperty("mongo_address");
