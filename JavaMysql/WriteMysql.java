@@ -282,8 +282,7 @@ public class WriteMysql {
 			// writeArrayListToFile(dateListTemperatura, "DadosMongoTemperatura.txt");
 			detetarOutliers(dateListTemperatura);
 
-			ArrayList<String> salasVerificadas = validarFormatosSalas(dateListRatos);
-			moverRatos(salasVerificadas);
+			validarFormatosSalas(dateListRatos);
 
 			float end = System.nanoTime();
 			float time = (end - start) / 1000000000;
@@ -302,7 +301,7 @@ public class WriteMysql {
 	////////////////////////////////////////////// FUNCOES RELACIONADAS COM AS
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// SALAS////////////////////////////////////////////////////////////////////////////////////////////
 
-	private ArrayList<String> validarFormatosSalas(ArrayList<String> dateListRatos) {
+	private void validarFormatosSalas(ArrayList<String> dateListRatos) {
 		String collectionName = "sensoresPortas";
 		ArrayList<String> dadosAnomalos = new ArrayList<String>();
 		ArrayList<String> dadosCorretos = new ArrayList<String>();
@@ -362,12 +361,11 @@ public class WriteMysql {
 		// writeArrayListToFile(dadosCorretos, "DadosCorretosSalas.txt");
 		// writeArrayListToFile(dadosAnomalos, "DadosAnomalosSalas.txt");
 
-		return dadosCorretos;
+		moverRatos(dadosCorretos, dadosAnomalos);
 	}
 
 	private boolean isValidDate(String valor) {
 		// System.out.println("Validating value " + valor + "\n");
-		System.out.println("AQUi");
 		String[] fullData = valor.split(" ");
 
 		String[] data = fullData[0].replace("\"", "").split("-"); // ano - mês - dia
@@ -404,26 +402,35 @@ public class WriteMysql {
 		return true;
 	}
 
-	private void moverRatos(ArrayList<String> dadosCorretos) {
+	private void moverRatos(ArrayList<String> dadosCorretos, ArrayList<String> dadosAnomalos) {
 		for (String data : dadosCorretos) {
 			int salaOrigem = extractRoom(data, "SalaOrigem");
 			int salaDestino = extractRoom(data, "SalaDestino");
 
-			// Atualiza as contagens das salas
-			salasMap.put(salaOrigem, salasMap.get(salaOrigem) - 1);
-			salasMap.put(salaDestino, salasMap.get(salaDestino) + 1);
-			if (salasMap.get(salaDestino) >= MAXRATOS) {
-				System.out.println("A sala " + salaDestino + " já está lotada. Não é possível adicionar mais ratos.");
-				break;
-			} else if (salasMap.get(salaOrigem) < 0) {
+			int quantidadeDestino = salasMap.get(salaDestino);
+			int quantidadeOrigem = salasMap.get(salaOrigem);
 
+			if (quantidadeOrigem - 1 < 0) {
 				System.out.println("A sala " + salaOrigem + " tem valores negativos. Algo de errado ocorreu.");
+				dadosAnomalos.add(data);
 			} else {
-				writeToMySQL(data, "medicoes_passagens");
+				if (quantidadeDestino + 1 >= MAXRATOS) {
+					System.out
+							.println("A sala " + salaDestino + " já está lotada. Não é possível adicionar mais ratos.");
+					salasMap.put(salaOrigem, salasMap.get(salaOrigem) - 1);
+					salasMap.put(salaDestino, salasMap.get(salaDestino) + 1);
+					writeToMySQL(data, "medicoes_passagens");
+					writeAlertaToMySQL(data, "MaxRatos", "Numero de ratos excedidos na sala " + salaDestino);
+					break;
+				} else {
+					salasMap.put(salaOrigem, salasMap.get(salaOrigem) - 1);
+					salasMap.put(salaDestino, salasMap.get(salaDestino) + 1);
+					writeToMySQL(data, "medicoes_passagens");
+				}
 			}
 		}
-		// writeMapToFile(salasMap, "DadosMapaSalas.txt");
 	}
+
 
 	public int extractRoom(String data, String key) {
 		// Remove os espaços em branco e as vírgulas extras e, em seguida, divide a
@@ -445,9 +452,7 @@ public class WriteMysql {
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////// FUNCOES RELACIONADAS COM AS
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// TEMPERATURAS
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////// FUNCOES RELACIONADAS COM AS TEMPERATURAS  ////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public ArrayList<String> validarFormatosTemperatura(ArrayList<String> dateListTemperatura) {
 		System.out.println("lista " + dateListTemperatura.size());
@@ -608,7 +613,7 @@ public class WriteMysql {
 		String sensor = "";
 		String salaOrigem = "";
 		String salaDestino = "";
-		String id = "";
+		int id =-1;
 
 		switch (tabela) {
 			case "medicoes_temperatura":
@@ -618,9 +623,9 @@ public class WriteMysql {
 				}
 				leitura = extractValue(c, "Leitura");
 				sensor = extractValue(c, "Sensor");
-				id = extractValue(c, "id");
+				id = idExperienciaFromSQL();
 				SqlCommando = "Insert into medicoes_temperatura" + " (" + "id_ex, hora, leitura, sensor" + ") values ("
-						+ 3
+						+ id
 						+ ",'" + hora + "', " + leitura + ", " + sensor + ");";
 
 				break;
@@ -632,11 +637,10 @@ public class WriteMysql {
 				}
 				salaOrigem = extractValue(c, "SalaOrigem");
 				salaDestino = extractValue(c, "SalaDestino");
-				id = extractValue(c, "id");
-				int idExp = idExperienciaFromSQL();
+				id = idExperienciaFromSQL();
 				SqlCommando = "Insert into medicoes_passagens" + " (" + "id_ex, hora, sala_origem, sala_destino"
 						+ ") values (" +
-						+3 + ", '" + hora + "', " + salaOrigem + ", " + salaDestino + ");";
+						id + ", '" + hora + "', " + salaOrigem + ", " + salaDestino + ");";
 				break;
 			default:
 				break;
@@ -650,14 +654,55 @@ public class WriteMysql {
 				int result = s.executeUpdate(SqlCommando);
 				System.out.println("Inseri " + result + "\n");
 				if (tabela.equals("medicoes_passagens")) {
-					writeInMongoBackupValue("sensoresPortas", Integer.parseInt(id));
+					writeInMongoBackupValue("sensoresPortas", id);
 				} else {
 
 					if (sensor.equals("1"))
-						writeInMongoBackupValue("sensoresTemp1", Integer.parseInt(id));
+						writeInMongoBackupValue("sensoresTemp1", id);
 					else
-						writeInMongoBackupValue("sensoresTemp2", Integer.parseInt(id));
+						writeInMongoBackupValue("sensoresTemp2", id);
 				}
+				s.close();
+				commandExecutedSuccessfully = true; // Define como verdadeiro se a execução foi bem-sucedida
+			} catch (Exception e) {
+				if (e instanceof java.sql.SQLNonTransientConnectionException) {
+					new WriteMysql().connectDatabase_to();
+				}
+
+				System.out.println("Error Inserting in the database . " + e);
+				// Em caso de falha, aguarde antes de tentar novamente
+				try {
+					Thread.sleep(1000); // Aguarda por 1 segundo antes de tentar novamente
+				} catch (InterruptedException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public void writeAlertaToMySQL(String c, String tipo_alerta, String mensagem) {
+
+		String hora = extractValue(c, "Hora") == null ? "NULL" : extractValue(c,"Hora");
+		if (!hora.equals("NULL") && hora.length() == 19) {
+			hora += ".075649";
+		}
+		String salaOrigem = extractValue(c, "SalaOrigem")==null ? "NULL" :extractValue(c, "SalaOrigem");
+		String salaDestino =extractValue(c, "SalaDestino")==null ? "NULL" :extractValue(c, "SalaDestino");
+		int id = idExperienciaFromSQL();
+		String leitura = extractValue(c, "Leitura") == null ? "NULL" :extractValue(c, "Leitura");
+		String sensor = extractValue(c, "Sensor") == null ? "NULL" :extractValue(c, "Sensor");
+		String SqlCommando = "Insert into alerta" + " ("
+				+ "id_ex, hora_real, sala, sensor, leitura, tipo_alerta, mensagem"
+				+ ") values (" +
+				id + ", '" + hora + "', " + salaDestino +", " + sensor +", " + leitura + ", " + tipo_alerta + ", " + mensagem + " );";
+		boolean commandExecutedSuccessfully = false;
+		while (!commandExecutedSuccessfully) {
+			try {
+				documentLabel.append(SqlCommando.toString() + "\n");
+				Statement s = connTo.createStatement();
+				int result = s.executeUpdate(SqlCommando);
+				System.out.println("Inseri " + result + "\n");
+
 				s.close();
 				commandExecutedSuccessfully = true; // Define como verdadeiro se a execução foi bem-sucedida
 			} catch (Exception e) {
@@ -779,10 +824,7 @@ public class WriteMysql {
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////// ESCREVER EM
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// FICHEIRO
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// PARA
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// TESTE//////////////////////////////////
+	////////////////////////////////////////////////////////////// ESCREVER EM FICHEIRO PARA TESTE//////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	public void writeArrayListToFile(ArrayList<String> dataList, String fileName) {
