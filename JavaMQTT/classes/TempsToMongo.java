@@ -25,6 +25,7 @@ import org.bson.Document;
 import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoIterable;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.util.JSON;
 
@@ -159,6 +160,7 @@ public class TempsToMongo implements MqttCallback {
             mongocol = db.getCollection("sensoresTemp" + Integer.toString(sensor));
             int nextID = getNextSequence("temps" + Integer.toString(sensor) + "ID");
             doc.append("id", nextID);
+            
             mongocol.insertOne(doc);
             System.out.println(doc);
             documentLabel.append(c.toString() + "\n");

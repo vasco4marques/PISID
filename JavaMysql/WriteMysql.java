@@ -13,6 +13,8 @@ import java.awt.*;
 import org.bson.*;
 
 import com.mongodb.*;
+import com.mongodb.client.MongoIterable;
+
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
@@ -143,7 +145,7 @@ public class WriteMysql {
 
 	private void writeInMongoBackupValue(String colIdUpdate, int newValue) {
 		Document filter = new Document("name", colIdUpdate);
-		Document update = new Document("$inc", new Document("id", newValue));
+		Document update = new Document("$inc", new Document("id", 1));
 		FindOneAndUpdateOptions options = new FindOneAndUpdateOptions()
 				.returnDocument(com.mongodb.client.model.ReturnDocument.AFTER);
 		Document sequenceDocument = db2.getCollection("lastInsertedIds").findOneAndUpdate(filter, update, options);
@@ -163,7 +165,7 @@ public class WriteMysql {
 			while (cursor.hasNext()) {
 				DBObject nextElement = cursor.next();
 				ids.put((String) (nextElement.get("name")), (int) (nextElement.get("id")));
-				// System.out.println(cursor.next());
+				System.out.println(nextElement);
 			}
 		}
 		return ids;
@@ -179,8 +181,8 @@ public class WriteMysql {
 		// último guardado no ficheiro de backup
 		BasicDBObject query = new BasicDBObject();
 		if (lastIds.containsKey(collectionName)) {
-			// query.put("id", new BasicDBObject("$gt", lastIds.get(collectionName)));
-			query.put("id", new BasicDBObject("$gt", 7));
+			query.put("id", new BasicDBObject("$gt", lastIds.get(collectionName)));
+			// query.put("id", new BasicDBObject(q"$gt", 7));
 
 		}
 
@@ -220,11 +222,24 @@ public class WriteMysql {
 			ArrayList<String> dateListTemperatura = new ArrayList<String>();
 			ArrayList<String> dateListRatos = new ArrayList<>();
 
-			List<DBObject> sensors = readFromMongo(colDoors, mongo_doors);
-			List<DBObject> temp1 = readFromMongo(colTemp1, mongo_temp1);
-			List<DBObject> temp2 = readFromMongo(colTemp2, mongo_temp1);
+			// List<DBObject> sensors = readFromMongo(colDoors, mongo_doors);
+			List<DBCollection> tempCollections = getAllTempCollections();
+			List<List<DBObject>> tempData = new ArrayList<List<DBObject>>();
+			for (DBCollection col : tempCollections) {
+				tempData.add(readFromMongo(col, col.getName()));
+			}
 
-			boolean comecar = false;
+			// Podes começar com este array
+			// Já tem as leituras do mongo
+
+			
+
+
+			// System.out.println(temp2.get(0));
+
+			// boolean comecar = true;
+			// if (comecar)
+			// break;
 
 			// for (DBObject sensor : sensors) {
 			// String data = sensor.toString();
@@ -265,7 +280,7 @@ public class WriteMysql {
 
 			System.out.println("Validei formatos");
 			// writeArrayListToFile(dateListRatos, "DadosMongoSalas.txt");
-			System.out.println("escrevi os ratos");
+			// System.out.println("escrevi os ratos");
 
 			// Iterar enquanto houverem elementos em temp1 ou temp2
 			boolean addToTemp1 = true; // Flag para alternar entre temp1 e temp2
@@ -282,7 +297,7 @@ public class WriteMysql {
 			// writeArrayListToFile(dateListTemperatura, "DadosMongoTemperatura.txt");
 			detetarOutliers(dateListTemperatura);
 
-			validarFormatosSalas(dateListRatos);
+			// validarFormatosSalas(dateListRatos);
 
 			float end = System.nanoTime();
 			float time = (end - start) / 1000000000;
@@ -295,6 +310,17 @@ public class WriteMysql {
 				}
 			}
 		}
+	}
+
+	public List<DBCollection> getAllTempCollections() {
+		List<DBCollection> tempList = new ArrayList<DBCollection>();
+		MongoIterable<String> lista = db2.listCollectionNames();
+		for (String a : lista) {
+			if (a.contains("sensoresTemp")) {
+				tempList.add(db.getCollection(a));
+			}
+		}
+		return tempList;
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -431,7 +457,6 @@ public class WriteMysql {
 		}
 	}
 
-
 	public int extractRoom(String data, String key) {
 		// Remove os espaços em branco e as vírgulas extras e, em seguida, divide a
 		// string pelos espaços restantes
@@ -452,7 +477,9 @@ public class WriteMysql {
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////// FUNCOES RELACIONADAS COM AS TEMPERATURAS  ////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////// FUNCOES RELACIONADAS COM AS
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// TEMPERATURAS
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public ArrayList<String> validarFormatosTemperatura(ArrayList<String> dateListTemperatura) {
 		System.out.println("lista " + dateListTemperatura.size());
@@ -613,7 +640,7 @@ public class WriteMysql {
 		String sensor = "";
 		String salaOrigem = "";
 		String salaDestino = "";
-		int id =-1;
+		int id = -1;
 
 		switch (tabela) {
 			case "medicoes_temperatura":
@@ -682,19 +709,20 @@ public class WriteMysql {
 
 	public void writeAlertaToMySQL(String c, String tipo_alerta, String mensagem) {
 
-		String hora = extractValue(c, "Hora") == null ? "NULL" : extractValue(c,"Hora");
+		String hora = extractValue(c, "Hora") == null ? "NULL" : extractValue(c, "Hora");
 		if (!hora.equals("NULL") && hora.length() == 19) {
 			hora += ".075649";
 		}
-		String salaOrigem = extractValue(c, "SalaOrigem")==null ? "NULL" :extractValue(c, "SalaOrigem");
-		String salaDestino =extractValue(c, "SalaDestino")==null ? "NULL" :extractValue(c, "SalaDestino");
+		String salaOrigem = extractValue(c, "SalaOrigem") == null ? "NULL" : extractValue(c, "SalaOrigem");
+		String salaDestino = extractValue(c, "SalaDestino") == null ? "NULL" : extractValue(c, "SalaDestino");
 		int id = idExperienciaFromSQL();
-		String leitura = extractValue(c, "Leitura") == null ? "NULL" :extractValue(c, "Leitura");
-		String sensor = extractValue(c, "Sensor") == null ? "NULL" :extractValue(c, "Sensor");
+		String leitura = extractValue(c, "Leitura") == null ? "NULL" : extractValue(c, "Leitura");
+		String sensor = extractValue(c, "Sensor") == null ? "NULL" : extractValue(c, "Sensor");
 		String SqlCommando = "Insert into alerta" + " ("
 				+ "id_ex, hora_real, sala, sensor, leitura, tipo_alerta, mensagem"
 				+ ") values (" +
-				id + ", '" + hora + "', " + salaDestino +", " + sensor +", " + leitura + ", " + tipo_alerta + ", " + mensagem + " );";
+				id + ", '" + hora + "', " + salaDestino + ", " + sensor + ", " + leitura + ", " + tipo_alerta + ", "
+				+ mensagem + " );";
 		boolean commandExecutedSuccessfully = false;
 		while (!commandExecutedSuccessfully) {
 			try {
@@ -824,7 +852,10 @@ public class WriteMysql {
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////// ESCREVER EM FICHEIRO PARA TESTE//////////////////////////////////
+	////////////////////////////////////////////////////////////// ESCREVER EM
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// FICHEIRO
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// PARA
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// TESTE//////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	public void writeArrayListToFile(ArrayList<String> dataList, String fileName) {
