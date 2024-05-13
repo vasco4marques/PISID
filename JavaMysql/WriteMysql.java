@@ -157,14 +157,11 @@ public class WriteMysql {
 	}
 
 	private Map<String, Integer> readLastProcessedIds() {
-		// File file = new File(filePath);
 		Map<String, Integer> ids = new HashMap<>();
-		// System.out.println("Cursor " + lastInsertedIds.find());
 		try (DBCursor cursor = lastInsertedIds.find()) {
 			while (cursor.hasNext()) {
 				DBObject nextElement = cursor.next();
 				ids.put((String) (nextElement.get("name")), (int) (nextElement.get("id")));
-				System.out.println(nextElement);
 			}
 		}
 		return ids;
@@ -181,8 +178,8 @@ public class WriteMysql {
 		BasicDBObject query = new BasicDBObject();
 		if (lastIds.containsKey(collectionName)) {
 			query.put("id", new BasicDBObject("$gt", lastIds.get(collectionName)));
-			// query.put("id", new BasicDBObject(q"$gt", 7));
-
+		} else {
+			query.put("id", new BasicDBObject("$gt", 0));
 		}
 
 		try (DBCursor cursor = col.find(query)) {
@@ -218,73 +215,76 @@ public class WriteMysql {
 
 			float start = System.nanoTime();
 
-			ArrayList<String> dateListTemperatura = new ArrayList<String>();
 			ArrayList<String> dateListRatos = new ArrayList<>();
 
-			List<DBObject> sensors = readFromMongo(colDoors, mongo_doors);
-			List<DBCollection> tempCollections = getAllTempCollections();
-			List<List<DBObject>> tempData = new ArrayList<List<DBObject>>();
-			for (DBCollection col : tempCollections) {
-				tempData.add(readFromMongo(col, col.getName()));
-			}
+			List<DBObject> portas = readFromMongo(colDoors, mongo_doors);
+			System.out.println("ports " + portas.size());
 
-			// Podes começar com este array
-			// Já tem as leituras do mongo
+			// List<DBCollection> tempCollections = getAllTempCollections();
+			// List<List<DBObject>> tempData = new ArrayList<List<DBObject>>();
+			// for (DBCollection col : tempCollections) {
+			// tempData.add(readFromMongo(col, col.getName()));
+			// }
+			// System.out.println("Dados de temperaturas retirados do mongo");
 
 			boolean comecar = false;
 			if (!comecar) {
-				for (DBObject sensor : sensors) {
+				for (DBObject sensor : portas) {
 					String data = sensor.toString();
-					if (data.contains("2000-01-01 00:00:00")) {
-						comecar = true;
-						salasMap.put(1, inicialNumRatos());
-					} else {
-						break;
-					}
 
-					if (comecar) {
-						dateListRatos.add(data);
-						int salaOrigem = (int) sensor.get("SalaOrigem");
-						int salaDestino = (int) sensor.get("SalaDestino");
-						if (!salasMap.containsKey(salaOrigem))
-							salasMap.put(salaOrigem, 0);
-						if (!salasMap.containsKey(salaDestino))
-							salasMap.put(salaDestino, 0);
-					}
+					// if (data.contains("2000-01-01 00:00:00")) {
+					// System.out.println("Encontrei documento com esta data");
+					// comecar = true;
+					// salasMap.put(1, inicialNumRatos());
+					// } else {
+					// break;
+					// }
+
+					// if (comecar) {
+					// System.out.println("Como começar está a true vou adicionar data a lista de
+					// ratos");
+					dateListRatos.add(data);
+					// int salaOrigem = (int) sensor.get("SalaOrigem");
+					// int salaDestino = (int) sensor.get("SalaDestino");
+					// if (!salasMap.containsKey(salaOrigem))
+					// salasMap.put(salaOrigem, 0);
+					// if (!salasMap.containsKey(salaDestino))
+					// salasMap.put(salaDestino, 0);
+					// }
 				}
 			}
 
-			List<ArrayList<String>> tempsStrings = new ArrayList<>();
-			for (List<DBObject> col : tempData) {
-				ArrayList<String> tempsToStringTemporaria = new ArrayList<>();
-				for (DBObject temp : col) {
-					tempsToStringTemporaria.add(temp.toString());
-				}
-				tempsStrings.add(tempsToStringTemporaria);
-			}
+			// List<ArrayList<String>> tempsStrings = new ArrayList<>();
+			// for (List<DBObject> col : tempData) {
+			// ArrayList<String> tempsToStringTemporaria = new ArrayList<>();
+			// for (DBObject temp : col) {
+			// tempsToStringTemporaria.add(temp.toString());
+			// }
+			// tempsStrings.add(tempsToStringTemporaria);
+			// }
 
-			List<ArrayList<String>> tempsValidadas = new ArrayList<>();
-			for (ArrayList<String> toBeValidated : tempsStrings) {
-				tempsValidadas.add(validarFormatosTemperatura(toBeValidated));
-			}
+			// List<ArrayList<String>> tempsValidadas = new ArrayList<>();
+			// for (ArrayList<String> toBeValidated : tempsStrings) {
+			// tempsValidadas.add(validarFormatosTemperatura(toBeValidated));
+			// }
 
 			// Criar iteradores para cada uma das listas dentro do tempValidadas
 			// while loop enquanto qualquer iterador tiver next
 			// if iterador x tiver next retirar da sua lista e meter na final
 
-			ArrayList<String> tempsMisturadas = new ArrayList<>();
-			while (existemElemnetos(tempsValidadas)) {
-				for (ArrayList<String> listas : tempsValidadas)
-					if (!listas.isEmpty())
-						tempsMisturadas.add(listas.remove(0).toString());
-			}
-			System.out.println("TempsMisturadas" + tempsMisturadas.size());
+			// ArrayList<String> tempsMisturadas = new ArrayList<>();
+			// while (existemElemnetos(tempsValidadas)) {
+			// for (ArrayList<String> listas : tempsValidadas)
+			// if (!listas.isEmpty())
+			// tempsMisturadas.add(listas.remove(0).toString());
+			// }
+			// System.out.println("TempsMisturadas" + tempsMisturadas.size());
 
 			// writeArrayListToFile(dateListRatos, "DadosMongoSalas.txt");
 			// System.out.println("escrevi os ratos");t
 
 			// writeArrayListToFile(dateListTemperatura, "DadosMongoTemperatura.txt");
-			detetarOutliers(tempsMisturadas);
+			// detetarOutliers(tempsMisturadas);
 
 			validarFormatosSalas(dateListRatos);
 
@@ -305,7 +305,7 @@ public class WriteMysql {
 	private boolean existemElemnetos(List<ArrayList<String>> tempsValidadas) {
 		boolean vazio = false;
 		for (ArrayList<String> temps : tempsValidadas)
-			vazio |= !temps.isEmpty();
+			vazio = !temps.isEmpty();
 		return vazio;
 	}
 
@@ -325,7 +325,7 @@ public class WriteMysql {
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// SALAS////////////////////////////////////////////////////////////////////////////////////////////
 
 	private void validarFormatosSalas(ArrayList<String> dateListRatos) {
-		String collectionName = "sensoresPortas";
+
 		ArrayList<String> dadosAnomalos = new ArrayList<String>();
 		ArrayList<String> dadosCorretos = new ArrayList<String>();
 		for (String data : dateListRatos) {
@@ -372,7 +372,6 @@ public class WriteMysql {
 						}
 					}
 				}
-				System.out.println("Anomalia " + anomalia);
 				if (!anomalia) {
 					// Se não for uma anomalia, adicione aos dados corretos
 					dadosCorretos.add(data);
@@ -383,7 +382,7 @@ public class WriteMysql {
 
 		// writeArrayListToFile(dadosCorretos, "DadosCorretosSalas.txt");
 		// writeArrayListToFile(dadosAnomalos, "DadosAnomalosSalas.txt");
-		System.out.println("movi ratos");
+
 		moverRatos(dadosCorretos, dadosAnomalos);
 	}
 
@@ -426,10 +425,15 @@ public class WriteMysql {
 	}
 
 	private void moverRatos(ArrayList<String> dadosCorretos, ArrayList<String> dadosAnomalos) {
+		System.out.println("movi ratos");
 		System.out.println("Quantos dados correto chegaram" + dadosCorretos.size());
+		System.out.println("Quantos dados errados chegaram" + dadosAnomalos.size());
 		for (String data : dadosCorretos) {
+
 			int salaOrigem = extractRoom(data, "SalaOrigem");
 			int salaDestino = extractRoom(data, "SalaDestino");
+			System.out.println("Sala Origem extraída " + salaOrigem);
+			System.out.println("Sala Destino extraída " + salaDestino);
 
 			int quantidadeDestino = salasMap.get(salaDestino);
 			int quantidadeOrigem = salasMap.get(salaOrigem);
@@ -438,7 +442,9 @@ public class WriteMysql {
 				System.out.println("A sala " + salaOrigem + " tem valores negativos. Algo de errado ocorreu.");
 				dadosAnomalos.add(data);
 			} else {
+
 				if (quantidadeDestino + 1 >= MAXRATOS) {
+					System.out.println("Lotado e vou inserir alerta");
 					System.out
 							.println("A sala " + salaDestino + " já está lotada. Não é possível adicionar mais ratos.");
 					salasMap.put(salaOrigem, salasMap.get(salaOrigem) - 1);
@@ -447,6 +453,7 @@ public class WriteMysql {
 					writeAlertaToMySQL(data, "MaxRatos", "Numero de ratos excedidos na sala " + salaDestino);
 					break;
 				} else {
+					System.out.println("Tudo bem e vou inserir portas");
 					salasMap.put(salaOrigem, salasMap.get(salaOrigem) - 1);
 					salasMap.put(salaDestino, salasMap.get(salaDestino) + 1);
 					writeToMySQL(data, "medicoes_passagens");
@@ -456,6 +463,7 @@ public class WriteMysql {
 	}
 
 	public int extractRoom(String data, String key) {
+		System.out.println("Extrair room");
 		// Remove os espaços em branco e as vírgulas extras e, em seguida, divide a
 		// string pelos espaços restantes
 		String[] partes = data.replaceAll("[{}]", "").split("\\s*,\\s*");
