@@ -149,7 +149,6 @@ public class WriteMysql {
 		FindOneAndUpdateOptions options = new FindOneAndUpdateOptions()
 				.returnDocument(com.mongodb.client.model.ReturnDocument.AFTER);
 		Document sequenceDocument = db2.getCollection("lastInsertedIds").findOneAndUpdate(filter, update, options);
-
 		if (sequenceDocument == null) {
 			db2.getCollection("lastInsertedIds")
 					.insertOne(new Document("name", colIdUpdate).append("lastInsertedID", newValue));
@@ -222,7 +221,7 @@ public class WriteMysql {
 			ArrayList<String> dateListTemperatura = new ArrayList<String>();
 			ArrayList<String> dateListRatos = new ArrayList<>();
 
-			// List<DBObject> sensors = readFromMongo(colDoors, mongo_doors);
+			List<DBObject> sensors = readFromMongo(colDoors, mongo_doors);
 			List<DBCollection> tempCollections = getAllTempCollections();
 			List<List<DBObject>> tempData = new ArrayList<List<DBObject>>();
 			for (DBCollection col : tempCollections) {
@@ -232,72 +231,62 @@ public class WriteMysql {
 			// Podes começar com este array
 			// Já tem as leituras do mongo
 
-			
+			boolean comecar = false;
+			if (!comecar) {
+				for (DBObject sensor : sensors) {
+					String data = sensor.toString();
+					if (data.contains("2000-01-01 00:00:00")) {
+						comecar = true;
+						salasMap.put(1, inicialNumRatos());
+					} else {
+						break;
+					}
 
-
-			// System.out.println(temp2.get(0));
-
-			// boolean comecar = true;
-			// if (comecar)
-			// break;
-
-			// for (DBObject sensor : sensors) {
-			// String data = sensor.toString();
-			// if (data.contains("2000-01-01 00:00:00")) {
-			// if (!comecar) {
-			// comecar = true;
-			// salasMap.put(1, inicialNumRatos());
-			// } else {
-			// break; // Se comecar for true, significa que já começamos, então não
-			// adicionamos mais
-			// // dados e saímos do loop
-			// }
-			// }
-			// if (comecar) {
-			// dateListRatos.add(data);
-			// int salaOrigem = (int) sensor.get("SalaOrigem");
-			// int salaDestino = (int) sensor.get("SalaDestino");
-			// if (!salasMap.containsKey(salaOrigem))
-			// salasMap.put(salaOrigem, 0);
-			// if (!salasMap.containsKey(salaDestino))
-			// salasMap.put(salaDestino, 0);
-			// }
-			// }
-
-			ArrayList<String> temp1Total = new ArrayList<>();
-			for (DBObject temp : temp1) {
-				temp1Total.add(temp.toString());
-			}
-			ArrayList<String> temp2Total = new ArrayList<>();
-			for (DBObject temp : temp2) {
-				temp2Total.add(temp.toString());
-			}
-
-			ArrayList<String> temp1Validada = validarFormatosTemperatura(temp1Total);
-			ArrayList<String> temp2Validada = validarFormatosTemperatura(temp2Total);
-			System.out.println("Temp1 " + temp1Validada.size());
-			System.out.println("Temp2 " + temp2Validada.size());
-
-			System.out.println("Validei formatos");
-			// writeArrayListToFile(dateListRatos, "DadosMongoSalas.txt");
-			// System.out.println("escrevi os ratos");
-
-			// Iterar enquanto houverem elementos em temp1 ou temp2
-			boolean addToTemp1 = true; // Flag para alternar entre temp1 e temp2
-			while (!temp1Validada.isEmpty() || !temp2Validada.isEmpty()) {
-				if (addToTemp1 && !temp1Validada.isEmpty()) {
-					String data = temp1Validada.remove(0).toString();
-					dateListTemperatura.add(data);
-				} else if (!temp2Validada.isEmpty()) {
-					String data = temp2Validada.remove(0).toString();
-					dateListTemperatura.add(data);
+					if (comecar) {
+						dateListRatos.add(data);
+						int salaOrigem = (int) sensor.get("SalaOrigem");
+						int salaDestino = (int) sensor.get("SalaDestino");
+						if (!salasMap.containsKey(salaOrigem))
+							salasMap.put(salaOrigem, 0);
+						if (!salasMap.containsKey(salaDestino))
+							salasMap.put(salaDestino, 0);
+					}
 				}
-				addToTemp1 = !addToTemp1; // Alternar a flag
 			}
-			// writeArrayListToFile(dateListTemperatura, "DadosMongoTemperatura.txt");
-			detetarOutliers(dateListTemperatura);
 
-			// validarFormatosSalas(dateListRatos);
+			List<ArrayList<String>> tempsStrings = new ArrayList<>();
+			for (List<DBObject> col : tempData) {
+				ArrayList<String> tempsToStringTemporaria = new ArrayList<>();
+				for (DBObject temp : col) {
+					tempsToStringTemporaria.add(temp.toString());
+				}
+				tempsStrings.add(tempsToStringTemporaria);
+			}
+
+			List<ArrayList<String>> tempsValidadas = new ArrayList<>();
+			for (ArrayList<String> toBeValidated : tempsStrings) {
+				tempsValidadas.add(validarFormatosTemperatura(toBeValidated));
+			}
+
+			// Criar iteradores para cada uma das listas dentro do tempValidadas
+			// while loop enquanto qualquer iterador tiver next
+			// if iterador x tiver next retirar da sua lista e meter na final
+
+			ArrayList<String> tempsMisturadas = new ArrayList<>();
+			while (existemElemnetos(tempsValidadas)) {
+				for (ArrayList<String> listas : tempsValidadas)
+					if (!listas.isEmpty())
+						tempsMisturadas.add(listas.remove(0).toString());
+			}
+			System.out.println("TempsMisturadas" + tempsMisturadas.size());
+
+			// writeArrayListToFile(dateListRatos, "DadosMongoSalas.txt");
+			// System.out.println("escrevi os ratos");t
+
+			// writeArrayListToFile(dateListTemperatura, "DadosMongoTemperatura.txt");
+			detetarOutliers(tempsMisturadas);
+
+			validarFormatosSalas(dateListRatos);
 
 			float end = System.nanoTime();
 			float time = (end - start) / 1000000000;
@@ -310,6 +299,14 @@ public class WriteMysql {
 				}
 			}
 		}
+
+	}
+
+	private boolean existemElemnetos(List<ArrayList<String>> tempsValidadas) {
+		boolean vazio = false;
+		for (ArrayList<String> temps : tempsValidadas)
+			vazio |= !temps.isEmpty();
+		return vazio;
 	}
 
 	public List<DBCollection> getAllTempCollections() {
@@ -386,7 +383,7 @@ public class WriteMysql {
 
 		// writeArrayListToFile(dadosCorretos, "DadosCorretosSalas.txt");
 		// writeArrayListToFile(dadosAnomalos, "DadosAnomalosSalas.txt");
-
+		System.out.println("movi ratos");
 		moverRatos(dadosCorretos, dadosAnomalos);
 	}
 
@@ -429,6 +426,7 @@ public class WriteMysql {
 	}
 
 	private void moverRatos(ArrayList<String> dadosCorretos, ArrayList<String> dadosAnomalos) {
+		System.out.println("Quantos dados correto chegaram" + dadosCorretos.size());
 		for (String data : dadosCorretos) {
 			int salaOrigem = extractRoom(data, "SalaOrigem");
 			int salaDestino = extractRoom(data, "SalaDestino");
@@ -482,7 +480,6 @@ public class WriteMysql {
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// ////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public ArrayList<String> validarFormatosTemperatura(ArrayList<String> dateListTemperatura) {
-		System.out.println("lista " + dateListTemperatura.size());
 
 		ArrayList<String> dadosAnomalos = new ArrayList<String>();
 		ArrayList<String> dadosCorretos = new ArrayList<String>();
@@ -538,6 +535,7 @@ public class WriteMysql {
 
 	private void detetarOutliers(ArrayList<String> dadosCorretos) {
 		System.out.println("Vou ver outliers");
+		System.out.println(dadosCorretos.isEmpty());
 		ArrayList<String> outliers = new ArrayList<String>();
 		for (int i = 0; i < dadosCorretos.size(); i++) {
 			// Calcula o IQR
@@ -558,9 +556,11 @@ public class WriteMysql {
 					outliers.add(dadosCorretos.get(i));
 					// como e outlier vai buscar o ultimo valido
 					dadoSet.add(dadosCorretos.get(i));
+					System.out.println("Foi detetado como OUTILIER: " + dadosCorretos.get(i));
 					// System.out.println("Temperatura É um outlier: " + temperatura);
 				} else {
 					// Se não for um outlier, insere no conjunto de dados
+					System.out.println("Não e outllier: " + dadosCorretos.get(i));
 					dadoSet.add(dadosCorretos.get(i));
 					writeToMySQL(dadosCorretos.get(i), "medicoes_temperatura");
 					// System.out.println("Temperatura NÃO É um outlier: " + temperatura);
@@ -681,6 +681,7 @@ public class WriteMysql {
 				int result = s.executeUpdate(SqlCommando);
 				System.out.println("Inseri " + result + "\n");
 				if (tabela.equals("medicoes_passagens")) {
+					System.out.println("vou dar update ao sensor das portas");
 					writeInMongoBackupValue("sensoresPortas", id);
 				} else {
 
