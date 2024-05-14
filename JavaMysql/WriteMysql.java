@@ -209,7 +209,10 @@ public class WriteMysql {
 		// Começa e acaba quando
 		// Hora ser 2000-01-01 00:00:00.000
 		// e se sala origem e destino for 0
+		boolean comecar = false;
+
 		while (true) {
+
 			MAXRATOS = numMaxRatos();
 			MAXTIMEPARADOS = tempoParadosPorSala();
 
@@ -227,31 +230,40 @@ public class WriteMysql {
 			// }
 			// System.out.println("Dados de temperaturas retirados do mongo");
 
-			boolean comecar = false;
-			if (!comecar) {
-				for (DBObject sensor : portas) {
-					String data = sensor.toString();
+			for (DBObject sensor : portas) {
+				String data = sensor.toString();
+				// Se o registo que existe tiver a data o começar inverte (começa a false logo
+				// passa para true)
+				if (data.contains("2000-01-01 00:00:00")) {
+					System.out.println("Encontrei documento com esta data");
+					comecar = !comecar;
+					// Se o começar for true vamos começar com os mapas dos ratos
+					// Caso não seja true quer dizer que é o segunda vez que ele encontra este
+					// registo logo a experiência acabou e para este ciclo
+					if (comecar)
+						salasMap.put(1, inicialNumRatos());
+					else
+						break;
 
-					// if (data.contains("2000-01-01 00:00:00")) {
-					// System.out.println("Encontrei documento com esta data");
-					// comecar = true;
-					// salasMap.put(1, inicialNumRatos());
-					// } else {
-					// break;
-					// }
-
-					// if (comecar) {
-					// System.out.println("Como começar está a true vou adicionar data a lista de
-					// ratos");
-					dateListRatos.add(data);
-					// int salaOrigem = (int) sensor.get("SalaOrigem");
-					// int salaDestino = (int) sensor.get("SalaDestino");
-					// if (!salasMap.containsKey(salaOrigem))
-					// salasMap.put(salaOrigem, 0);
-					// if (!salasMap.containsKey(salaDestino))
-					// salasMap.put(salaDestino, 0);
-					// }
+					// Continue serve para saltar para a prox iteraçãp
+					continue;
 				}
+				// Caso a experiencia tenha começado na verificação interior, depois de saltar o
+				// registo com aquela data específica adicionamos os datos a lista de dados
+				if (comecar) {
+					dateListRatos.add(data);
+				}
+
+				// if (comecar) {
+				// System.out.println("Como começar está a true vou adicionar data a lista de
+				// ratos");
+				// int salaOrigem = (int) sensor.get("SalaOrigem");
+				// int salaDestino = (int) sensor.get("SalaDestino");
+				// if (!salasMap.containsKey(salaOrigem))
+				// salasMap.put(salaOrigem, 0);
+				// if (!salasMap.containsKey(salaDestino))
+				// salasMap.put(salaDestino, 0);
+				// }
 			}
 
 			// List<ArrayList<String>> tempsStrings = new ArrayList<>();
@@ -331,6 +343,7 @@ public class WriteMysql {
 		for (String data : dateListRatos) {
 			boolean anomalia = false; // Variável para verificar se é uma anomalia
 			if (!data.contains("Hora") || !data.contains("SalaDestino") || !data.contains("SalaOrigem")) {
+				System.out.println("Formato errado logo é anomalo " + data);
 				dadosAnomalos.add(data);
 				anomalia = true;
 			}
@@ -342,13 +355,16 @@ public class WriteMysql {
 						String chave = partes[0].trim();
 						String valor = partes[1].trim();
 						if (chave.equals("\"Hora\"")) {
-							if (!Pattern.matches("'\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3,}'", valor)) {
-								// System.err.println("VALOR "+valor);
+							if (!Pattern.matches("\"\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3,}\"", valor)) {
+
+								System.err.println("Data mal formatada" + valor);
 								dadosAnomalos.add(data);
 								// System.err.println("HORA MAL FORMATADA");
 								anomalia = true; // Define como anomalia se Hora estiver mal formatada
 
 							} else if (!isValidDate(valor)) {
+								System.err.println("Data invalida" + valor);
+
 								dadosAnomalos.add(data);
 								anomalia = true;
 
@@ -356,16 +372,17 @@ public class WriteMysql {
 								try {
 									Integer.parseInt(valor);
 								} catch (NumberFormatException e) {
+
+									System.err.println("Sala Destino MAL FORMATADA");
 									dadosAnomalos.add(data);
-									// System.err.println("LEITURA MAL FORMATADA");
 									anomalia = true; // Define como anomalia se Leitura estiver mal formatada
 								}
 							} else if (chave.equals("SalaOrigem")) {
 								try {
 									Integer.parseInt(valor);
 								} catch (NumberFormatException e) {
+									System.err.println("Sala Destino MAL FORMATADA");
 									dadosAnomalos.add(data);
-									// System.err.println("LEITURA MAL FORMATADA");
 									anomalia = true; // Define como anomalia se Leitura estiver mal formatada
 								}
 							}
@@ -374,6 +391,7 @@ public class WriteMysql {
 				}
 				if (!anomalia) {
 					// Se não for uma anomalia, adicione aos dados corretos
+					System.out.println("Tudo bem com este " + data);
 					dadosCorretos.add(data);
 				}
 
@@ -425,15 +443,12 @@ public class WriteMysql {
 	}
 
 	private void moverRatos(ArrayList<String> dadosCorretos, ArrayList<String> dadosAnomalos) {
-		System.out.println("movi ratos");
 		System.out.println("Quantos dados correto chegaram" + dadosCorretos.size());
 		System.out.println("Quantos dados errados chegaram" + dadosAnomalos.size());
 		for (String data : dadosCorretos) {
 
 			int salaOrigem = extractRoom(data, "SalaOrigem");
 			int salaDestino = extractRoom(data, "SalaDestino");
-			System.out.println("Sala Origem extraída " + salaOrigem);
-			System.out.println("Sala Destino extraída " + salaDestino);
 
 			int quantidadeDestino = salasMap.get(salaDestino);
 			int quantidadeOrigem = salasMap.get(salaOrigem);
