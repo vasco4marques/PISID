@@ -35,6 +35,7 @@ public class WriteMysql {
 
 	// Objeto SQL
 	static Connection connTo;
+	static Connection connToStor;
 
 	static JTextArea documentLabel = new JTextArea("\n");
 
@@ -67,6 +68,7 @@ public class WriteMysql {
 	private static int MAXRATOS;
 	private static int MAXTIMEPARADOS;
 	private final static int TIMELOOP = 3000;
+	private HashMap<Integer,LinkedList<Integer>> caminhos = new HashMap<Integer,LinkedList<Integer>>();
 
 	// janela para aparecer informacoes de mongo o sql
 	private static void createWindow() {
@@ -107,7 +109,7 @@ public class WriteMysql {
 
 		try {
 			Class.forName("org.mariadb.jdbc.Driver");
-			connTo = DriverManager.getConnection(sql_storDatabase_connection_to, sql_storDatabase_user_to,
+			connToStor = DriverManager.getConnection(sql_storDatabase_connection_to, sql_storDatabase_user_to,
 					sql_storDatabase_password_to);
 			documentLabel.append("SQl Connection:" + sql_storDatabase_connection_to + "\n");
 			documentLabel
@@ -235,7 +237,9 @@ public class WriteMysql {
 				// Se o registo que existe tiver a data o começar inverte (começa a false logo
 				// passa para true)
 				if (data.contains("2000-01-01 00:00:00")) {
-					System.out.println("Encontrei documento com esta data");
+					caminhos.clear();
+					// construirCaminhos();
+					
 					comecar = !comecar;
 					// Se o começar for true vamos começar com os mapas dos ratos
 					// Caso não seja true quer dizer que é o segunda vez que ele encontra este
@@ -313,6 +317,18 @@ public class WriteMysql {
 		}
 
 	}
+
+	// private void construirCaminhos() {
+	// 	try {
+	// 		Statement s = connToStor.createStatement();
+	// 		ResultSet rs = s.executeQuery("SELECT * FROM corredor");
+	// 		LinkedList<String>=rs.getArray();
+
+	// 	} catch (SQLException e) {
+	// 		// TODO Auto-generated catch block
+	// 		e.printStackTrace();
+	// 	}
+	// }
 
 	private boolean existemElemnetos(List<ArrayList<String>> tempsValidadas) {
 		boolean vazio = false;
@@ -930,9 +946,9 @@ public class WriteMysql {
 		try {
 			Properties p = new Properties();
 			// LINHA PARA OS RESTANTES
-			// p.load(new FileInputStream("JavaMysql/WriteMysql.ini"));
+			p.load(new FileInputStream("JavaMysql/WriteMysql.ini"));
 			// Linha para funcionar no VASCO
-			p.load(new FileInputStream("E:\\3ºAno\\2ºSemestre\\PISID\\PISID\\JavaMysql\\WriteMysql.ini"));
+			// p.load(new FileInputStream("E:\\3ºAno\\2ºSemestre\\PISID\\PISID\\JavaMysql\\WriteMysql.ini"));
 			// sql_table_to = p.getProperty("sql_table_to");
 			sql_database_connection_to = p.getProperty("sql_database_connection_to");
 			sql_database_password_to = p.getProperty("sql_database_password_to");
@@ -957,9 +973,9 @@ public class WriteMysql {
 			JOptionPane.showMessageDialog(null, "The WriteMysql inifile wasn't found.", "Data Migration",
 					JOptionPane.ERROR_MESSAGE);
 		}
-		new WriteMysql().connectToMongo();
+		// new WriteMysql().connectToMongo();
 		new WriteMysql().connectDatabase_to();
-		new WriteMysql().ReadData();
+		// new WriteMysql().ReadData();
 
 		// while (true) {
 		// String sql = "Insert into medicoes_passagens( id_ex, sala_origem,
