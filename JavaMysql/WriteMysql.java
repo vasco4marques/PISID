@@ -35,6 +35,7 @@ public class WriteMysql {
 
 	// Objeto SQL
 	static Connection connTo;
+	static Connection connToStor;
 
 	static JTextArea documentLabel = new JTextArea("\n");
 
@@ -107,8 +108,13 @@ public class WriteMysql {
 
 		try {
 			Class.forName("org.mariadb.jdbc.Driver");
-			connTo = DriverManager.getConnection(sql_storDatabase_connection_to, sql_storDatabase_user_to,
+			System.out.println("2ENTROU1");
+			System.out.println(sql_storDatabase_connection_to + sql_storDatabase_password_to + sql_storDatabase_user_to);
+			connToStor = DriverManager.getConnection(sql_storDatabase_connection_to, sql_storDatabase_user_to,
 					sql_storDatabase_password_to);
+
+			System.out.println("PASSEI");
+
 			documentLabel.append("SQl Connection:" + sql_storDatabase_connection_to + "\n");
 			documentLabel
 					.append("Connection To MariaDB Destination " + sql_storDatabase_connection_to + " Suceeded" + "\n");
@@ -957,11 +963,11 @@ public class WriteMysql {
 			JOptionPane.showMessageDialog(null, "The WriteMysql inifile wasn't found.", "Data Migration",
 					JOptionPane.ERROR_MESSAGE);
 		}
-		new WriteMysql().connectToMongo();
+		// new WriteMysql().connectToMongo();
 		new WriteMysql().connectDatabase_to();
-		new WriteMysql().ReadData();
+		// new WriteMysql().ReadData();
 
-		// while (true) {
+		// while (true) {:
 		// String sql = "Insert into medicoes_passagens( id_ex, sala_origem,
 		// sala_destino) values ("
 		// + "3" + ", " + Math.random() * 10 + ", " + Math.random() * 10 + ");";
