@@ -626,6 +626,8 @@ public class WriteMysql {
 		return num;
 	}
 
+	// Limite inferior dos alertas de temperatura alta (temp max = 20, este valor é
+	// por exemplo 18)
 	public double maxTempForAlert() {
 		double num = -1.00;
 		String SqlCommando = "SELECT MAX_TEMPERATURA_FOR_ALERT FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
@@ -659,6 +661,8 @@ public class WriteMysql {
 
 	}
 
+	// Limite superior dos alertas de temperatura baixa (temp min = 10, este valor é
+	// por exemplo 12)
 	public double minTempForAlert() {
 		double num = -1.00;
 		String SqlCommando = "SELECT MIN_TEMPERATURA_FOR_ALERT FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
