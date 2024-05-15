@@ -770,30 +770,38 @@ public class WriteMysql {
 	}
 
 	public void writeAlertaToMySQL(String c, String tipo_alerta, String mensagem) {
-
-		String hora = extractValue(c, "Hora") == null ? "NULL" : extractValue(c, "Hora");
-		if (!hora.equals("NULL") && hora.length() == 19) {
-			hora += ".075649";
-		}
-		String salaOrigem = extractValue(c, "SalaOrigem") == null ? "NULL" : extractValue(c, "SalaOrigem");
-		String salaDestino = extractValue(c, "SalaDestino") == null ? "NULL" : extractValue(c, "SalaDestino");
-		int id = idExperienciaFromSQL();
-		String leitura = extractValue(c, "Leitura") == null ? "NULL" : extractValue(c, "Leitura");
-		String sensor = extractValue(c, "Sensor") == null ? "NULL" : extractValue(c, "Sensor");
-		String SqlCommando = "";
-		if (id == -1) {
+		String SqlCommando = null;
+		if (c == null) {
+			int id = idExperienciaFromSQL();
 			SqlCommando = "Insert into alerta" + " ("
-					+ "id_ex, hora_real, sala, sensor, leitura, tipo_alerta, mensagem"
-					+ ") values (" +
-					"NULL" + ", '" + hora + "', " + salaDestino + ", " + sensor + ", " + leitura + ", " + tipo_alerta
-					+ ", "
-					+ mensagem + " );";
+					+ "id_ex, hora_real, tipo_alerta, mensagem, hora_chegada"
+					+ ") values (" + id + ", CURRENT_TIMESTAMP" + ", '" + tipo_alerta + "', '"
+					+ mensagem + "', CURRENT_TIMESTAMP );";
 		} else {
-			SqlCommando = "Insert into alerta" + " ("
-					+ "id_ex, hora_real, sala, sensor, leitura, tipo_alerta, mensagem"
-					+ ") values (" +
-					id + ", '" + hora + "', " + salaDestino + ", " + sensor + ", " + leitura + ", " + tipo_alerta + ", "
-					+ mensagem + " );";
+			String hora = extractValue(c, "Hora") == null ? "NULL" : extractValue(c, "Hora");
+			if (!hora.equals("NULL") && hora.length() == 19) {
+				hora += ".075649";
+			}
+			String salaOrigem = extractValue(c, "SalaOrigem") == null ? "NULL" : extractValue(c, "SalaOrigem");
+			String salaDestino = extractValue(c, "SalaDestino") == null ? "NULL" : extractValue(c, "SalaDestino");
+			int id = idExperienciaFromSQL();
+			String leitura = extractValue(c, "Leitura") == null ? "NULL" : extractValue(c, "Leitura");
+			String sensor = extractValue(c, "Sensor") == null ? "NULL" : extractValue(c, "Sensor");
+			SqlCommando = "";
+			if (id == -1) {
+				SqlCommando = "Insert into alerta" + " ("
+						+ "id_ex, hora_real, sala, sensor, leitura, tipo_alerta, mensagem, hora_chegada"
+						+ ") values (" +
+						"NULL" + " , '" + hora + "' , " + salaDestino + " , " + sensor + " , " + leitura + " , '"
+						+ tipo_alerta + "', '" + mensagem + "', CURRENT_TIMESTAMP );";
+			} else {
+				SqlCommando = "Insert into alerta" + " ("
+						+ "id_ex, hora_real, sala, sensor, leitura, tipo_alerta, mensagem , hora_chegada"
+						+ ") values (" +
+						id + " , ' " + hora + "' , " + salaDestino + " , " + sensor + " , " + leitura + " , '"
+						+ tipo_alerta
+						+ "' , '" + mensagem + "' , CURRENT_TIMESTAMP );";
+			}
 		}
 
 		boolean commandExecutedSuccessfully = false;
@@ -802,7 +810,6 @@ public class WriteMysql {
 				documentLabel.append(SqlCommando.toString() + "\n");
 				Statement s = connTo.createStatement();
 				int result = s.executeUpdate(SqlCommando);
-				System.out.println("Inseri " + result + "\n");
 
 				s.close();
 				commandExecutedSuccessfully = true; // Define como verdadeiro se a execução foi bem-sucedida
@@ -827,16 +834,29 @@ public class WriteMysql {
 		for (int room : roomFinalMap.keySet()) {
 			String SqlComando = "Insert into medicoes" + " (" + "id_ex, num_ratos, sala, hora" + ") values (" + id
 					+ ", " + roomFinalMap.get(room) + ", " + room + ", CURRENT_TIMESTAMP);";
-			try {
-				Statement s = connTo.createStatement();
-				ResultSet rs = s.executeQuery(SqlComando);
-			} catch (Exception e) {
-				System.out.println("Resultado para a sala " + room + " não inserido");
+			boolean commandExecutedSuccessfully = false;
+			while (!commandExecutedSuccessfully) {
+				try {
+					Statement s = connTo.createStatement();
+					ResultSet rs = s.executeQuery(SqlComando);
+					s.close();
+					commandExecutedSuccessfully = true; // Define como verdadeiro se a execução foi bem-sucedida
+				} catch (Exception e) {
+					System.out.println("Resultado para a sala " + room + " não inserido");
+					if (e instanceof java.sql.SQLNonTransientConnectionException) {
+						new WriteMysql().connectDatabase_to();
+					}
+
+					System.out.println("Error Inserting in the database alerta. " + e);
+					// Em caso de falha, aguarde antes de tentar novamente
+					try {
+						Thread.sleep(1000); // Aguarda por 1 segundo antes de tentar novamente
+					} catch (InterruptedException ex) {
+						ex.printStackTrace();
+					}
+				}
 			}
-
 		}
-
-	}
 
 	// Funções auxiliares relacionadas com o mongo
 	private void writeInMongoBackupValue(String colIdUpdate, int newValue) {
