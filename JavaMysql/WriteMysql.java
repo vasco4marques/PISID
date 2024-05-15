@@ -78,14 +78,12 @@ public class WriteMysql {
 	public void ReadData() {
 		System.out.println("Vou começar a leitura");
 
-		// Começa e acaba quando
-		// Hora ser 2000-01-01 00:00:00.000
-		// e se sala origem e destino for 0
+
 		boolean comecar = false;
 
 		while (true) {
 
-			// MAXRATOS = numMaxRatos();
+			MAXRATOS = numMaxRatos();
 			MAXRATOS = 100;
 			MAXTIMEPARADOS = tempoParadosPorSala();
 
@@ -761,9 +759,9 @@ public class WriteMysql {
 		if (c == null) {
 			int id = idExperienciaFromSQL();
 			SqlCommando = "Insert into alerta" + " ("
-					+ "id_ex, hora_real, tipo_alerta, mensagem"
-					+ ") values (" + id + ", " + new Date(System.currentTimeMillis()) + ", " + tipo_alerta + ", " + ", "
-					+ mensagem + " )";
+					+ "id_ex, hora_real, tipo_alerta, mensagem, hora_chegada"
+					+ ") values (" + id + ", CURRENT_TIMESTAMP" + ", '" + tipo_alerta + "', '"
+					+ mensagem + "', CURRENT_TIMESTAMP );";
 		} else {
 			String hora = extractValue(c, "Hora") == null ? "NULL" : extractValue(c, "Hora");
 			if (!hora.equals("NULL") && hora.length() == 19) {
@@ -777,19 +775,17 @@ public class WriteMysql {
 			SqlCommando = "";
 			if (id == -1) {
 				SqlCommando = "Insert into alerta" + " ("
-						+ "id_ex, hora_real, sala, sensor, leitura, tipo_alerta, mensagem"
+						+ "id_ex, hora_real, sala, sensor, leitura, tipo_alerta, mensagem, hora_chegada"
 						+ ") values (" +
-						"NULL" + ", '" + hora + "', " + salaDestino + ", " + sensor + ", " + leitura + ", "
-						+ tipo_alerta
-						+ ", "
-						+ mensagem + " );";
+						"NULL" + " , '" + hora + "' , " + salaDestino + " , " + sensor + " , " + leitura + " , '"
+						+ tipo_alerta + "', '" + mensagem + "', CURRENT_TIMESTAMP );";
 			} else {
 				SqlCommando = "Insert into alerta" + " ("
-						+ "id_ex, hora_real, sala, sensor, leitura, tipo_alerta, mensagem"
+						+ "id_ex, hora_real, sala, sensor, leitura, tipo_alerta, mensagem , hora_chegada"
 						+ ") values (" +
-						id + ", '" + hora + "', " + salaDestino + ", " + sensor + ", " + leitura + ", " + tipo_alerta
-						+ ", "
-						+ mensagem + " );";
+						id + " , ' " + hora + "' , " + salaDestino + " , " + sensor + " , " + leitura + " , '"
+						+ tipo_alerta
+						+ "' , '" + mensagem + "' , CURRENT_TIMESTAMP );";
 			}
 		}
 
@@ -799,7 +795,6 @@ public class WriteMysql {
 				documentLabel.append(SqlCommando.toString() + "\n");
 				Statement s = connTo.createStatement();
 				int result = s.executeUpdate(SqlCommando);
-				System.out.println("Inseri " + result + "\n");
 
 				s.close();
 				commandExecutedSuccessfully = true; // Define como verdadeiro se a execução foi bem-sucedida
@@ -824,13 +819,28 @@ public class WriteMysql {
 		for (int room : roomFinalMap.keySet()) {
 			String SqlComando = "Insert into medicoes" + " (" + "id_ex, num_ratos, sala, hora" + ") values (" + id
 					+ ", " + roomFinalMap.get(room) + ", " + room + ", CURRENT_TIMESTAMP);";
-			try {
-				Statement s = connTo.createStatement();
-				ResultSet rs = s.executeQuery(SqlComando);
-			} catch (Exception e) {
-				System.out.println("Resultado para a sala " + room + " não inserido");
-			}
+			boolean commandExecutedSuccessfully = false;
+			while (!commandExecutedSuccessfully) {
+				try {
+					Statement s = connTo.createStatement();
+					ResultSet rs = s.executeQuery(SqlComando);
+					s.close();
+					commandExecutedSuccessfully = true; // Define como verdadeiro se a execução foi bem-sucedida
+				} catch (Exception e) {
+					System.out.println("Resultado para a sala " + room + " não inserido");
+					if (e instanceof java.sql.SQLNonTransientConnectionException) {
+						new WriteMysql().connectDatabase_to();
+					}
 
+					System.out.println("Error Inserting in the database alerta. " + e);
+					// Em caso de falha, aguarde antes de tentar novamente
+					try {
+						Thread.sleep(1000); // Aguarda por 1 segundo antes de tentar novamente
+					} catch (InterruptedException ex) {
+						ex.printStackTrace();
+					}
+				}
+			}
 		}
 
 	}
@@ -949,9 +959,10 @@ public class WriteMysql {
 		try {
 			Properties p = new Properties();
 			// LINHA PARA OS RESTANTES
-			// p.load(new FileInputStream("JavaMysql/WriteMysql.ini"));
+			p.load(new FileInputStream("JavaMysql/WriteMysql.ini"));
 			// Linha para funcionar no VASCO
-			p.load(new FileInputStream("E:\\3ºAno\\2ºSemestre\\PISID\\PISID\\JavaMysql\\WriteMysql.ini"));
+			// p.load(new
+			// FileInputStream("E:\\3ºAno\\2ºSemestre\\PISID\\PISID\\JavaMysql\\WriteMysql.ini"));
 			// sql_table_to = p.getProperty("sql_table_to");
 			sql_database_connection_to = p.getProperty("sql_database_connection_to");
 			sql_database_password_to = p.getProperty("sql_database_password_to");
@@ -1058,13 +1069,11 @@ public class WriteMysql {
 
 	// MAIN
 	public static void main(String[] args) {
-		WriteMysql programa = new WriteMysql();
 		createWindow();
-		programa.readFile();
-		programa.connectToMongo();
-		programa.connectDatabase_to();
-		programa.connectMazeMySQL();
-		programa.ReadData();
-
+		new WriteMysql().readFile();
+		new WriteMysql().connectToMongo();
+		new WriteMysql().connectDatabase_to();
+		// new WriteMysql().connectMazeMySQL();
+		// new WriteMysql().ReadData();
 	}
 }
