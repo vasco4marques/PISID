@@ -579,9 +579,39 @@ public class WriteMysql {
 
 	// Funções auxiliares relacionadas com o MySQL
 
+	// /queries vara ir buscar todas as variaveis necessárias dos parametros
+	// adicionais
+	// Ir buscar id da experiencia ativa - Sim
+	// Max ratos sala - Sim
+	// Num ratos minimo por sala para alerta - Sim
+	// Max tempo parados - Sim
+	// Numero de ratos que iniciam a experiencia - Sim
+	// Temperatura minima -
+	// Temperatura minima para alerta do maximo-
+	// Temperatura maxima -
+	// Temperatura maxima para começar alertas do minimo -
+	// Intervalo de tempo entre alertas Temperatura -
+	// Intervalo de tempo entre alertas Ratos -
+
+	public int numRatosMinimoParaAlerta() {
+		int num = -1;
+		String SqlCommando = "SELECT NUMBER_RATOS_FOR_ALERT FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
+		try {
+			Statement s = connTo.createStatement();
+			ResultSet rs = s.executeQuery(SqlCommando);
+			if (rs.next()) {
+				num = rs.getInt(1);
+			}
+			s.close();
+		} catch (Exception e) {
+			num = -1;
+		}
+		return num;
+	}
+
 	public int tempoParadosPorSala() {
 		int tempo = -1;
-		String SqlCommando = "SELECT LimiteRatosNumaSala AS maximo_de_ratos_por_sala FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
+		String SqlCommando = "SELECT TempoMaximoPermanenciaSala AS maximo_de_ratos_por_sala FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
 		try {
 			Statement s = connTo.createStatement();
 			ResultSet rs = s.executeQuery(SqlCommando);
@@ -595,7 +625,7 @@ public class WriteMysql {
 		return tempo;
 	}
 
-	public int numMaxRatos() {
+	public int numMaxRatosSala() {
 		int numMaxRatos = -1;
 		String SqlCommando = "SELECT LimiteRatosNumaSala AS maximo_de_ratos_por_sala FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
 		try {
@@ -999,7 +1029,6 @@ public class WriteMysql {
 			documentLabel.append("SQl Connection:" + sql_database_connection_to + "\n");
 			documentLabel
 					.append("Connection To MariaDB Destination " + sql_database_connection_to + " Suceeded" + "\n");
-
 		} catch (Exception e) {
 			System.out.println("Mysql Server Destination down, unable to make the connection. " + e);
 		}
@@ -1034,10 +1063,10 @@ public class WriteMysql {
 		WriteMysql programa = new WriteMysql();
 		createWindow();
 		programa.readFile();
-		programa.connectToMongo();
+		// programa.connectToMongo();
 		programa.connectDatabase_to();
-		programa.connectMazeMySQL();
-		programa.ReadData();
+		// programa.connectMazeMySQL();
+		// programa.ReadData();
 
 	}
 }
