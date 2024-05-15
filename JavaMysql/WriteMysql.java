@@ -586,12 +586,110 @@ public class WriteMysql {
 	// Num ratos minimo por sala para alerta - Sim
 	// Max tempo parados - Sim
 	// Numero de ratos que iniciam a experiencia - Sim
-	// Temperatura minima -
-	// Temperatura minima para alerta do maximo-
-	// Temperatura maxima -
-	// Temperatura maxima para começar alertas do minimo -
-	// Intervalo de tempo entre alertas Temperatura -
-	// Intervalo de tempo entre alertas Ratos -
+	// Temperatura minima - Sim
+	// Temperatura maxima para começar alertas do minimo -Sim
+	// Temperatura minima para alerta do maximo- Sim
+	// Temperatura maxima -Sim
+	// Intervalo de tempo entre alertas Temperatura - Sim
+	// Intervalo de tempo entre alertas Ratos - Sim
+
+	public int tempoEntreAlertasTemperatura() {
+		int num = -1;
+		String SqlCommando = "SELECT Tempo_Alerta_TEMPERATURA FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
+		try {
+			Statement s = connTo.createStatement();
+			ResultSet rs = s.executeQuery(SqlCommando);
+			if (rs.next()) {
+				num = rs.getInt(1);
+			}
+			s.close();
+		} catch (Exception e) {
+			num = -1;
+		}
+		return num;
+
+	}
+
+	public int tempoEntreAlertasRatos() {
+		int num = -1;
+		String SqlCommando = "SELECT Tempo_Alerta_RATOS FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
+		try {
+			Statement s = connTo.createStatement();
+			ResultSet rs = s.executeQuery(SqlCommando);
+			if (rs.next()) {
+				num = rs.getInt(1);
+			}
+			s.close();
+		} catch (Exception e) {
+			num = -1;
+		}
+		return num;
+	}
+
+	public double maxTempForAlert() {
+		double num = -1.00;
+		String SqlCommando = "SELECT MAX_TEMPERATURA_FOR_ALERT FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
+		try {
+			Statement s = connTo.createStatement();
+			ResultSet rs = s.executeQuery(SqlCommando);
+			if (rs.next()) {
+				num = rs.getDouble(1);
+			}
+			s.close();
+		} catch (Exception e) {
+			num = -1.00;
+		}
+		return num;
+	}
+
+	public double maxTemperature() {
+		double num = -1.00;
+		String SqlCommando = "SELECT maxTemperatura FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
+		try {
+			Statement s = connTo.createStatement();
+			ResultSet rs = s.executeQuery(SqlCommando);
+			if (rs.next()) {
+				num = rs.getDouble(1);
+			}
+			s.close();
+		} catch (Exception e) {
+			num = -1.00;
+		}
+		return num;
+
+	}
+
+	public double minTempForAlert() {
+		double num = -1.00;
+		String SqlCommando = "SELECT MIN_TEMPERATURA_FOR_ALERT FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
+		try {
+			Statement s = connTo.createStatement();
+			ResultSet rs = s.executeQuery(SqlCommando);
+			if (rs.next()) {
+				num = rs.getDouble(1);
+			}
+			s.close();
+		} catch (Exception e) {
+			num = -1.00;
+		}
+		return num;
+	}
+
+	public double minTemperature() {
+		double num = -1.00;
+		String SqlCommando = "SELECT minTemperatura FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
+		try {
+			Statement s = connTo.createStatement();
+			ResultSet rs = s.executeQuery(SqlCommando);
+			if (rs.next()) {
+				num = rs.getDouble(1);
+			}
+			s.close();
+		} catch (Exception e) {
+			num = -1.00;
+		}
+		return num;
+	}
 
 	public int numRatosMinimoParaAlerta() {
 		int num = -1;
@@ -857,6 +955,8 @@ public class WriteMysql {
 				}
 			}
 		}
+
+	}
 
 	// Funções auxiliares relacionadas com o mongo
 	private void writeInMongoBackupValue(String colIdUpdate, int newValue) {
