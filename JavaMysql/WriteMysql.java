@@ -6,6 +6,8 @@ import java.util.regex.*;
 import java.util.List;
 import java.text.SimpleDateFormat;
 import java.sql.*;
+import java.sql.Date;
+
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
@@ -67,6 +69,8 @@ public class WriteMysql {
 	private final static int OUTLIERS = 16;
 	private static int MAXRATOS;
 	private static int MAXTIMEPARADOS;
+	private float startRatosParados;
+	private boolean haviaDados = true;
 	private final static int TIMELOOP = 3000;
 	private HashMap<Integer, LinkedList<Integer>> caminhos = new HashMap<Integer, LinkedList<Integer>>();
 
@@ -86,17 +90,20 @@ public class WriteMysql {
 			MAXTIMEPARADOS = tempoParadosPorSala();
 
 			float start = System.nanoTime();
+			if (haviaDados) {
+				startRatosParados = System.nanoTime();
+			}
 
 			ArrayList<String> dateListRatos = new ArrayList<>();
 
 			List<DBObject> portas = readFromMongo(colDoors, mongo_doors);
 			System.out.println("ports " + portas.size());
 
-			// List<DBCollection> tempCollections = getAllTempCollections();
-			// List<List<DBObject>> tempData = new ArrayList<List<DBObject>>();
-			// for (DBCollection col : tempCollections) {
-			// tempData.add(readFromMongo(col, col.getName()));
-			// }
+			List<DBCollection> tempCollections = getAllTempCollections();
+			List<List<DBObject>> tempData = new ArrayList<List<DBObject>>();
+			for (DBCollection col : tempCollections) {
+				tempData.add(readFromMongo(col, col.getName()));
+			}
 			// System.out.println("Dados de temperaturas retirados do mongo");
 
 			for (DBObject sensor : portas) {
@@ -125,7 +132,7 @@ public class WriteMysql {
 				if (comecar) {
 					dateListRatos.add(data);
 				}
-				System.out.println("tamanho dos dados entre a data " + dateListRatos.size());
+				// System.out.println("tamanho dos dados entre a data " + dateListRatos.size());
 
 				if (comecar) {
 					// System.out.println("Como começar está a true vou adicionar data a lista
@@ -139,37 +146,46 @@ public class WriteMysql {
 				}
 			}
 
-			// List<ArrayList<String>> tempsStrings = new ArrayList<>();
-			// for (List<DBObject> col : tempData) {
-			// ArrayList<String> tempsToStringTemporaria = new ArrayList<>();
-			// for (DBObject temp : col) {
-			// tempsToStringTemporaria.add(temp.toString());
-			// }
-			// tempsStrings.add(tempsToStringTemporaria);
-			// }
+			if (dateListRatos.isEmpty()) {
+				haviaDados = false;
+				if (System.nanoTime() - startRatosParados > MAXTIMEPARADOS * 1000 * 1000 * 1000) {
+					writeAlertaToMySQL(null, "RatosParados", "Os ratos estao parados");
+					writeMySQLFinalRoomResult(salasMap);
+				}
+			} else {
+				haviaDados = true;
+			}
+			List<ArrayList<String>> tempsStrings = new ArrayList<>();
+			for (List<DBObject> col : tempData) {
+				ArrayList<String> tempsToStringTemporaria = new ArrayList<>();
+				for (DBObject temp : col) {
+					tempsToStringTemporaria.add(temp.toString());
+				}
+				tempsStrings.add(tempsToStringTemporaria);
+			}
 
-			// List<ArrayList<String>> tempsValidadas = new ArrayList<>();
-			// for (ArrayList<String> toBeValidated : tempsStrings) {
-			// tempsValidadas.add(validarFormatosTemperatura(toBeValidated));
-			// }
+			List<ArrayList<String>> tempsValidadas = new ArrayList<>();
+			for (ArrayList<String> toBeValidated : tempsStrings) {
+				tempsValidadas.add(validarFormatosTemperatura(toBeValidated));
+			}
 
-			// // Criar iteradores para cada uma das listas dentro do tempValidadas
-			// // while loop enquanto qualquer iterador tiver next
-			// // if iterador x tiver next retirar da sua lista e meter na final
+			// Criar iteradores para cada uma das listas dentro do tempValidadas
+			// while loop enquanto qualquer iterador tiver next
+			// if iterador x tiver next retirar da sua lista e meter na final
 
-			// ArrayList<String> tempsMisturadas = new ArrayList<>();
-			// while (existemElemnetos(tempsValidadas)) {
-			// for (ArrayList<String> listas : tempsValidadas)
-			// if (!listas.isEmpty())
-			// tempsMisturadas.add(listas.remove(0).toString());
-			// }
-			// // System.out.println("TempsMisturadas" + tempsMisturadas.size());
+			ArrayList<String> tempsMisturadas = new ArrayList<>();
+			while (existemElementos(tempsValidadas)) {
+				for (ArrayList<String> listas : tempsValidadas)
+					if (!listas.isEmpty())
+						tempsMisturadas.add(listas.remove(0).toString());
+			}
+			// System.out.println("TempsMisturadas" + tempsMisturadas.size());
 
-			// // writeArrayListToFile(dateListRatos, "DadosMongoSalas.txt");
-			// // System.out.println("escrevi os ratos");t
+			// writeArrayListToFile(dateListRatos, "DadosMongoSalas.txt");
+			// System.out.println("escrevi os ratos");t
 
-			// // writeArrayListToFile(dateListTemperatura, "DadosMongoTemperatura.txt");
-			// detetarOutliers(tempsMisturadas);
+			// writeArrayListToFile(dateListTemperatura, "DadosMongoTemperatura.txt");
+			detetarOutliers(tempsMisturadas);
 
 			validarFormatosSalas(dateListRatos);
 
@@ -304,6 +320,7 @@ public class WriteMysql {
 					salasMap.put(salaDestino, salasMap.get(salaDestino) + 1);
 					writeToMySQL(data, "medicoes_passagens");
 					writeAlertaToMySQL(data, "MaxRatos", "Numero de ratos excedidos na sala " + salaDestino);
+					writeMySQLFinalRoomResult(salasMap);
 					break;
 				} else {
 					salasMap.put(salaOrigem, salasMap.get(salaOrigem) - 1);
@@ -581,7 +598,7 @@ public class WriteMysql {
 
 	public int tempoParadosPorSala() {
 		int tempo = -1;
-		String SqlCommando = "SELECT LimiteRatosNumaSala AS maximo_de_ratos_por_sala FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
+		String SqlCommando = "SELECT TempoMaximoPermanenciaSala AS maximo_de_ratos_por_sala FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
 		try {
 			Statement s = connTo.createStatement();
 			ResultSet rs = s.executeQuery(SqlCommando);
@@ -740,30 +757,40 @@ public class WriteMysql {
 	}
 
 	public void writeAlertaToMySQL(String c, String tipo_alerta, String mensagem) {
-
-		String hora = extractValue(c, "Hora") == null ? "NULL" : extractValue(c, "Hora");
-		if (!hora.equals("NULL") && hora.length() == 19) {
-			hora += ".075649";
-		}
-		String salaOrigem = extractValue(c, "SalaOrigem") == null ? "NULL" : extractValue(c, "SalaOrigem");
-		String salaDestino = extractValue(c, "SalaDestino") == null ? "NULL" : extractValue(c, "SalaDestino");
-		int id = idExperienciaFromSQL();
-		String leitura = extractValue(c, "Leitura") == null ? "NULL" : extractValue(c, "Leitura");
-		String sensor = extractValue(c, "Sensor") == null ? "NULL" : extractValue(c, "Sensor");
-		String SqlCommando = "";
-		if (id == -1) {
+		String SqlCommando = null;
+		if (c == null) {
+			int id = idExperienciaFromSQL();
 			SqlCommando = "Insert into alerta" + " ("
-					+ "id_ex, hora_real, sala, sensor, leitura, tipo_alerta, mensagem"
-					+ ") values (" +
-					"NULL" + ", '" + hora + "', " + salaDestino + ", " + sensor + ", " + leitura + ", " + tipo_alerta
-					+ ", "
-					+ mensagem + " );";
+					+ "id_ex, hora_real, tipo_alerta, mensagem"
+					+ ") values (" + id + ", " + new Date(System.currentTimeMillis()) + ", " + tipo_alerta + ", " + ", "
+					+ mensagem + " )";
 		} else {
-			SqlCommando = "Insert into alerta" + " ("
-					+ "id_ex, hora_real, sala, sensor, leitura, tipo_alerta, mensagem"
-					+ ") values (" +
-					id + ", '" + hora + "', " + salaDestino + ", " + sensor + ", " + leitura + ", " + tipo_alerta + ", "
-					+ mensagem + " );";
+			String hora = extractValue(c, "Hora") == null ? "NULL" : extractValue(c, "Hora");
+			if (!hora.equals("NULL") && hora.length() == 19) {
+				hora += ".075649";
+			}
+			String salaOrigem = extractValue(c, "SalaOrigem") == null ? "NULL" : extractValue(c, "SalaOrigem");
+			String salaDestino = extractValue(c, "SalaDestino") == null ? "NULL" : extractValue(c, "SalaDestino");
+			int id = idExperienciaFromSQL();
+			String leitura = extractValue(c, "Leitura") == null ? "NULL" : extractValue(c, "Leitura");
+			String sensor = extractValue(c, "Sensor") == null ? "NULL" : extractValue(c, "Sensor");
+			SqlCommando = "";
+			if (id == -1) {
+				SqlCommando = "Insert into alerta" + " ("
+						+ "id_ex, hora_real, sala, sensor, leitura, tipo_alerta, mensagem"
+						+ ") values (" +
+						"NULL" + ", '" + hora + "', " + salaDestino + ", " + sensor + ", " + leitura + ", "
+						+ tipo_alerta
+						+ ", "
+						+ mensagem + " );";
+			} else {
+				SqlCommando = "Insert into alerta" + " ("
+						+ "id_ex, hora_real, sala, sensor, leitura, tipo_alerta, mensagem"
+						+ ") values (" +
+						id + ", '" + hora + "', " + salaDestino + ", " + sensor + ", " + leitura + ", " + tipo_alerta
+						+ ", "
+						+ mensagem + " );";
+			}
 		}
 
 		boolean commandExecutedSuccessfully = false;
