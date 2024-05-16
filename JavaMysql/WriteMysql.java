@@ -6,6 +6,8 @@ import java.util.regex.*;
 import java.util.List;
 import java.text.SimpleDateFormat;
 import java.sql.*;
+import java.sql.Date;
+
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
@@ -67,13 +69,16 @@ public class WriteMysql {
 	private final static int OUTLIERS = 16;
 	private static int MAXRATOS;
 	private static int MAXTIMEPARADOS;
-	private static int STARTRATOS;
-	private static int RATOSALERTSTART;
-
+	private float startRatosParados;
+	private boolean haviaDados = true;
+	private boolean alertaInseridoRatos = true;
 	private final static int TIMELOOP = 3000;
-	// private HashMap<Integer, LinkedList<Integer>> caminhos = new HashMap<Integer,
-	// LinkedList<Integer>>();
-	private static boolean experienceStart = false;
+	private static int RATOSALERTSTART;
+	private static int TEMPOALERTASRATOS;
+	private static float TEMPOALERTASRATOSAUX;
+	private static float last_temperature_alert = 0;
+	private static long last_timestamp_alert = 0;
+	private HashMap<Integer, LinkedList<Integer>> caminhos = new HashMap<Integer, LinkedList<Integer>>();
 
 	// Função principal do nosso código
 	public void ReadData() {
@@ -82,27 +87,33 @@ public class WriteMysql {
 		// Começa e acaba quando
 		// Hora ser 2000-01-01 00:00:00.000
 		// e se sala origem e destino for 0
-		// Este boolean só serve para começar e parar de ir buscar dados ao mongo ( ter
-		// os dados de uma experiência específica apenas)
 		boolean comecar = false;
+
 		while (true) {
 
 			MAXRATOS = numMaxRatosSala();
 			MAXTIMEPARADOS = tempoParadosPorSala();
-			STARTRATOS = inicialNumRatos();
 			RATOSALERTSTART = numRatosMinimoParaAlerta();
-
+			TEMPOALERTASRATOS = tempoEntreAlertasRatos();
 			float start = System.nanoTime();
+			if (alertaInseridoRatos) {
+				TEMPOALERTASRATOSAUX = System.nanoTime();
+			}
+
+			if (haviaDados) {
+				startRatosParados = System.nanoTime();
+			}
 
 			ArrayList<String> dateListRatos = new ArrayList<>();
 
 			List<DBObject> portas = readFromMongo(colDoors, mongo_doors);
+			System.out.println("ports " + portas.size());
 
-			// List<DBCollection> tempCollections = getAllTempCollections();
-			// List<List<DBObject>> tempData = new ArrayList<List<DBObject>>();
-			// for (DBCollection col : tempCollections) {
-			// tempData.add(readFromMongo(col, col.getName()));
-			// }
+			List<DBCollection> tempCollections = getAllTempCollections();
+			List<List<DBObject>> tempData = new ArrayList<List<DBObject>>();
+			for (DBCollection col : tempCollections) {
+				tempData.add(readFromMongo(col, col.getName()));
+			}
 			// System.out.println("Dados de temperaturas retirados do mongo");
 
 			for (DBObject sensor : portas) {
@@ -110,20 +121,16 @@ public class WriteMysql {
 				// Se o registo que existe tiver a data o começar inverte (começa a false logo
 				// passa para true)
 				if (data.contains("2000-01-01 00:00:00")) {
+					System.out.println("Found this data");
 					comecar = !comecar;
-					if (comecar)
-						System.out.println("Experiencia começou nos dados");
-					else
-						System.out.println("Experiencia acabou nos dados");
-
 					// Se o começar for true vamos começar com os mapas dos ratos
 					// Caso não seja true quer dizer que é o segunda vez que ele encontra este
 					// registo logo a experiência acabou e para este ciclo
 					if (comecar) {
 						salasMap = new HashMap<>();
-						// caminhos.clear();
-						// construirCaminhos();
-						salasMap.put(1, STARTRATOS);
+						caminhos.clear();
+						construirCaminhos();
+						salasMap.put(1, 2);
 					} else
 						break;
 
@@ -148,38 +155,47 @@ public class WriteMysql {
 						salasMap.put(salaDestino, 0);
 				}
 			}
+			if (dateListRatos.isEmpty()) {
+				haviaDados = false;
+				if (System.nanoTime() - startRatosParados > MAXTIMEPARADOS * 1000 * 1000 * 1000) {
+					writeAlertaToMySQL(null, "RatosParados", "Os ratos estao parados");
+					writeMySQLFinalRoomResult(salasMap);
+				}
+			} else {
+				haviaDados = true;
+			}
 
-			// List<ArrayList<String>> tempsStrings = new ArrayList<>();
-			// for (List<DBObject> col : tempData) {
-			// ArrayList<String> tempsToStringTemporaria = new ArrayList<>();
-			// for (DBObject temp : col) {
-			// tempsToStringTemporaria.add(temp.toString());
-			// }
-			// tempsStrings.add(tempsToStringTemporaria);
-			// }
+			List<ArrayList<String>> tempsStrings = new ArrayList<>();
+			for (List<DBObject> col : tempData) {
+				ArrayList<String> tempsToStringTemporaria = new ArrayList<>();
+				for (DBObject temp : col) {
+					tempsToStringTemporaria.add(temp.toString());
+				}
+				tempsStrings.add(tempsToStringTemporaria);
+			}
 
-			// List<ArrayList<String>> tempsValidadas = new ArrayList<>();
-			// for (ArrayList<String> toBeValidated : tempsStrings) {
-			// tempsValidadas.add(validarFormatosTemperatura(toBeValidated));
-			// }
+			List<ArrayList<String>> tempsValidadas = new ArrayList<>();
+			for (ArrayList<String> toBeValidated : tempsStrings) {
+				tempsValidadas.add(validarFormatosTemperatura(toBeValidated));
+			}
 
 			// // Criar iteradores para cada uma das listas dentro do tempValidadas
 			// // while loop enquanto qualquer iterador tiver next
 			// // if iterador x tiver next retirar da sua lista e meter na final
 
-			// ArrayList<String> tempsMisturadas = new ArrayList<>();
-			// while (existemElemnetos(tempsValidadas)) {
-			// for (ArrayList<String> listas : tempsValidadas)
-			// if (!listas.isEmpty())
-			// tempsMisturadas.add(listas.remove(0).toString());
-			// }
+			ArrayList<String> tempsMisturadas = new ArrayList<>();
+			while (existemElementos(tempsValidadas))
+				for (ArrayList<String> listas : tempsValidadas)
+					if (!listas.isEmpty())
+						tempsMisturadas.add(listas.remove(0).toString());
+
 			// // System.out.println("TempsMisturadas" + tempsMisturadas.size());
 
 			// // writeArrayListToFile(dateListRatos, "DadosMongoSalas.txt");
 			// // System.out.println("escrevi os ratos");t
 
 			// // writeArrayListToFile(dateListTemperatura, "DadosMongoTemperatura.txt");
-			// detetarOutliers(tempsMisturadas);
+			detetarOutliers(tempsMisturadas);
 
 			validarFormatosSalas(dateListRatos);
 
@@ -202,46 +218,61 @@ public class WriteMysql {
 
 	// Funções auxiliares à função principal
 
-	// private void construirCaminhos() {
-	// String command = "Select * FROM corredor";
-	// try {
-	// PreparedStatement statement = connToStor.prepareStatement(command);
-	// ResultSet result = statement.executeQuery();
+	private void construirCaminhos() {
+		String command = "Select * FROM corredor";
+		boolean commandExecutedSuccessfully = false;
+		while (!commandExecutedSuccessfully) {
+			try {
+				PreparedStatement statement = connToStor.prepareStatement(command);
+				ResultSet result = statement.executeQuery();
 
-	// while (result.next()) {
-	// String roomA = result.getString("salaa");
-	// String roomB = result.getString("salab");
-	// if (!caminhos.containsKey(Integer.parseInt(roomA))) {
-	// LinkedList<Integer> list = new LinkedList<Integer>();
-	// list.add(Integer.parseInt(roomB));
-	// caminhos.put(Integer.parseInt(roomA), list);
-	// } else {
-	// LinkedList<Integer> list = caminhos.get(Integer.parseInt(roomA));
-	// list.add(Integer.parseInt(roomB));
-	// caminhos.put(Integer.parseInt(roomA), list);
-	// }
-	// }
-	// result.close();
-	// statement.close();
-	// } catch (Exception e) {
-	// System.out.println("Error Selecting from the database . " + e);
-	// System.out.println(command);
-	// }
-	// }
+				while (result.next()) {
+					String roomA = result.getString("salaa");
+					String roomB = result.getString("salab");
+					if (!caminhos.containsKey(Integer.parseInt(roomA))) {
+						LinkedList<Integer> list = new LinkedList<Integer>();
+						list.add(Integer.parseInt(roomB));
+						caminhos.put(Integer.parseInt(roomA), list);
+					} else {
+						LinkedList<Integer> list = caminhos.get(Integer.parseInt(roomA));
+						list.add(Integer.parseInt(roomB));
+						caminhos.put(Integer.parseInt(roomA), list);
+					}
+				}
+				result.close();
+				statement.close();
+				commandExecutedSuccessfully = true;
+			} catch (Exception e) {
+				System.out.println("Error Selecting from the database . " + e);
+				System.out.println(command);
+				if (e instanceof java.sql.SQLNonTransientConnectionException) {
+					new WriteMysql().connectDatabase_to();
+				}
 
-	// public boolean existeCaminho(int roomA, int roomB) {
-	// try {
-	// if (caminhos.containsKey(roomA)) {
-	// LinkedList<Integer> list = caminhos.get(roomA);
-	// if (list.contains(roomB)) {
-	// return true;
-	// }
-	// }
-	// return false;
-	// } catch (Exception e) {
-	// return false;
-	// }
-	// }
+				System.out.println("Error Inserting in the database normal value. " + e);
+				// Em caso de falha, aguarde antes de tentar novamente
+				try {
+					Thread.sleep(1000); // Aguarda por 1 segundo antes de tentar novamente
+				} catch (InterruptedException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public boolean existeCaminho(int roomA, int roomB) {
+		try {
+			if (caminhos.containsKey(roomA)) {
+				LinkedList<Integer> list = caminhos.get(roomA);
+				if (list.contains(roomB)) {
+					return true;
+				}
+			}
+			return false;
+		} catch (Exception e) {
+			return false;
+		}
+	}
 
 	private boolean existemElementos(List<ArrayList<String>> tempsValidadas) {
 		boolean vazio = false;
@@ -289,10 +320,9 @@ public class WriteMysql {
 	}
 
 	private void moverRatos(ArrayList<String> dadosCorretos, ArrayList<String> dadosAnomalos) {
-		System.out.println("Quantos dados correto chegaram" + dadosCorretos.size());
-		System.out.println("Quantos dados errados chegaram" + dadosAnomalos.size());
+		// System.out.println("Quantos dados correto chegaram" + dadosCorretos.size());
+		// System.out.println("Quantos dados errados chegaram" + dadosAnomalos.size());
 		for (String data : dadosCorretos) {
-			System.out.println("Dado para mover ratos");
 
 			int salaOrigem = extractRoom(data, "SalaOrigem");
 			int salaDestino = extractRoom(data, "SalaDestino");
@@ -300,39 +330,53 @@ public class WriteMysql {
 			int quantidadeDestino = salasMap.get(salaDestino);
 			int quantidadeOrigem = salasMap.get(salaOrigem);
 
-			// if (!existeCaminho(salaOrigem, salaDestino))
-			// dadosAnomalos.add(data);
-			// else
-			if (quantidadeOrigem - 1 < 0) {
-				// System.out.println("A sala " + salaOrigem + " tem valores negativos. Algo de
-				// errado ocorreu.");
+			if (!existeCaminho(salaOrigem, salaDestino)) {
 				dadosAnomalos.add(data);
 			} else {
-				if (quantidadeDestino + 1 == MAXRATOS) {
-					// System.out.println("Lotado e vou inserir alerta");
-					// System.out.println("A sala " + salaDestino + " já está lotada. Não é possível
-					// adicionar mais ratos.");
-					salasMap.put(salaOrigem, salasMap.get(salaOrigem) - 1);
-					salasMap.put(salaDestino, salasMap.get(salaDestino) + 1);
-					writeToMySQL(data, "medicoes_passagens");
-					writeAlertaToMySQL(data, "MaxRatos", "Numero de ratos numa sala chegou ao máximo " + salaDestino);
-					break;
-				} else if (quantidadeDestino + 1 >= RATOSALERTSTART && quantidadeDestino + 1 < MAXRATOS) {
-					salasMap.put(salaOrigem, salasMap.get(salaOrigem) - 1);
-					salasMap.put(salaDestino, salasMap.get(salaDestino) + 1);
-					writeToMySQL(data, "medicoes_passagens");
-					writeAlertaToMySQL(data, "QuaseMaxRatos",
-							"Numero de ratos numa esta quase no maximo " + salaDestino);
+				if (quantidadeOrigem - 1 < 0) {
+					// System.out.println("A sala " + salaOrigem + " tem valores negativos. Algo de
+					// errado ocorreu.");
+					dadosAnomalos.add(data);
 				} else {
-					salasMap.put(salaOrigem, salasMap.get(salaOrigem) - 1);
-					salasMap.put(salaDestino, salasMap.get(salaDestino) + 1);
-					writeToMySQL(data, "medicoes_passagens");
+					if (quantidadeDestino + 1 == MAXRATOS) {
+						// System.out.println("Lotado e vou inserir alerta");
+						// System.out.println("A sala " + salaDestino + " já está lotada. Não é possível
+						// adicionar mais ratos.");
+						salasMap.put(salaOrigem, salasMap.get(salaOrigem) - 1);
+						salasMap.put(salaDestino, salasMap.get(salaDestino) + 1);
+						writeToMySQL(data, "medicoes_passagens");
+						writeAlertaToMySQL(data, "MaxRatos",
+								"Numero de ratos numa sala chegou ao máximo " + salaDestino);
+						inserirDataFimExperiencia(idExperienciaFromSQL());
+						break;
+					} else if (quantidadeDestino + 1 >= RATOSALERTSTART && quantidadeDestino + 1 < MAXRATOS) {
+						salasMap.put(salaOrigem, salasMap.get(salaOrigem) - 1);
+						salasMap.put(salaDestino, salasMap.get(salaDestino) + 1);
+						writeToMySQL(data, "medicoes_passagens");
+						if (ultimoAlertaLimiteRatos(salaDestino)) {
+							if (System.nanoTime() - TEMPOALERTASRATOSAUX > TEMPOALERTASRATOS * 1000000000) {
+								writeAlertaToMySQL(data, "QuaseMaxRatos",
+										"Numero de ratos numa esta quase no maximo " + salaDestino);
+							}
+						} else {
+							if (System.nanoTime() - TEMPOALERTASRATOSAUX > TEMPOALERTASRATOS * 1000000000) {
+								alertaInseridoRatos = true;
+								writeAlertaToMySQL(data, "QuaseMaxRatos",
+										"Numero de ratos numa esta quase no maximo " + salaDestino);
+							}
+						}
+					} else {
+						salasMap.put(salaOrigem, salasMap.get(salaOrigem) - 1);
+						salasMap.put(salaDestino, salasMap.get(salaDestino) + 1);
+						writeToMySQL(data, "medicoes_passagens");
+					}
 				}
 			}
 		}
 	}
 
-	// Extração de dados dos json do mongo
+
+	
 
 	public int extractRoom(String data, String key) {
 		// Remove os espaços em branco e as vírgulas extras e, em seguida, divide a
@@ -414,9 +458,50 @@ public class WriteMysql {
 				} else {
 					// Se não for um outlier, insere no conjunto de dados
 					System.out.println("Não e outllier: " + dadosCorretos.get(i));
+
+
 					dadoSet.add(dadosCorretos.get(i));
 					writeToMySQL(dadosCorretos.get(i), "medicoes_temperatura");
-					// System.out.println("Temperatura NÃO É um outlier: " + temperatura);
+
+					// CHECK ALERTAS
+
+					// check if temperatura is within range returned in funcitons minTempForAlert
+					// and maxTempForAlert
+					// check if experience ends if the temperature is bigger than maxTemperature or
+					// less than minTemperature
+
+					if (temperatura <= minTemperature()) {
+						writeAlertaToMySQL(dadosCorretos.get(i), "TemperaturaBaixaExtrema",
+								"Temperatura baixa extrema na sala " + extractRoom(dadosCorretos.get(i), "Sensor"));
+						// acabar experiencia 
+						inserirDataFimExperiencia(idExperienciaFromSQL());
+					} else if (temperatura >= maxTemperature()) {
+						writeAlertaToMySQL(dadosCorretos.get(i), "TemperaturaAltaExtrema",
+								"Temperatura alta extrema na sala " + extractRoom(dadosCorretos.get(i), "Sensor"));
+						// acabar experiencia 
+						inserirDataFimExperiencia(idExperienciaFromSQL());
+					} else if (temperatura <= minTempForAlert()) {
+						// check if temperatura has the same value as last temperatura alert
+						// if it has the same value, check if the time between the two alerts is bigger
+						// than the time between alerts
+						if ((temperatura == last_temperature_alert && last_timestamp_alert + (tempoEntreAlertasTemperatura() * 1000 * 60) < System
+									.currentTimeMillis()) || temperatura != last_temperature_alert) {
+								writeAlertaToMySQL(dadosCorretos.get(i), "TemperaturaBaixa",
+										"Temperatura baixa na sala " + extractRoom(dadosCorretos.get(i), "Sensor"));
+						}
+					} else if (temperatura >= maxTempForAlert()) {
+						// check if temperatura has the same value as last temperatura alert
+						// if it has the same value, check if the time between the two alerts is bigger
+						// than the time between alerts
+						if ((temperatura == last_temperature_alert && last_timestamp_alert + (tempoEntreAlertasTemperatura() * 1000 * 60) < System
+									.currentTimeMillis()) || temperatura != last_temperature_alert) {
+								writeAlertaToMySQL(dadosCorretos.get(i), "TemperaturaAlta",
+										"Temperatura alta na sala " + extractRoom(dadosCorretos.get(i), "Sensor"));
+						}
+					}
+
+					last_temperature_alert = temperatura;
+					last_timestamp_alert = System.currentTimeMillis();
 				}
 			} else
 				dadoSet.add(dadosCorretos.get(i));
@@ -611,18 +696,99 @@ public class WriteMysql {
 	// Intervalo de tempo entre alertas Temperatura - Sim
 	// Intervalo de tempo entre alertas Ratos - Sim
 
+	// Funcao para inserir na expeiencia que nao tiver a hora preenchida,
+	// preenche-la com a data de fim da experiencia: data atual
+
+	private boolean ultimoAlertaLimiteRatos(int salaDestino) {
+		String SqlCommando = "SELECT * FROM alerta WHERE tipo_alerta = 'QuaseMaxRatos' AND sala = " + salaDestino
+				+ " ORDER BY hora_real DESC LIMIT 1;";
+		boolean result = false;
+		boolean commandExecutedSuccessfully = false;
+		while (!commandExecutedSuccessfully) {
+			try {
+				Statement s = connTo.createStatement();
+				ResultSet rs = s.executeQuery(SqlCommando);
+				result = rs.next();
+				s.close();
+				commandExecutedSuccessfully = true;
+			} catch (Exception e) {
+				if (e instanceof java.sql.SQLNonTransientConnectionException) {
+					new WriteMysql().connectDatabase_to();
+					System.out.println("Error Inserting in the database normal value. " + e);
+					// Em caso de falha, aguarde antes de tentar novamente
+					try {
+						Thread.sleep(1000); // Aguarda por 1 segundo antes de tentar novamente
+					} catch (InterruptedException ex) {
+						ex.printStackTrace();
+					}
+				} else {
+					result = false;
+					commandExecutedSuccessfully = true;
+				}
+			}
+		}
+		return result;
+	}
+
+	
+	public void inserirDataFimExperiencia(int id) {
+		if (id == -1)
+			return;
+		String SqlCommando = "UPDATE experiencia SET data_hora_fim = NULL WHERE id_ex= " + id +";";
+		boolean commandExecutedSuccessfully = false;
+
+		while (!commandExecutedSuccessfully) {
+			try {
+				Statement s = connTo.createStatement();
+				s.executeQuery(SqlCommando);
+				s.close();
+				commandExecutedSuccessfully = true;
+			} catch (Exception e) {
+				if (e instanceof java.sql.SQLNonTransientConnectionException) {
+					new WriteMysql().connectDatabase_to();
+					try {
+						Thread.sleep(1000); // Aguarda por 1 segundo antes de tentar novamente
+					} catch (InterruptedException ex) {
+						ex.printStackTrace();
+					}
+				} else {
+					commandExecutedSuccessfully = true;
+				}
+
+				System.out.println("Error updating the database. " + e);
+			}
+		}
+	}
+
 	public int tempoEntreAlertasTemperatura() {
 		int num = -1;
-		String SqlCommando = "SELECT Tempo_Alerta_TEMPERATURA FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
-		try {
-			Statement s = connTo.createStatement();
-			ResultSet rs = s.executeQuery(SqlCommando);
-			if (rs.next()) {
-				num = rs.getInt(1);
+		String SqlCommando = "SELECT Tempo_Alerta_TEMPERATURA FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
+		boolean commandExecutedSuccessfully = false;
+		while (!commandExecutedSuccessfully) {
+			try {
+				Statement s = connTo.createStatement();
+				ResultSet rs = s.executeQuery(SqlCommando);
+				if (rs.next()) {
+					num = rs.getInt(1);
+				}
+				s.close();
+				commandExecutedSuccessfully = true;
+			} catch (Exception e) {
+				if (e instanceof java.sql.SQLNonTransientConnectionException) {
+					new WriteMysql().connectDatabase_to();
+					try {
+						Thread.sleep(1000); // Aguarda por 1 segundo antes de tentar novamente
+					} catch (InterruptedException ex) {
+						ex.printStackTrace();
+					}
+				} else {
+					num = -1;
+					commandExecutedSuccessfully = true;
+				}
+
+				System.out.println("Error Inserting in the database normal value. " + e);
+				// Em caso de falha, aguarde antes de tentar novamente
 			}
-			s.close();
-		} catch (Exception e) {
-			num = -1;
 		}
 		return num;
 
@@ -630,16 +796,31 @@ public class WriteMysql {
 
 	public int tempoEntreAlertasRatos() {
 		int num = -1;
-		String SqlCommando = "SELECT Tempo_Alerta_RATOS FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
-		try {
-			Statement s = connTo.createStatement();
-			ResultSet rs = s.executeQuery(SqlCommando);
-			if (rs.next()) {
-				num = rs.getInt(1);
+		String SqlCommando = "SELECT Tempo_Alerta_RATOS FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
+
+		boolean commandExecutedSuccessfully = false;
+		while (!commandExecutedSuccessfully) {
+			try {
+				Statement s = connTo.createStatement();
+				ResultSet rs = s.executeQuery(SqlCommando);
+				if (rs.next()) {
+					num = rs.getInt(1);
+				}
+				s.close();
+				commandExecutedSuccessfully = true;
+			} catch (Exception e) {
+				if (e instanceof java.sql.SQLNonTransientConnectionException) {
+					new WriteMysql().connectDatabase_to();
+					try {
+						Thread.sleep(1000); // Aguarda por 1 segundo antes de tentar novamente
+					} catch (InterruptedException ex) {
+						ex.printStackTrace();
+					}
+				} else {
+					num = -1;
+					commandExecutedSuccessfully = true;
+				}
 			}
-			s.close();
-		} catch (Exception e) {
-			num = -1;
 		}
 		return num;
 	}
@@ -648,32 +829,60 @@ public class WriteMysql {
 	// por exemplo 18)
 	public double maxTempForAlert() {
 		double num = -1.00;
-		String SqlCommando = "SELECT MAX_TEMPERATURA_FOR_ALERT FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
-		try {
-			Statement s = connTo.createStatement();
-			ResultSet rs = s.executeQuery(SqlCommando);
-			if (rs.next()) {
-				num = rs.getDouble(1);
+		String SqlCommando = "SELECT MAX_TEMPERATURA_FOR_ALERT FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
+		boolean commandExecutedSuccessfully = false;
+		while (!commandExecutedSuccessfully) {
+			try {
+				Statement s = connTo.createStatement();
+				ResultSet rs = s.executeQuery(SqlCommando);
+				if (rs.next()) {
+					num = rs.getDouble(1);
+				}
+				s.close();
+				commandExecutedSuccessfully = true;
+			} catch (Exception e) {
+				if (e instanceof java.sql.SQLNonTransientConnectionException) {
+					new WriteMysql().connectDatabase_to();
+					try {
+						Thread.sleep(1000); // Aguarda por 1 segundo antes de tentar novamente
+					} catch (InterruptedException ex) {
+						ex.printStackTrace();
+					}
+				} else {
+					num = -1.00;
+					commandExecutedSuccessfully = true;
+				}
 			}
-			s.close();
-		} catch (Exception e) {
-			num = -1.00;
 		}
 		return num;
 	}
 
 	public double maxTemperature() {
 		double num = -1.00;
-		String SqlCommando = "SELECT maxTemperatura FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
-		try {
-			Statement s = connTo.createStatement();
-			ResultSet rs = s.executeQuery(SqlCommando);
-			if (rs.next()) {
-				num = rs.getDouble(1);
+		String SqlCommando = "SELECT maxTemperatura FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
+		boolean commandExecutedSuccessfully = false;
+		while (!commandExecutedSuccessfully) {
+
+			try {
+				Statement s = connTo.createStatement();
+				ResultSet rs = s.executeQuery(SqlCommando);
+				if (rs.next()) {
+					num = rs.getDouble(1);
+				}
+				s.close();
+			} catch (Exception e) {
+				if (e instanceof java.sql.SQLNonTransientConnectionException) {
+					new WriteMysql().connectDatabase_to();
+					try {
+						Thread.sleep(1000); // Aguarda por 1 segundo antes de tentar novamente
+					} catch (InterruptedException ex) {
+						ex.printStackTrace();
+					}
+				} else {
+					num = -1.00;
+					commandExecutedSuccessfully = true;
+				}
 			}
-			s.close();
-		} catch (Exception e) {
-			num = -1.00;
 		}
 		return num;
 
@@ -683,64 +892,121 @@ public class WriteMysql {
 	// por exemplo 12)
 	public double minTempForAlert() {
 		double num = -1.00;
-		String SqlCommando = "SELECT MIN_TEMPERATURA_FOR_ALERT FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
-		try {
-			Statement s = connTo.createStatement();
-			ResultSet rs = s.executeQuery(SqlCommando);
-			if (rs.next()) {
-				num = rs.getDouble(1);
+		String SqlCommando = "SELECT MIN_TEMPERATURA_FOR_ALERT FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
+		boolean commandExecutedSuccessfully = false;
+		while (!commandExecutedSuccessfully) {
+			try {
+				Statement s = connTo.createStatement();
+				ResultSet rs = s.executeQuery(SqlCommando);
+				if (rs.next()) {
+					num = rs.getDouble(1);
+				}
+				s.close();
+				commandExecutedSuccessfully = true;
+			} catch (Exception e) {
+				if (e instanceof java.sql.SQLNonTransientConnectionException) {
+					new WriteMysql().connectDatabase_to();
+					try {
+						Thread.sleep(1000); // Aguarda por 1 segundo antes de tentar novamente
+					} catch (InterruptedException ex) {
+						ex.printStackTrace();
+					}
+				} else {
+					num = -1.00;
+					commandExecutedSuccessfully = true;
+				}
 			}
-			s.close();
-		} catch (Exception e) {
-			num = -1.00;
 		}
+
 		return num;
 	}
 
 	public double minTemperature() {
 		double num = -1.00;
-		String SqlCommando = "SELECT minTemperatura FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
-		try {
-			Statement s = connTo.createStatement();
-			ResultSet rs = s.executeQuery(SqlCommando);
-			if (rs.next()) {
-				num = rs.getDouble(1);
+		String SqlCommando = "SELECT minTemperatura FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
+		boolean commandExecutedSuccessfully = false;
+		while (!commandExecutedSuccessfully) {
+			try {
+				Statement s = connTo.createStatement();
+				ResultSet rs = s.executeQuery(SqlCommando);
+				if (rs.next()) {
+					num = rs.getDouble(1);
+				}
+				s.close();
+				commandExecutedSuccessfully = true;
+			} catch (Exception e) {
+				if (e instanceof java.sql.SQLNonTransientConnectionException) {
+					new WriteMysql().connectDatabase_to();
+					try {
+						Thread.sleep(1000); // Aguarda por 1 segundo antes de tentar novamente
+					} catch (InterruptedException ex) {
+						ex.printStackTrace();
+					}
+				} else {
+					num = -1.00;
+					commandExecutedSuccessfully = true;
+				}
 			}
-			s.close();
-		} catch (Exception e) {
-			num = -1.00;
 		}
 		return num;
 	}
 
 	public int numRatosMinimoParaAlerta() {
 		int num = -1;
-		String SqlCommando = "SELECT NUMBER_RATOS_FOR_ALERT FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
-		try {
-			Statement s = connTo.createStatement();
-			ResultSet rs = s.executeQuery(SqlCommando);
-			if (rs.next()) {
-				num = rs.getInt(1);
+		String SqlCommando = "SELECT NUMBER_RATOS_FOR_ALERT FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
+		boolean commandExecutedSuccessfully = false;
+		while (!commandExecutedSuccessfully) {
+			try {
+				Statement s = connTo.createStatement();
+				ResultSet rs = s.executeQuery(SqlCommando);
+				if (rs.next()) {
+					num = rs.getInt(1);
+				}
+				s.close();
+				commandExecutedSuccessfully = true;
+			} catch (Exception e) {
+				if (e instanceof java.sql.SQLNonTransientConnectionException) {
+					new WriteMysql().connectDatabase_to();
+					try {
+						Thread.sleep(1000); // Aguarda por 1 segundo antes de tentar novamente
+					} catch (InterruptedException ex) {
+						ex.printStackTrace();
+					}
+				} else {
+					num = -1;
+					commandExecutedSuccessfully = true;
+				}
 			}
-			s.close();
-		} catch (Exception e) {
-			num = -1;
 		}
 		return num;
 	}
 
 	public int tempoParadosPorSala() {
 		int tempo = -1;
-		String SqlCommando = "SELECT TempoMaximoPermanenciaSala AS maximo_de_ratos_por_sala FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
-		try {
-			Statement s = connTo.createStatement();
-			ResultSet rs = s.executeQuery(SqlCommando);
-			if (rs.next()) {
-				tempo = rs.getInt(1);
+		String SqlCommando = "SELECT TempoMaximoPermanenciaSala AS maximo_de_ratos_por_sala FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
+		boolean commandExecutedSuccessfully = false;
+		while (!commandExecutedSuccessfully) {
+			try {
+				Statement s = connTo.createStatement();
+				ResultSet rs = s.executeQuery(SqlCommando);
+				if (rs.next()) {
+					tempo = rs.getInt(1);
+				}
+				s.close();
+				commandExecutedSuccessfully = true;
+			} catch (Exception e) {
+				if (e instanceof java.sql.SQLNonTransientConnectionException) {
+					new WriteMysql().connectDatabase_to();
+					try {
+						Thread.sleep(1000); // Aguarda por 1 segundo antes de tentar novamente
+					} catch (InterruptedException ex) {
+						ex.printStackTrace();
+					}
+				} else {
+					tempo = -1;
+					commandExecutedSuccessfully = true;
+				}
 			}
-			s.close();
-		} catch (Exception e) {
-			tempo = -1;
 		}
 		return tempo;
 	}
@@ -748,15 +1014,30 @@ public class WriteMysql {
 	public int numMaxRatosSala() {
 		int numMaxRatos = -1;
 		String SqlCommando = "SELECT LimiteRatosNumaSala AS maximo_de_ratos_por_sala FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
-		try {
-			Statement s = connTo.createStatement();
-			ResultSet rs = s.executeQuery(SqlCommando);
-			if (rs.next()) {
-				numMaxRatos = rs.getInt(1);
+
+		boolean commandExecutedSuccessfully = false;
+		while (!commandExecutedSuccessfully) {
+			try {
+				Statement s = connTo.createStatement();
+				ResultSet rs = s.executeQuery(SqlCommando);
+				if (rs.next()) {
+					numMaxRatos = rs.getInt(1);
+				}
+				s.close();
+				commandExecutedSuccessfully = true;
+			} catch (Exception e) {
+				if (e instanceof java.sql.SQLNonTransientConnectionException) {
+					new WriteMysql().connectDatabase_to();
+					try {
+						Thread.sleep(1000); // Aguarda por 1 segundo antes de tentar novamente
+					} catch (InterruptedException ex) {
+						ex.printStackTrace();
+					}
+				} else {
+					numMaxRatos = -1;
+					commandExecutedSuccessfully = true;
+				}
 			}
-			s.close();
-		} catch (Exception e) {
-			numMaxRatos = -1;
 		}
 		return numMaxRatos;
 	}
@@ -764,15 +1045,29 @@ public class WriteMysql {
 	public int inicialNumRatos() {
 		int numRatos = -1;
 		String SqlCommando = "SELECT num_ratos FROM experiencia WHERE data_hora_fim IS NULL ORDER BY data_hora_inicio DESC LIMIT 1;";
-		try {
-			Statement s = connTo.createStatement();
-			ResultSet rs = s.executeQuery(SqlCommando);
-			if (rs.next()) {
-				numRatos = rs.getInt(1);
+		boolean commandExecutedSuccessfully = false;
+		while (!commandExecutedSuccessfully) {
+			try {
+				Statement s = connTo.createStatement();
+				ResultSet rs = s.executeQuery(SqlCommando);
+				if (rs.next()) {
+					numRatos = rs.getInt(1);
+				}
+				s.close();
+				commandExecutedSuccessfully = true;
+			} catch (Exception e) {
+				if (e instanceof java.sql.SQLNonTransientConnectionException) {
+					new WriteMysql().connectDatabase_to();
+					try {
+						Thread.sleep(1000); // Aguarda por 1 segundo antes de tentar novamente
+					} catch (InterruptedException ex) {
+						ex.printStackTrace();
+					}
+				} else {
+					numRatos = -1;
+					commandExecutedSuccessfully = true;
+				}
 			}
-			s.close();
-		} catch (Exception e) {
-			numRatos = -1;
 		}
 		return numRatos;
 	}
@@ -783,19 +1078,35 @@ public class WriteMysql {
 		// que não acabou
 		// String SqlComando = "SELECT MAX(id_ex) FROM experiencia;";
 		String SqlComando = "SELECT * FROM experiencia WHERE id_ex = (SELECT MAX(id_ex) FROM experiencia) AND data_hora_fim IS NULL;";
-		try {
-			Statement s = connTo.createStatement();
-			ResultSet rs = s.executeQuery(SqlComando);
-			if (rs.next()) {
-				maxIdExperiencia = rs.getInt(1); // Obtém o valor máximo da coluna id_experiencia
-				// Use o valor maxIdExperiencia conforme necessário
-				// System.out.println("Maior valor de id_experiencia: " + maxIdExperiencia);
-			} else {
-				maxIdExperiencia = -1;
+		boolean commandExecutedSuccessfully = false;
+		while (!commandExecutedSuccessfully) {
+			try {
+				Statement s = connTo.createStatement();
+				ResultSet rs = s.executeQuery(SqlComando);
+				if (rs.next()) {
+					maxIdExperiencia = rs.getInt(1); // Obtém o valor máximo da coluna id_experiencia
+					// Use o valor maxIdExperiencia conforme necessário
+					// System.out.println("Maior valor de id_experiencia: " + maxIdExperiencia);
+				} else {
+					maxIdExperiencia = -1;
+				}
+				s.close();
+				commandExecutedSuccessfully = true;
+			} catch (Exception e) {
+				if (e instanceof java.sql.SQLNonTransientConnectionException) {
+					new WriteMysql().connectDatabase_to();
+					try {
+						Thread.sleep(1000); // Aguarda por 1 segundo antes de tentar novamente
+					} catch (InterruptedException ex) {
+						ex.printStackTrace();
+					}
+				} else {
+					maxIdExperiencia = -1;
+					commandExecutedSuccessfully = true;
+
+				}
+				System.out.println("Erro ao buscar o maior valor de id_experiencia: " + e);
 			}
-			s.close();
-		} catch (Exception e) {
-			System.out.println("Erro ao buscar o maior valor de id_experiencia: " + e);
 		}
 		return maxIdExperiencia;
 	}
@@ -1159,7 +1470,7 @@ public class WriteMysql {
 							+ "\n");
 
 		} catch (Exception e) {
-			System.out.println("\n Stor Mysql Server Destination down, unable to make the connection. " + e);
+			System.out.println("Mysql Server Destination down, unable to make the connection. " + e);
 		}
 	}
 
@@ -1172,7 +1483,7 @@ public class WriteMysql {
 			documentLabel
 					.append("Connection To MariaDB Destination " + sql_database_connection_to + " Suceeded" + "\n");
 		} catch (Exception e) {
-			System.out.println("\n Mysql Server Destination down, unable to make the connection. " + e);
+			System.out.println("Mysql Server Destination down, unable to make the connection. " + e);
 		}
 	}
 
@@ -1198,7 +1509,6 @@ public class WriteMysql {
 		colTemp1 = db.getCollection(mongo_temp1);
 		colTemp2 = db.getCollection(mongo_temp2);
 		lastInsertedIds = db.getCollection("lastInsertedIds");
-
 	}
 
 	// MAIN
@@ -1206,9 +1516,9 @@ public class WriteMysql {
 		WriteMysql programa = new WriteMysql();
 		createWindow();
 		programa.readFile();
-		programa.connectToMongo();
+		// programa.connectToMongo();
 		programa.connectDatabase_to();
-		programa.connectMazeMySQL();
+		// programa.connectMazeMySQL();
 		programa.ReadData();
 
 	}
