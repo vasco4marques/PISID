@@ -67,8 +67,13 @@ public class WriteMysql {
 	private final static int OUTLIERS = 16;
 	private static int MAXRATOS;
 	private static int MAXTIMEPARADOS;
+	private static int STARTRATOS;
+	private static int RATOSALERTSTART;
+
 	private final static int TIMELOOP = 3000;
-	private HashMap<Integer, LinkedList<Integer>> caminhos = new HashMap<Integer, LinkedList<Integer>>();
+	// private HashMap<Integer, LinkedList<Integer>> caminhos = new HashMap<Integer,
+	// LinkedList<Integer>>();
+	private static boolean experienceStart = false;
 
 	// Função principal do nosso código
 	public void ReadData() {
@@ -77,20 +82,21 @@ public class WriteMysql {
 		// Começa e acaba quando
 		// Hora ser 2000-01-01 00:00:00.000
 		// e se sala origem e destino for 0
+		// Este boolean só serve para começar e parar de ir buscar dados ao mongo ( ter
+		// os dados de uma experiência específica apenas)
 		boolean comecar = false;
-
 		while (true) {
 
-			// MAXRATOS = numMaxRatos();
-			MAXRATOS = 100;
+			MAXRATOS = numMaxRatosSala();
 			MAXTIMEPARADOS = tempoParadosPorSala();
+			STARTRATOS = inicialNumRatos();
+			RATOSALERTSTART = numRatosMinimoParaAlerta();
 
 			float start = System.nanoTime();
 
 			ArrayList<String> dateListRatos = new ArrayList<>();
 
 			List<DBObject> portas = readFromMongo(colDoors, mongo_doors);
-			System.out.println("ports " + portas.size());
 
 			// List<DBCollection> tempCollections = getAllTempCollections();
 			// List<List<DBObject>> tempData = new ArrayList<List<DBObject>>();
@@ -104,16 +110,20 @@ public class WriteMysql {
 				// Se o registo que existe tiver a data o começar inverte (começa a false logo
 				// passa para true)
 				if (data.contains("2000-01-01 00:00:00")) {
-					System.out.println("Found this data");
 					comecar = !comecar;
+					if (comecar)
+						System.out.println("Experiencia começou nos dados");
+					else
+						System.out.println("Experiencia acabou nos dados");
+
 					// Se o começar for true vamos começar com os mapas dos ratos
 					// Caso não seja true quer dizer que é o segunda vez que ele encontra este
 					// registo logo a experiência acabou e para este ciclo
 					if (comecar) {
 						salasMap = new HashMap<>();
-						caminhos.clear();
-						construirCaminhos();
-						salasMap.put(1, 2);
+						// caminhos.clear();
+						// construirCaminhos();
+						salasMap.put(1, STARTRATOS);
 					} else
 						break;
 
@@ -192,46 +202,46 @@ public class WriteMysql {
 
 	// Funções auxiliares à função principal
 
-	private void construirCaminhos() {
-		String command = "Select * FROM corredor";
-		try {
-			PreparedStatement statement = connToStor.prepareStatement(command);
-			ResultSet result = statement.executeQuery();
+	// private void construirCaminhos() {
+	// String command = "Select * FROM corredor";
+	// try {
+	// PreparedStatement statement = connToStor.prepareStatement(command);
+	// ResultSet result = statement.executeQuery();
 
-			while (result.next()) {
-				String roomA = result.getString("salaa");
-				String roomB = result.getString("salab");
-				if (!caminhos.containsKey(Integer.parseInt(roomA))) {
-					LinkedList<Integer> list = new LinkedList<Integer>();
-					list.add(Integer.parseInt(roomB));
-					caminhos.put(Integer.parseInt(roomA), list);
-				} else {
-					LinkedList<Integer> list = caminhos.get(Integer.parseInt(roomA));
-					list.add(Integer.parseInt(roomB));
-					caminhos.put(Integer.parseInt(roomA), list);
-				}
-			}
-			result.close();
-			statement.close();
-		} catch (Exception e) {
-			System.out.println("Error Selecting from the database . " + e);
-			System.out.println(command);
-		}
-	}
+	// while (result.next()) {
+	// String roomA = result.getString("salaa");
+	// String roomB = result.getString("salab");
+	// if (!caminhos.containsKey(Integer.parseInt(roomA))) {
+	// LinkedList<Integer> list = new LinkedList<Integer>();
+	// list.add(Integer.parseInt(roomB));
+	// caminhos.put(Integer.parseInt(roomA), list);
+	// } else {
+	// LinkedList<Integer> list = caminhos.get(Integer.parseInt(roomA));
+	// list.add(Integer.parseInt(roomB));
+	// caminhos.put(Integer.parseInt(roomA), list);
+	// }
+	// }
+	// result.close();
+	// statement.close();
+	// } catch (Exception e) {
+	// System.out.println("Error Selecting from the database . " + e);
+	// System.out.println(command);
+	// }
+	// }
 
-	public boolean existeCaminho(int roomA, int roomB) {
-		try {
-			if (caminhos.containsKey(roomA)) {
-				LinkedList<Integer> list = caminhos.get(roomA);
-				if (list.contains(roomB)) {
-					return true;
-				}
-			}
-			return false;
-		} catch (Exception e) {
-			return false;
-		}
-	}
+	// public boolean existeCaminho(int roomA, int roomB) {
+	// try {
+	// if (caminhos.containsKey(roomA)) {
+	// LinkedList<Integer> list = caminhos.get(roomA);
+	// if (list.contains(roomB)) {
+	// return true;
+	// }
+	// }
+	// return false;
+	// } catch (Exception e) {
+	// return false;
+	// }
+	// }
 
 	private boolean existemElementos(List<ArrayList<String>> tempsValidadas) {
 		boolean vazio = false;
@@ -289,22 +299,30 @@ public class WriteMysql {
 
 			int quantidadeDestino = salasMap.get(salaDestino);
 			int quantidadeOrigem = salasMap.get(salaOrigem);
-			if (!existeCaminho(salaOrigem, salaDestino))
-				dadosAnomalos.add(data);
-			else if (quantidadeOrigem - 1 < 0) {
+
+			// if (!existeCaminho(salaOrigem, salaDestino))
+			// dadosAnomalos.add(data);
+			// else
+			if (quantidadeOrigem - 1 < 0) {
 				// System.out.println("A sala " + salaOrigem + " tem valores negativos. Algo de
 				// errado ocorreu.");
 				dadosAnomalos.add(data);
 			} else {
-				if (quantidadeDestino + 1 >= MAXRATOS) {
+				if (quantidadeDestino + 1 == MAXRATOS) {
 					// System.out.println("Lotado e vou inserir alerta");
 					// System.out.println("A sala " + salaDestino + " já está lotada. Não é possível
 					// adicionar mais ratos.");
 					salasMap.put(salaOrigem, salasMap.get(salaOrigem) - 1);
 					salasMap.put(salaDestino, salasMap.get(salaDestino) + 1);
 					writeToMySQL(data, "medicoes_passagens");
-					writeAlertaToMySQL(data, "MaxRatos", "Numero de ratos excedidos na sala " + salaDestino);
+					writeAlertaToMySQL(data, "MaxRatos", "Numero de ratos numa sala chegou ao máximo " + salaDestino);
 					break;
+				} else if (quantidadeDestino + 1 >= RATOSALERTSTART && quantidadeDestino + 1 < MAXRATOS) {
+					salasMap.put(salaOrigem, salasMap.get(salaOrigem) - 1);
+					salasMap.put(salaDestino, salasMap.get(salaDestino) + 1);
+					writeToMySQL(data, "medicoes_passagens");
+					writeAlertaToMySQL(data, "QuaseMaxRatos",
+							"Numero de ratos numa esta quase no maximo " + salaDestino);
 				} else {
 					salasMap.put(salaOrigem, salasMap.get(salaOrigem) - 1);
 					salasMap.put(salaDestino, salasMap.get(salaDestino) + 1);
@@ -1141,7 +1159,7 @@ public class WriteMysql {
 							+ "\n");
 
 		} catch (Exception e) {
-			System.out.println("Mysql Server Destination down, unable to make the connection. " + e);
+			System.out.println("\n Stor Mysql Server Destination down, unable to make the connection. " + e);
 		}
 	}
 
@@ -1154,7 +1172,7 @@ public class WriteMysql {
 			documentLabel
 					.append("Connection To MariaDB Destination " + sql_database_connection_to + " Suceeded" + "\n");
 		} catch (Exception e) {
-			System.out.println("Mysql Server Destination down, unable to make the connection. " + e);
+			System.out.println("\n Mysql Server Destination down, unable to make the connection. " + e);
 		}
 	}
 
@@ -1180,6 +1198,7 @@ public class WriteMysql {
 		colTemp1 = db.getCollection(mongo_temp1);
 		colTemp2 = db.getCollection(mongo_temp2);
 		lastInsertedIds = db.getCollection("lastInsertedIds");
+
 	}
 
 	// MAIN
@@ -1187,10 +1206,10 @@ public class WriteMysql {
 		WriteMysql programa = new WriteMysql();
 		createWindow();
 		programa.readFile();
-		// programa.connectToMongo();
+		programa.connectToMongo();
 		programa.connectDatabase_to();
-		// programa.connectMazeMySQL();
-		// programa.ReadData();
+		programa.connectMazeMySQL();
+		programa.ReadData();
 
 	}
 }

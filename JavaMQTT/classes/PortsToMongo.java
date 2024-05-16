@@ -28,49 +28,50 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.util.JSON;
 
-
 public class PortsToMongo implements MqttCallback {
     MqttClient mqttclient;
     static MongoClient mongoClient;
     static MongoDatabase db;
     static MongoCollection mongocol;
-	static String mongo_user = new String();
-	static String mongo_password = new String();
-	static String mongo_address = new String();
-	static String cloud_server = new String();
+    static String mongo_user = new String();
+    static String mongo_password = new String();
+    static String mongo_address = new String();
+    static String cloud_server = new String();
     static String cloud_topic = new String();
     static String mongo_host = new String();
     static String mongo_replica = new String();
-	static String mongo_database = new String();
+    static String mongo_database = new String();
     static String mongo_collection = new String();
-	static String mongo_authentication = new String();
-	static JTextArea documentLabel = new JTextArea();
-   
-    private static void createWindow(String name, JTextArea label) {      	
-	    JFrame frame = new JFrame(name);    
-	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);       
-	    JLabel textLabel = new JLabel("Data from broker: ",SwingConstants.CENTER);       
-	    textLabel.setPreferredSize(new Dimension(600, 30));   
-	    JScrollPane scroll = new JScrollPane (label, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);	
-	    scroll.setPreferredSize(new Dimension(600, 200)); 	
-	    JButton b1 = new JButton("Stop the program");
-	    frame.getContentPane().add(textLabel, BorderLayout.PAGE_START);	
-	    frame.getContentPane().add(scroll, BorderLayout.CENTER);	
-	    frame.getContentPane().add(b1, BorderLayout.PAGE_END);		
-	    frame.setLocationRelativeTo(null);      
-	    frame.pack();      
-	    frame.setVisible(true);    
-	    b1.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent evt) {
-	    		System.exit(0);
-	    	}
-	    });
+    static String mongo_authentication = new String();
+    static JTextArea documentLabel = new JTextArea();
+
+    private static void createWindow(String name, JTextArea label) {
+        JFrame frame = new JFrame(name);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JLabel textLabel = new JLabel("Data from broker: ", SwingConstants.CENTER);
+        textLabel.setPreferredSize(new Dimension(600, 30));
+        JScrollPane scroll = new JScrollPane(label, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scroll.setPreferredSize(new Dimension(600, 200));
+        JButton b1 = new JButton("Stop the program");
+        frame.getContentPane().add(textLabel, BorderLayout.PAGE_START);
+        frame.getContentPane().add(scroll, BorderLayout.CENTER);
+        frame.getContentPane().add(b1, BorderLayout.PAGE_END);
+        frame.setLocationRelativeTo(null);
+        frame.pack();
+        frame.setVisible(true);
+        b1.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                System.exit(0);
+            }
+        });
     }
 
     public int getNextSequence(String sequenceName) {
         Document filter = new Document("_id", sequenceName);
         Document update = new Document("$inc", new Document("seq", 1));
-        FindOneAndUpdateOptions options = new FindOneAndUpdateOptions().returnDocument(com.mongodb.client.model.ReturnDocument.AFTER);
+        FindOneAndUpdateOptions options = new FindOneAndUpdateOptions()
+                .returnDocument(com.mongodb.client.model.ReturnDocument.AFTER);
         Document sequenceDocument = db.getCollection("counters").findOneAndUpdate(filter, update, options);
 
         if (sequenceDocument == null) {
@@ -82,34 +83,34 @@ public class PortsToMongo implements MqttCallback {
         return sequenceDocument.getInteger("seq");
     }
 
-
-    public static void readDocument(){
+    public static void readDocument() {
         try {
             Properties p = new Properties();
             p.load(new FileInputStream("E:\\3ºAno\\2ºSemestre\\PISID\\PISID\\JavaMQTT\\PortsToMongo.ini"));
             // p.load(new FileInputStream("./JavaMQTT/PortsToMongo.ini"));
-// 
-			mongo_address = p.getProperty("mongo_address");
+            //
+            mongo_address = p.getProperty("mongo_address");
             mongo_user = p.getProperty("mongo_user");
-            mongo_password = p.getProperty("mongo_password");						
+            mongo_password = p.getProperty("mongo_password");
             mongo_replica = p.getProperty("mongo_replica");
-            cloud_server = p.getProperty("cloud_server");			
+            cloud_server = p.getProperty("cloud_server");
             cloud_topic = p.getProperty("cloud_topic");
             mongo_host = p.getProperty("mongo_host");
             mongo_database = p.getProperty("mongo_database");
-            mongo_authentication = p.getProperty("mongo_authentication");			
+            mongo_authentication = p.getProperty("mongo_authentication");
             mongo_collection = p.getProperty("mongo_collection");
         } catch (Exception e) {
             System.out.println("Error reading CloudToMongo.ini file " + e);
-            JOptionPane.showMessageDialog(null, "The CloudToMongo.inifile wasn't found.", "CloudToMongo", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "The CloudToMongo.inifile wasn't found.", "CloudToMongo",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
     public void connecCloud() {
-		int i;
+        int i;
         try {
-			i = new Random().nextInt(100000);
-            mqttclient = new MqttClient(cloud_server, "CloudToMongo_"+String.valueOf(i)+"_"+cloud_topic);
+            i = new Random().nextInt(100000);
+            mqttclient = new MqttClient(cloud_server, "CloudToMongo_" + String.valueOf(i) + "_" + cloud_topic);
             mqttclient.connect();
             mqttclient.setCallback(this);
             mqttclient.subscribe(cloud_topic);
@@ -119,33 +120,42 @@ public class PortsToMongo implements MqttCallback {
     }
 
     public void connectMongo() {
-		String mongoURI = new String();
-		mongoURI = "mongodb://";		
-		if (mongo_authentication.equals("true")) mongoURI = mongoURI + mongo_user + ":" + mongo_password + "@";		
-		mongoURI = mongoURI + mongo_address;		
-		if (!mongo_replica.equals("false")) 
-			if (mongo_authentication.equals("true")) mongoURI = mongoURI + "/?replicaSet=" + mongo_replica+"&authSource=admin";
-			else mongoURI = mongoURI + "/?replicaSet=" + mongo_replica;		
-		else
-			if (mongo_authentication.equals("true")) mongoURI = mongoURI  + "/?authSource=admin";			
-		MongoClient mongoClient = new MongoClient(new MongoClientURI(mongoURI));						
-		db = mongoClient.getDatabase(mongo_database);
-        mongocol = db.getCollection(mongo_collection);
+        String mongoURI = new String();
+        mongoURI = "mongodb://";
+        if (mongo_authentication.equals("true"))
+            mongoURI = mongoURI + mongo_user + ":" + mongo_password + "@";
+        mongoURI = mongoURI + mongo_address;
+        if (!mongo_replica.equals("false"))
+            if (mongo_authentication.equals("true"))
+                mongoURI = mongoURI + "/?replicaSet=" + mongo_replica + "&authSource=admin";
+            else
+                mongoURI = mongoURI + "/?replicaSet=" + mongo_replica;
+        else if (mongo_authentication.equals("true"))
+            mongoURI = mongoURI + "/?authSource=admin";
+
+        try {
+            System.out.println("Tentar ligar \n");
+            MongoClient mongoClient = new MongoClient(new MongoClientURI(mongoURI));
+            db = mongoClient.getDatabase(mongo_database);
+            mongocol = db.getCollection(mongo_collection);
+        } catch (Exception e) {
+        }
+
     }
 
     @Override
     public void messageArrived(String topic, MqttMessage c)
             throws Exception {
         try {
-                DBObject document_json;
-                document_json = (DBObject) JSON.parse(c.toString());
-                Document doc = Document.parse(document_json.toString());
-    
-                int nextID = getNextSequence("portsSeqID");
-                doc.append("id",nextID);
-                mongocol.insertOne(doc);     	
-                System.out.println(doc);
-				documentLabel.append(c.toString()+"\n");				
+            DBObject document_json;
+            document_json = (DBObject) JSON.parse(c.toString());
+            Document doc = Document.parse(document_json.toString());
+
+            int nextID = getNextSequence("portsSeqID");
+            doc.append("id", nextID);
+            mongocol.insertOne(doc);
+            System.out.println(doc);
+            documentLabel.append(c.toString() + "\n");
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -157,24 +167,13 @@ public class PortsToMongo implements MqttCallback {
 
     @Override
     public void deliveryComplete(IMqttDeliveryToken token) {
-    }	
-
+    }
 
     public static void main(String[] args) {
         readDocument();
-        createWindow("Doors",documentLabel);
+        createWindow("Doors", documentLabel);
         new PortsToMongo().connecCloud();
         new PortsToMongo().connectMongo();
     }
-
-    
-
-
-
-
-
-
-
-
 
 }
