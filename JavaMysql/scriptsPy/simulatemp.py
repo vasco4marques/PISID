@@ -16,24 +16,42 @@ clientMqttMovements.on_connect = on_connectMqttTemp
 clientMqttMovements.connect('broker.mqtt-dashboard.com', 1883)
 
 
+def generate_temperature_readings(base_temp, num_readings):
+    temperature_readings = []
+
+    for i in range(num_readings):
+        fluctuation = random.gauss(0, 2)  # Normal fluctuation around the base temperature
+
+        # Introduce occasional outliers
+        if random.random() < 0.05:  # 5% chance of an outlier
+            fluctuation = random.choice([1, -1]) * (10 + random.randint(0, 10))  # Large fluctuation between 10 and 20 degrees
+        elif random.random() < 0.02:  # 2% chance of extreme outlier
+            fluctuation = random.choice([1, -1]) * 100  # Extreme outlier of +/- 100 degrees
+
+        temperature_readings.append(base_temp + fluctuation)
+        print(f"Reading {i + 1}: {temperature_readings[-1]:.2f}°C")
+
+    return temperature_readings
+
+listOFreadings = generate_temperature_readings(15,100)
+
 i=0
-while True:
-    i = i+1            
+while True:          
     rand = random.randint(1,10)
-    if (i==50):
-        i=-50
-    try:
-        mensagem ="{Hora: \"" + str(datetime.now()) + "\", Leitura: " + str(i) + ", Sensor:2}" 
-        # temp1.insert_one({"Hora":datetime.now(), "Leitura":i, "Sensor": 1})       
-        clientMqttMovements.publish(topic,mensagem,qos=0)
-        clientMqttMovements.loop()
-        # temp2.insert_one({"Hora":datetime.now(), "Leitura":i+1, "Sensor": 2})
-        mensagem ="{Hora: \"" + str(datetime.now()) + "\", Leitura: " + str(i+1) + ", Sensor:1}" 
-        print(mensagem) 
-        clientMqttMovements.publish(topic,mensagem,qos=2)
-        clientMqttMovements.loop()       
-        time.sleep(1) 
-    except Exception:
-        print("Error sendMqtt")
-        pass   
-      
+    
+    for number in listOFreadings:
+        
+        try:
+            print(i)
+            mensagem ="{Hora: \"" + str(datetime.now()) + "\", Leitura: " + str(number) + ", Sensor:2}"       
+            clientMqttMovements.publish(topic,mensagem,qos=0)
+            clientMqttMovements.loop()
+            mensagem ="{Hora: \"" + str(datetime.now()) + "\", Leitura: " + str(number-1) + ", Sensor:1}" 
+            clientMqttMovements.publish(topic,mensagem,qos=2)
+            clientMqttMovements.loop()       
+            time.sleep(1) 
+        except Exception:
+            print("Error sendMqtt")
+            pass   
+        i = i+1
+        

@@ -9,10 +9,16 @@ import java.sql.*;
 import java.sql.Date;
 
 import javax.swing.*;
+import java.time.ZoneOffset;
 import java.awt.event.*;
 import java.awt.*;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.time.format.DateTimeFormatter;
+
 import org.bson.*;
+import java.time.LocalDateTime;
 
 import com.mongodb.*;
 import com.mongodb.client.MongoIterable;
@@ -24,6 +30,8 @@ import com.mongodb.util.JSON;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 public class WriteMysql {
+
+	private static final DecimalFormat dfZero = new DecimalFormat("0.00");
 
 	// Objetos Mongo
 	static MongoClient mongoClient;
@@ -76,9 +84,24 @@ public class WriteMysql {
 	private static int RATOSALERTSTART;
 	private static int TEMPOALERTASRATOS;
 	private static float TEMPOALERTASRATOSAUX;
+	private static int NUMINICIALRATOS;
 	private static float last_temperature_alert = 0;
 	private static long last_timestamp_alert = 0;
 	private HashMap<Integer, LinkedList<Integer>> caminhos = new HashMap<Integer, LinkedList<Integer>>();
+	private String lastInsertedRat = "";
+
+	// TIPOS DE ALERTAS
+	private static String RATOSPARADOS = "RatoParadoLotTime";
+	private static String RatosQuaseMax = "RatosQuaseMax";
+	private static String RatosMAX = "RatosMax";
+	private static String TemperaturaQuaseMax = "TemperaturaQuaseMax";
+	private static String TemperaturaMax = "TemperaturaChegouMax";
+	private static String TemperaturaQuaseMin = "TemperaturaQuaseMin";
+	private static String TemperaturaMin = "TemperaturaChegouMin";
+
+	// TODO - 2. Leituras muito grandes passar para que tenham máximo de casas
+	// deciamis ( FALTA TESTAR )
+	// TODO - 3. Testar multiplas experiências seguidas
 
 	// Função principal do nosso código
 	public void ReadData() {
@@ -90,11 +113,8 @@ public class WriteMysql {
 		boolean comecar = false;
 
 		while (true) {
-
 			MAXRATOS = numMaxRatosSala();
-			MAXTIMEPARADOS = tempoParadosPorSala();
-			RATOSALERTSTART = numRatosMinimoParaAlerta();
-			TEMPOALERTASRATOS = tempoEntreAlertasRatos();
+
 			float start = System.nanoTime();
 			if (alertaInseridoRatos) {
 				TEMPOALERTASRATOSAUX = System.nanoTime();
@@ -114,56 +134,64 @@ public class WriteMysql {
 			for (DBCollection col : tempCollections) {
 				tempData.add(readFromMongo(col, col.getName()));
 			}
-			// System.out.println("Dados de temperaturas retirados do mongo");
 
-			for (DBObject sensor : portas) {
-				String data = sensor.toString();
-				// Se o registo que existe tiver a data o começar inverte (começa a false logo
-				// passa para true)
-				if (data.contains("2000-01-01 00:00:00")) {
-					System.out.println("Found this data");
-					comecar = !comecar;
-					// Se o começar for true vamos começar com os mapas dos ratos
-					// Caso não seja true quer dizer que é o segunda vez que ele encontra este
-					// registo logo a experiência acabou e para este ciclo
+			System.out.println("Dados de temperaturas retirados do mongo");
+			// Só pode ir buscar dados se houver experiência ativa no sql (podemos inserir
+			// uma experiência e ter tempo para ir buscar a proxima)
+			if (idExperienciaFromSQL() != -1) {
+
+				for (DBObject sensor : portas) {
+					String data = sensor.toString();
+					// Se o registo que existe tiver a data o começar inverte (começa a falselogo
+					// passa para true)
+					if (data.contains("2000-01-01 00:00:00")) {
+						System.out.println("Found this data");
+						comecar = !comecar;
+						// Se o começar for true vamos começar com os mapas dos ratos
+						// Caso não seja true quer dizer que é o segunda vez que ele encontra este
+						// registo logo a experiência acabou e para este ciclo
+						if (comecar) {
+							salasMap = new HashMap<>();
+							caminhos.clear();
+							construirCaminhos();
+							popularMedicoes();
+							NUMINICIALRATOS = inicialNumRatos();
+							if (NUMINICIALRATOS != -1)
+								salasMap.put(1, NUMINICIALRATOS);
+						} else
+							break;
+
+						// Continue serve para saltar para a prox iteraçãp
+						continue;
+					}
+					// Caso a experiencia tenha começado na verificação interior, depois de saltar o
+					// registo com aquela data específica adicionamos os datos a lista de dadosif
+					// (comecar) {
 					if (comecar) {
-						salasMap = new HashMap<>();
-						caminhos.clear();
-						construirCaminhos();
-						salasMap.put(1, 2);
-					} else
-						break;
+						// System.out.println("tamanho dos dados entre a data " +
+						dateListRatos.add(data);
+					}
 
-					// Continue serve para saltar para a prox iteraçãp
-					continue;
-				}
-				// Caso a experiencia tenha começado na verificação interior, depois de saltar o
-				// registo com aquela data específica adicionamos os datos a lista de dados
-				if (comecar) {
-					dateListRatos.add(data);
-				}
-				System.out.println("tamanho dos dados entre a data " + dateListRatos.size());
+					if (comecar) {
+						// System.out.println("Como começar está a true vou adicionar data a lista
+						// de ratos");
+						int salaOrigem = (int) sensor.get("SalaOrigem");
+						int salaDestino = (int) sensor.get("SalaDestino");
+						// System.err.println("Sala origem para inserir no mapa " + salaOrigem);
+						// System.err.println("Sala destino para inserir no mapa " + salaDestino);
 
-				if (comecar) {
-					// System.out.println("Como começar está a true vou adicionar data a lista
-					// deratos");
-					int salaOrigem = (int) sensor.get("SalaOrigem");
-					int salaDestino = (int) sensor.get("SalaDestino");
-					if (!salasMap.containsKey(salaOrigem))
-						salasMap.put(salaOrigem, 0);
-					if (!salasMap.containsKey(salaDestino))
-						salasMap.put(salaDestino, 0);
+						if (!salasMap.containsKey(salaOrigem))
+							salasMap.put(salaOrigem, 0);
+						if (!salasMap.containsKey(salaDestino))
+							salasMap.put(salaDestino, 0);
+					}
 				}
 			}
-			if (dateListRatos.isEmpty()) {
-				haviaDados = false;
-				if (System.nanoTime() - startRatosParados > MAXTIMEPARADOS * 1000 * 1000 * 1000) {
-					writeAlertaToMySQL(null, "RatosParados", "Os ratos estao parados");
-					writeMySQLFinalRoomResult(salasMap);
-				}
-			} else {
-				haviaDados = true;
-			}
+			System.out.println("Dados das portas todos adicionados");
+
+			// TODO - Variavel no fim do for que atualiza tipo var = sensor.ToString().
+			// If comecar (if data atual - data passada > tempo maximo parado)
+			// Acabou a experiencia porque os ratos ficaram parado
 
 			List<ArrayList<String>> tempsStrings = new ArrayList<>();
 			for (List<DBObject> col : tempData) {
@@ -179,9 +207,9 @@ public class WriteMysql {
 				tempsValidadas.add(validarFormatosTemperatura(toBeValidated));
 			}
 
-			// // Criar iteradores para cada uma das listas dentro do tempValidadas
-			// // while loop enquanto qualquer iterador tiver next
-			// // if iterador x tiver next retirar da sua lista e meter na final
+			// Criar iteradores para cada uma das listas dentro do tempValidadas
+			// while loop enquanto qualquer iterador tiver next
+			// if iterador x tiver next retirar da sua lista e meter na final
 
 			ArrayList<String> tempsMisturadas = new ArrayList<>();
 			while (existemElementos(tempsValidadas))
@@ -189,22 +217,20 @@ public class WriteMysql {
 					if (!listas.isEmpty())
 						tempsMisturadas.add(listas.remove(0).toString());
 
-			// // System.out.println("TempsMisturadas" + tempsMisturadas.size());
+			// System.out.println("TempsMisturadas" + tempsMisturadas.size());
 
-			// // writeArrayListToFile(dateListRatos, "DadosMongoSalas.txt");
-			// // System.out.println("escrevi os ratos");t
+			// writeArrayListToFile(dateListRatos, "DadosMongoSalas.txt");
+			// System.out.println("escrevi os ratos");t
 
-			// // writeArrayListToFile(dateListTemperatura, "DadosMongoTemperatura.txt");
-			detetarOutliers(tempsMisturadas);
+			// writeArrayListToFile(dateListTemperatura, "DadosMongoTemperatura.txt");
+			// detetarOutliers(tempsMisturadas);
+			System.out.println("escrevi os outliers");
 
 			validarFormatosSalas(dateListRatos);
 
 			float end = System.nanoTime();
 			float time = (end - start) / 1000000000;
 
-			for (int i : salasMap.keySet()) {
-				System.out.println(i + " " + salasMap.get(i).toString());
-			}
 			if (time >= 0 && time <= TIMELOOP) {
 				try {
 					Thread.sleep(3000 - (long) time);
@@ -215,7 +241,6 @@ public class WriteMysql {
 		}
 
 	}
-
 	// Funções auxiliares à função principal
 
 	private void construirCaminhos() {
@@ -320,6 +345,8 @@ public class WriteMysql {
 	}
 
 	private void moverRatos(ArrayList<String> dadosCorretos, ArrayList<String> dadosAnomalos) {
+		System.err.println("Vamos mover os ratos: " + dadosCorretos.size());
+		boolean inserted = false;
 		// System.out.println("Quantos dados correto chegaram" + dadosCorretos.size());
 		// System.out.println("Quantos dados errados chegaram" + dadosAnomalos.size());
 		for (String data : dadosCorretos) {
@@ -338,45 +365,104 @@ public class WriteMysql {
 					// errado ocorreu.");
 					dadosAnomalos.add(data);
 				} else {
-					if (quantidadeDestino + 1 == MAXRATOS) {
+					RATOSALERTSTART = numRatosMinimoParaAlerta();
+					MAXRATOS = numMaxRatosSala();
+					if (MAXRATOS != -1 && quantidadeDestino + 1 == MAXRATOS) {
 						// System.out.println("Lotado e vou inserir alerta");
 						// System.out.println("A sala " + salaDestino + " já está lotada. Não é possível
 						// adicionar mais ratos.");
 						salasMap.put(salaOrigem, salasMap.get(salaOrigem) - 1);
 						salasMap.put(salaDestino, salasMap.get(salaDestino) + 1);
 						writeToMySQL(data, "medicoes_passagens");
-						writeAlertaToMySQL(data, "MaxRatos",
+						inserted = true;
+						if (hasMaxTimePassed(data, lastInsertedRat)) {
+							writeAlertaToMySQL(data, RATOSPARADOS, "Ratos ficaram parados durante muito tempo");
+							inserirDataFimExperiencia(idExperienciaFromSQL());
+						}
+						updateSala(salaDestino, quantidadeDestino + 1);
+						updateSala(salaOrigem, quantidadeOrigem - 1);
+						writeAlertaToMySQL(data, RatosMAX,
 								"Numero de ratos numa sala chegou ao máximo " + salaDestino);
 						inserirDataFimExperiencia(idExperienciaFromSQL());
 						break;
-					} else if (quantidadeDestino + 1 >= RATOSALERTSTART && quantidadeDestino + 1 < MAXRATOS) {
+					} else if (RATOSALERTSTART != -1 && MAXRATOS != -1 && quantidadeDestino + 1 >= RATOSALERTSTART
+							&& quantidadeDestino + 1 < MAXRATOS) {
+						System.out.println("Sala 1 ou + ratos");
 						salasMap.put(salaOrigem, salasMap.get(salaOrigem) - 1);
 						salasMap.put(salaDestino, salasMap.get(salaDestino) + 1);
 						writeToMySQL(data, "medicoes_passagens");
+						inserted = true;
+						if (hasMaxTimePassed(data, lastInsertedRat)) {
+							writeAlertaToMySQL(data, RATOSPARADOS, "Ratos ficaram parados durante muito tempo");
+							inserirDataFimExperiencia(idExperienciaFromSQL());
+						}
+						updateSala(salaDestino, quantidadeDestino + 1);
+						updateSala(salaOrigem, quantidadeOrigem - 1);
+
 						if (ultimoAlertaLimiteRatos(salaDestino)) {
-							if (System.nanoTime() - TEMPOALERTASRATOSAUX > TEMPOALERTASRATOS * 1000000000) {
-								writeAlertaToMySQL(data, "QuaseMaxRatos",
+							System.out.println("Encontrei alerta 1 ");
+							TEMPOALERTASRATOS = tempoEntreAlertasRatos();
+							if (TEMPOALERTASRATOS != -1
+									&& System.nanoTime() - TEMPOALERTASRATOSAUX > TEMPOALERTASRATOS * 1000000000) {
+								System.out.println("Tempo esta okay 1");
+								writeAlertaToMySQL(data, RatosQuaseMax,
 										"Numero de ratos numa esta quase no maximo " + salaDestino);
 							}
 						} else {
-							if (System.nanoTime() - TEMPOALERTASRATOSAUX > TEMPOALERTASRATOS * 1000000000) {
-								alertaInseridoRatos = true;
-								writeAlertaToMySQL(data, "QuaseMaxRatos",
-										"Numero de ratos numa esta quase no maximo " + salaDestino);
-							}
+							System.out.println("nada de alerta 2");
+							System.err.println(" tempo esta okay 2");
+							alertaInseridoRatos = true;
+							writeAlertaToMySQL(data, RatosQuaseMax,
+									"Numero de ratos numa esta quase no maximo " + salaDestino);
+
 						}
 					} else {
 						salasMap.put(salaOrigem, salasMap.get(salaOrigem) - 1);
 						salasMap.put(salaDestino, salasMap.get(salaDestino) + 1);
 						writeToMySQL(data, "medicoes_passagens");
+						inserted = true;
+						if (hasMaxTimePassed(data, lastInsertedRat)) {
+							writeAlertaToMySQL(data, RATOSPARADOS, "Ratos ficaram parados durante muito tempo");
+							inserirDataFimExperiencia(idExperienciaFromSQL());
+						}
+						updateSala(salaDestino, quantidadeDestino + 1);
+						updateSala(salaOrigem, quantidadeOrigem - 1);
 					}
 				}
+			}
+
+			if (inserted) {
+				lastInsertedRat = data;
+				inserted = false;
 			}
 		}
 	}
 
+	private boolean hasMaxTimePassed(String data, String lastInsertedRat2) {
 
-	
+		if (data == "" || lastInsertedRat2 == "")
+			return false;
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
+
+		String horaData = extractValue(data, "Hora");
+		String horaLast = extractValue(lastInsertedRat2, "Hora");
+
+		LocalDateTime dateTimeHoraData = LocalDateTime.parse(horaData, formatter);
+		LocalDateTime dateTimeHoraLast = LocalDateTime.parse(horaLast, formatter);
+
+		long miliHoraData = dateTimeHoraData.atZone(ZoneOffset.UTC).toInstant().toEpochMilli();
+		long miliHoraLast = dateTimeHoraLast.atZone(ZoneOffset.UTC).toInstant().toEpochMilli();
+		MAXTIMEPARADOS = tempoParadosPorSala();
+		if (MAXTIMEPARADOS == -1) {
+			return false;
+		}
+
+		if (miliHoraLast + (MAXTIMEPARADOS * 1000) <= miliHoraData) {
+			return true;
+		}
+
+		return false;
+	}
 
 	public int extractRoom(String data, String key) {
 		// Remove os espaços em branco e as vírgulas extras e, em seguida, divide a
@@ -431,16 +517,17 @@ public class WriteMysql {
 	// Datas Outliers
 
 	private void detetarOutliers(ArrayList<String> dadosCorretos) {
-		System.out.println("Vou ver outliers");
-		System.out.println(dadosCorretos.isEmpty());
+		System.out.println("Vou ver outliers: " + dadosCorretos.size());
 		ArrayList<String> outliers = new ArrayList<String>();
+		System.err.println(dadosCorretos.size());
 		for (int i = 0; i < dadosCorretos.size(); i++) {
+			System.out.println(dadosCorretos.get(i));
 			// Calcula o IQR
 			float Q1 = calculatePercentile(1);
 			float Q3 = calculatePercentile(2);
 
 			if (Q1 != Float.NEGATIVE_INFINITY && Q3 != Float.NEGATIVE_INFINITY) {
-
+				System.err.println("NAO ERA INFINITO");
 				float IQR = Q3 - Q1;
 
 				// Define os limites
@@ -451,18 +538,16 @@ public class WriteMysql {
 				// Verifica se a temperatura é um outlier
 				if (temperatura < lowerLimit || temperatura > upperLimit) {
 					outliers.add(dadosCorretos.get(i));
-					// como e outlier vai buscar o ultimo valido
 					dadoSet.add(dadosCorretos.get(i));
-					System.out.println("Foi detetado como OUTILIER: " + dadosCorretos.get(i));
 					// System.out.println("Temperatura É um outlier: " + temperatura);
 				} else {
 					// Se não for um outlier, insere no conjunto de dados
-					System.out.println("Não e outllier: " + dadosCorretos.get(i));
-
+					System.out.println("linha 500");
 
 					dadoSet.add(dadosCorretos.get(i));
 					writeToMySQL(dadosCorretos.get(i), "medicoes_temperatura");
 
+					System.out.println("linha 505");
 					// CHECK ALERTAS
 
 					// check if temperatura is within range returned in funcitons minTempForAlert
@@ -471,40 +556,57 @@ public class WriteMysql {
 					// less than minTemperature
 
 					if (temperatura <= minTemperature()) {
-						writeAlertaToMySQL(dadosCorretos.get(i), "TemperaturaBaixaExtrema",
+						System.out.println("alerta 1");
+						writeAlertaToMySQL(dadosCorretos.get(i), TemperaturaMin,
 								"Temperatura baixa extrema na sala " + extractRoom(dadosCorretos.get(i), "Sensor"));
-						// acabar experiencia 
+						// acabar experiencia
 						inserirDataFimExperiencia(idExperienciaFromSQL());
 					} else if (temperatura >= maxTemperature()) {
-						writeAlertaToMySQL(dadosCorretos.get(i), "TemperaturaAltaExtrema",
+						System.out.println("alerta 2");
+
+						writeAlertaToMySQL(dadosCorretos.get(i), TemperaturaMax,
 								"Temperatura alta extrema na sala " + extractRoom(dadosCorretos.get(i), "Sensor"));
-						// acabar experiencia 
+						// acabar experiencia
 						inserirDataFimExperiencia(idExperienciaFromSQL());
-					} else if (temperatura <= minTempForAlert()) {
+					} else if (minTempForAlert() != -1 && temperatura <= minTempForAlert()) {
 						// check if temperatura has the same value as last temperatura alert
 						// if it has the same value, check if the time between the two alerts is bigger
 						// than the time between alerts
-						if ((temperatura == last_temperature_alert && last_timestamp_alert + (tempoEntreAlertasTemperatura() * 1000 * 60) < System
-									.currentTimeMillis()) || temperatura != last_temperature_alert) {
-								writeAlertaToMySQL(dadosCorretos.get(i), "TemperaturaBaixa",
-										"Temperatura baixa na sala " + extractRoom(dadosCorretos.get(i), "Sensor"));
+						System.out.println("alerta 3");
+						if ((temperatura == last_temperature_alert
+								&& last_timestamp_alert + (tempoEntreAlertasTemperatura() * 1000 * 60) < System
+										.currentTimeMillis())
+								|| temperatura != last_temperature_alert) {
+
+							writeAlertaToMySQL(dadosCorretos.get(i), TemperaturaQuaseMin,
+									"Temperatura baixa na sala " + extractRoom(dadosCorretos.get(i), "Sensor"));
 						}
 					} else if (temperatura >= maxTempForAlert()) {
 						// check if temperatura has the same value as last temperatura alert
 						// if it has the same value, check if the time between the two alerts is bigger
 						// than the time between alerts
-						if ((temperatura == last_temperature_alert && last_timestamp_alert + (tempoEntreAlertasTemperatura() * 1000 * 60) < System
-									.currentTimeMillis()) || temperatura != last_temperature_alert) {
-								writeAlertaToMySQL(dadosCorretos.get(i), "TemperaturaAlta",
-										"Temperatura alta na sala " + extractRoom(dadosCorretos.get(i), "Sensor"));
+						System.out.println("alerta 4");
+						if ((temperatura == last_temperature_alert
+								&& last_timestamp_alert + (tempoEntreAlertasTemperatura() * 1000 * 60) < System
+										.currentTimeMillis())
+								|| temperatura != last_temperature_alert) {
+
+							writeAlertaToMySQL(dadosCorretos.get(i), TemperaturaQuaseMax,
+									"Temperatura alta na sala " + extractRoom(dadosCorretos.get(i), "Sensor"));
 						}
 					}
 
+					System.err.println("linha 555");
 					last_temperature_alert = temperatura;
 					last_timestamp_alert = System.currentTimeMillis();
 				}
-			} else
+				System.err.println("Estou not else + " + i);
+			} else {
+				System.err.println("Estou else + " + i);
 				dadoSet.add(dadosCorretos.get(i));
+				writeToMySQL(dadosCorretos.get(i), "medicoes_temperatura");
+			}
+
 		}
 
 		// FAZER ALGO COM OS OUTLIERS
@@ -515,10 +617,12 @@ public class WriteMysql {
 		 */
 		// writeArrayListToFile(outliers, "DadosOutliersTemperatura.txt");
 		// writeHashSetToFile(dadoSet, "DadoSetTemperatura.txt");
+		System.out.println("print");
 	}
 
 	public float calculatePercentile(float quartile) {
 		int start = dadoSet.size() - OUTLIERS;
+		System.out.println("start = " + start);
 		if (start <= 0)
 			return Float.NEGATIVE_INFINITY;
 		else {
@@ -614,6 +718,8 @@ public class WriteMysql {
 
 	private void validarFormatosSalas(ArrayList<String> dateListRatos) {
 
+		System.out.println("Vamos validar as salas");
+
 		ArrayList<String> dadosAnomalos = new ArrayList<String>();
 		ArrayList<String> dadosCorretos = new ArrayList<String>();
 		for (String data : dateListRatos) {
@@ -699,6 +805,66 @@ public class WriteMysql {
 	// Funcao para inserir na expeiencia que nao tiver a hora preenchida,
 	// preenche-la com a data de fim da experiencia: data atual
 
+	private void popularMedicoes() {
+		int expId = idExperienciaFromSQL();
+		int numOfRooms = getTotalNumberOfRooms();
+		int num_ratos = 0;
+		if (expId == -1 || numOfRooms == -1)
+			return;
+
+		try {
+			Statement s = connTo.createStatement();
+			for (int i = 1; i <= numOfRooms; i++) {
+				String SqlComando = "INSERT INTO medicoes (id_ex, num_ratos, sala, hora) VALUES (" + expId + ", "
+						+ num_ratos + ", '" + i + "', CURRENT_TIMESTAMP);";
+				ResultSet rs = s.executeQuery(SqlComando);
+			}
+			s.close();
+		} catch (Exception e) {
+			if (e instanceof java.sql.SQLNonTransientConnectionException) {
+				this.connectDatabase_to();
+				System.out.println("Error Inserting in the database normal value. " + e);
+				// Em caso de falha, aguarde antes de tentar novamente
+				try {
+					Thread.sleep(1000); // Aguarda por 1 segundo antes de tentar novamente
+				} catch (InterruptedException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+	}
+
+	private void updateSala(int sala, int newValue) {
+		int id = idExperienciaFromSQL();
+		if (id == -1)
+			return;
+
+		String SqlCommando = "UPDATE medicoes SET num_ratos = " + newValue + ", hora = CURRENT_TIMESTAMP WHERE sala = '"
+				+ sala + "';";
+		boolean commandExecutedSuccessfully = false;
+
+		while (!commandExecutedSuccessfully) {
+			try {
+				Statement s = connTo.createStatement();
+				s.executeQuery(SqlCommando);
+				s.close();
+				commandExecutedSuccessfully = true;
+			} catch (Exception e) {
+				if (e instanceof java.sql.SQLNonTransientConnectionException) {
+					new WriteMysql().connectDatabase_to();
+					try {
+						Thread.sleep(1000); // Aguarda por 1 segundo antes de tentar novamente
+					} catch (InterruptedException ex) {
+						ex.printStackTrace();
+					}
+				} else {
+					commandExecutedSuccessfully = true;
+				}
+				System.out.println("Error updating the database. " + e);
+			}
+		}
+	}
+
 	private boolean ultimoAlertaLimiteRatos(int salaDestino) {
 		String SqlCommando = "SELECT * FROM alerta WHERE tipo_alerta = 'QuaseMaxRatos' AND sala = " + salaDestino
 				+ " ORDER BY hora_real DESC LIMIT 1;";
@@ -730,11 +896,10 @@ public class WriteMysql {
 		return result;
 	}
 
-	
 	public void inserirDataFimExperiencia(int id) {
 		if (id == -1)
 			return;
-		String SqlCommando = "UPDATE experiencia SET data_hora_fim = NULL WHERE id_ex= " + id +";";
+		String SqlCommando = "UPDATE experiencia SET data_hora_fim = CURRENT_TIMESTAMP WHERE id_ex= " + id + ";";
 		boolean commandExecutedSuccessfully = false;
 
 		while (!commandExecutedSuccessfully) {
@@ -858,43 +1023,12 @@ public class WriteMysql {
 	}
 
 	public double maxTemperature() {
+		System.err.println("Max Temperature Inicio");
 		double num = -1.00;
 		String SqlCommando = "SELECT maxTemperatura FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
 		boolean commandExecutedSuccessfully = false;
 		while (!commandExecutedSuccessfully) {
 
-			try {
-				Statement s = connTo.createStatement();
-				ResultSet rs = s.executeQuery(SqlCommando);
-				if (rs.next()) {
-					num = rs.getDouble(1);
-				}
-				s.close();
-			} catch (Exception e) {
-				if (e instanceof java.sql.SQLNonTransientConnectionException) {
-					new WriteMysql().connectDatabase_to();
-					try {
-						Thread.sleep(1000); // Aguarda por 1 segundo antes de tentar novamente
-					} catch (InterruptedException ex) {
-						ex.printStackTrace();
-					}
-				} else {
-					num = -1.00;
-					commandExecutedSuccessfully = true;
-				}
-			}
-		}
-		return num;
-
-	}
-
-	// Limite superior dos alertas de temperatura baixa (temp min = 10, este valor é
-	// por exemplo 12)
-	public double minTempForAlert() {
-		double num = -1.00;
-		String SqlCommando = "SELECT MIN_TEMPERATURA_FOR_ALERT FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
-		boolean commandExecutedSuccessfully = false;
-		while (!commandExecutedSuccessfully) {
 			try {
 				Statement s = connTo.createStatement();
 				ResultSet rs = s.executeQuery(SqlCommando);
@@ -917,7 +1051,43 @@ public class WriteMysql {
 				}
 			}
 		}
+		System.err.println("Max Temperature Fim : " + num);
 
+		return num;
+
+	}
+
+	// Limite superior dos alertas de temperatura baixa (temp min = 10, este valor é
+	// por exemplo 12)
+	public double minTempForAlert() {
+		double num = -1.00;
+		String SqlCommando = "SELECT MIN_TEMPERATURA_FOR_ALERT FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
+		boolean commandExecutedSuccessfully = false;
+		while (!commandExecutedSuccessfully) {
+			try {
+				System.err.println("query coias 1");
+				Statement s = connTo.createStatement();
+				ResultSet rs = s.executeQuery(SqlCommando);
+				if (rs.next()) {
+					num = rs.getDouble(1);
+				}
+				s.close();
+				commandExecutedSuccessfully = true;
+			} catch (Exception e) {
+				if (e instanceof java.sql.SQLNonTransientConnectionException) {
+					new WriteMysql().connectDatabase_to();
+					try {
+						Thread.sleep(1000); // Aguarda por 1 segundo antes de tentar novamente
+					} catch (InterruptedException ex) {
+						ex.printStackTrace();
+					}
+				} else {
+					num = -1.00;
+					commandExecutedSuccessfully = true;
+				}
+			}
+		}
+		System.err.println("query coias 2");
 		return num;
 	}
 
@@ -948,6 +1118,7 @@ public class WriteMysql {
 				}
 			}
 		}
+		System.out.println("minTemp :" + num);
 		return num;
 	}
 
@@ -983,7 +1154,7 @@ public class WriteMysql {
 
 	public int tempoParadosPorSala() {
 		int tempo = -1;
-		String SqlCommando = "SELECT TempoMaximoPermanenciaSala AS maximo_de_ratos_por_sala FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
+		String SqlCommando = "SELECT TempoMaximoPermanenciaSala AS maximo_de_ratos_por_sala FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT   1;";
 		boolean commandExecutedSuccessfully = false;
 		while (!commandExecutedSuccessfully) {
 			try {
@@ -1013,7 +1184,7 @@ public class WriteMysql {
 
 	public int numMaxRatosSala() {
 		int numMaxRatos = -1;
-		String SqlCommando = "SELECT LimiteRatosNumaSala AS maximo_de_ratos_por_sala FROM parametro_adicionais ORDER BY id_parametros DESC LIMIT 1;";
+		String SqlCommando = "SELECT RatosNumaSala AS maximo_de_ratos_por_sala FROM parametro_adicionais ORDER BY id_parametros  DESC LIMIT  1;";
 
 		boolean commandExecutedSuccessfully = false;
 		while (!commandExecutedSuccessfully) {
@@ -1044,7 +1215,7 @@ public class WriteMysql {
 
 	public int inicialNumRatos() {
 		int numRatos = -1;
-		String SqlCommando = "SELECT num_ratos FROM experiencia WHERE data_hora_fim IS NULL ORDER BY data_hora_inicio DESC LIMIT 1;";
+		String SqlCommando = "SELECT num_ratos FROM experiencia WHERE id_ex = " + idExperienciaFromSQL() + ";";
 		boolean commandExecutedSuccessfully = false;
 		while (!commandExecutedSuccessfully) {
 			try {
@@ -1077,7 +1248,9 @@ public class WriteMysql {
 		// Só isto não funciona, a experiência tem de ter data final a NULL para saber
 		// que não acabou
 		// String SqlComando = "SELECT MAX(id_ex) FROM experiencia;";
-		String SqlComando = "SELECT * FROM experiencia WHERE id_ex = (SELECT MAX(id_ex) FROM experiencia) AND data_hora_fim IS NULL;";
+		// Só vai buscar a mais recetne se tiver parametros adicionais, até lá não conta
+		// como experiência ativax
+		String SqlComando = "SELECT e.* FROM experiencia e JOIN parametro_adicionais p ON e.id_ex = p.id_ex WHERE e.id_ex = ( SELECT MAX(id_ex) FROM experiencia ) AND e.data_hora_fim IS NULL;";
 		boolean commandExecutedSuccessfully = false;
 		while (!commandExecutedSuccessfully) {
 			try {
@@ -1111,6 +1284,41 @@ public class WriteMysql {
 		return maxIdExperiencia;
 	}
 
+	public int getTotalNumberOfRooms() {
+		int totalNumberOfRooms = -1;
+		String SqlComando = "SELECT numerodesalas from configuracaolabirinto;";
+		boolean commandExecutedSuccessfully = false;
+		while (!commandExecutedSuccessfully) {
+			try {
+				Statement s = connToStor.createStatement();
+				ResultSet rs = s.executeQuery(SqlComando);
+				if (rs.next()) {
+					totalNumberOfRooms = rs.getInt(1); // Obtém o valor máximo da coluna id_experiencia
+					// Use o valor maxIdExperiencia conforme necessário
+					// System.out.println("Maior valor de id_experiencia: " + maxIdExperiencia);
+				} else {
+					totalNumberOfRooms = -1;
+				}
+				s.close();
+				commandExecutedSuccessfully = true;
+			} catch (Exception e) {
+				if (e instanceof java.sql.SQLNonTransientConnectionException) {
+					this.connectDatabase_to();
+					try {
+						Thread.sleep(1000); // Aguarda por 1 segundo antes de tentar novamente
+					} catch (InterruptedException ex) {
+						ex.printStackTrace();
+					}
+				} else {
+					totalNumberOfRooms = -1;
+					commandExecutedSuccessfully = true;
+				}
+				System.out.println("Erro ao buscar o maior valor de id_experiencia: " + e);
+			}
+		}
+		return totalNumberOfRooms;
+	}
+
 	public void writeToMySQL(String c, String tabela) {
 		String SqlCommando = "";
 		String hora = "";
@@ -1128,6 +1336,13 @@ public class WriteMysql {
 					hora += ".075649";
 				}
 				leitura = extractValue(c, "Leitura");
+				if (leitura != "NULL") {
+					leitura = dfZero.format(Double.parseDouble(leitura));
+					if (Double.parseDouble(leitura) >= 10000.0) {
+						leitura = "9999.99";
+					}
+				}
+
 				sensor = extractValue(c, "Sensor");
 				mongoID = Integer.parseInt(extractValue(c, "id"));
 				id = idExperienciaFromSQL();
@@ -1155,15 +1370,12 @@ public class WriteMysql {
 				salaOrigem = extractValue(c, "SalaOrigem");
 				salaDestino = extractValue(c, "SalaDestino");
 				id = idExperienciaFromSQL();
-				if (id == -1) {
-					SqlCommando = "Insert into medicoes_passagens" + " (" + "id_ex, hora, sala_origem, sala_destino"
-							+ ") values (" +
-							"NULL" + ", '" + hora + "', " + salaOrigem + ", " + salaDestino + ");";
-				} else {
-					SqlCommando = "Insert into medicoes_passagens" + " (" + "id_ex, hora, sala_origem, sala_destino"
-							+ ") values (" +
-							id + ", '" + hora + "', " + salaOrigem + ", " + salaDestino + ");";
-				}
+				if (id == -1)
+					return;
+
+				SqlCommando = "Insert into medicoes_passagens" + " (" + "id_ex, hora, sala_origem, sala_destino"
+						+ ") values (" +
+						id + ", '" + hora + "', " + salaOrigem + ", " + salaDestino + ");";
 				break;
 			default:
 				break;
@@ -1177,7 +1389,6 @@ public class WriteMysql {
 				int result = s.executeUpdate(SqlCommando);
 				System.out.println("Inseri " + result + " " + SqlCommando);
 				if (tabela.equals("medicoes_passagens")) {
-					// System.out.println("vou dar update ao sensor das portas");
 					writeInMongoBackupValue("sensoresPortas", mongoID);
 				} else {
 					writeInMongoBackupValue("sensoresTemp" + sensor, mongoID);
@@ -1204,6 +1415,9 @@ public class WriteMysql {
 		String SqlCommando = null;
 		if (c == null) {
 			int id = idExperienciaFromSQL();
+			if (id == -1)
+				return;
+
 			SqlCommando = "Insert into alerta" + " ("
 					+ "id_ex, hora_real, tipo_alerta, mensagem, hora_chegada"
 					+ ") values (" + id + ", CURRENT_TIMESTAMP" + ", '" + tipo_alerta + "', '"
@@ -1217,22 +1431,24 @@ public class WriteMysql {
 			String salaDestino = extractValue(c, "SalaDestino") == null ? "NULL" : extractValue(c, "SalaDestino");
 			int id = idExperienciaFromSQL();
 			String leitura = extractValue(c, "Leitura") == null ? "NULL" : extractValue(c, "Leitura");
+			if (leitura != "NULL") {
+				leitura = dfZero.format(Double.parseDouble(leitura));
+				if (Double.parseDouble(leitura) >= 10000.0) {
+					leitura = "9999.99";
+				}
+			}
 			String sensor = extractValue(c, "Sensor") == null ? "NULL" : extractValue(c, "Sensor");
 			SqlCommando = "";
-			if (id == -1) {
-				SqlCommando = "Insert into alerta" + " ("
-						+ "id_ex, hora_real, sala, sensor, leitura, tipo_alerta, mensagem, hora_chegada"
-						+ ") values (" +
-						"NULL" + " , '" + hora + "' , " + salaDestino + " , " + sensor + " , " + leitura + " , '"
-						+ tipo_alerta + "', '" + mensagem + "', CURRENT_TIMESTAMP );";
-			} else {
-				SqlCommando = "Insert into alerta" + " ("
-						+ "id_ex, hora_real, sala, sensor, leitura, tipo_alerta, mensagem , hora_chegada"
-						+ ") values (" +
-						id + " , ' " + hora + "' , " + salaDestino + " , " + sensor + " , " + leitura + " , '"
-						+ tipo_alerta
-						+ "' , '" + mensagem + "' , CURRENT_TIMESTAMP );";
-			}
+			if (id == -1)
+				return;
+
+			SqlCommando = "Insert into alerta" + " ("
+					+ "id_ex, hora_real, sala, sensor, leitura, tipo_alerta, mensagem , hora_chegada"
+					+ ") values (" +
+					id + " , ' " + hora + "' , " + salaDestino + " , " + sensor + " , " + leitura + " , '"
+					+ tipo_alerta
+					+ "' , '" + mensagem + "' , CURRENT_TIMESTAMP );";
+
 		}
 
 		boolean commandExecutedSuccessfully = false;
@@ -1301,10 +1517,8 @@ public class WriteMysql {
 		System.out.println(sequenceDocument + "\n");
 
 		if (sequenceDocument == null) {
-			System.out.println("Not found lastInsertedIds");
 			db2.getCollection("lastInsertedIds")
 					.insertOne(new Document("name", colIdUpdate).append("id", newValue));
-			System.out.println("Logo inseri id: " + newValue + "\n");
 		}
 
 	}
@@ -1317,9 +1531,10 @@ public class WriteMysql {
 				ids.put((String) (nextElement.get("name")), (int) (nextElement.get("id")));
 			}
 		}
-		for (String a : ids.keySet()) {
-			System.err.println(a + " " + ids.get(a));
-		}
+
+		// for (String a : ids.keySet()) {
+		// System.err.println(a + " " + ids.get(a));
+		// }
 
 		return ids;
 	}
@@ -1334,9 +1549,9 @@ public class WriteMysql {
 		// último guardado no ficheiro de backup
 		BasicDBObject query = new BasicDBObject();
 		if (lastIds.containsKey(collectionName)) {
-			query.put("id", new BasicDBObject("$gte", lastIds.get(collectionName)));
+			query.put("id", new BasicDBObject("$gt", lastIds.get(collectionName)));
 		} else {
-			query.put("id", new BasicDBObject("$gte", 0));
+			query.put("id", new BasicDBObject("$gt", 0));
 		}
 
 		try (DBCursor cursor = col.find(query)) {
@@ -1516,9 +1731,9 @@ public class WriteMysql {
 		WriteMysql programa = new WriteMysql();
 		createWindow();
 		programa.readFile();
-		// programa.connectToMongo();
+		programa.connectToMongo();
 		programa.connectDatabase_to();
-		// programa.connectMazeMySQL();
+		programa.connectMazeMySQL();
 		programa.ReadData();
 
 	}
