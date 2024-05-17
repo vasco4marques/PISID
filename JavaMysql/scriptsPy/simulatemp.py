@@ -49,7 +49,7 @@ while True:
             mensagem ="{Hora: \"" + str(datetime.now()) + "\", Leitura: " + str(number-1) + ", Sensor:1}" 
             clientMqttMovements.publish(topic,mensagem,qos=2)
             clientMqttMovements.loop()       
-            time.sleep(1) 
+            time.sleep(2) 
         except Exception:
             print("Error sendMqtt")
             pass   

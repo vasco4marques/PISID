@@ -144,7 +144,7 @@ public class WriteMysql {
 					String data = sensor.toString();
 					// Se o registo que existe tiver a data o começar inverte (começa a falselogo
 					// passa para true)
-					if (data.contains("2000-01-01 00:00:00")) {
+					if (data.contains("\"SalaOrigem\" : 0 , \"SalaDestino\" : 0")) {
 						System.out.println("Found this data");
 						comecar = !comecar;
 						// Se o começar for true vamos começar com os mapas dos ratos
@@ -223,7 +223,7 @@ public class WriteMysql {
 			// System.out.println("escrevi os ratos");t
 
 			// writeArrayListToFile(dateListTemperatura, "DadosMongoTemperatura.txt");
-			// detetarOutliers(tempsMisturadas);
+			detetarOutliers(tempsMisturadas);
 			System.out.println("escrevi os outliers");
 
 			validarFormatosSalas(dateListRatos);
@@ -542,12 +542,10 @@ public class WriteMysql {
 					// System.out.println("Temperatura É um outlier: " + temperatura);
 				} else {
 					// Se não for um outlier, insere no conjunto de dados
-					System.out.println("linha 500");
 
 					dadoSet.add(dadosCorretos.get(i));
 					writeToMySQL(dadosCorretos.get(i), "medicoes_temperatura");
 
-					System.out.println("linha 505");
 					// CHECK ALERTAS
 
 					// check if temperatura is within range returned in funcitons minTempForAlert
@@ -556,13 +554,11 @@ public class WriteMysql {
 					// less than minTemperature
 
 					if (temperatura <= minTemperature()) {
-						System.out.println("alerta 1");
 						writeAlertaToMySQL(dadosCorretos.get(i), TemperaturaMin,
 								"Temperatura baixa extrema na sala " + extractRoom(dadosCorretos.get(i), "Sensor"));
 						// acabar experiencia
 						inserirDataFimExperiencia(idExperienciaFromSQL());
 					} else if (temperatura >= maxTemperature()) {
-						System.out.println("alerta 2");
 
 						writeAlertaToMySQL(dadosCorretos.get(i), TemperaturaMax,
 								"Temperatura alta extrema na sala " + extractRoom(dadosCorretos.get(i), "Sensor"));
@@ -572,7 +568,6 @@ public class WriteMysql {
 						// check if temperatura has the same value as last temperatura alert
 						// if it has the same value, check if the time between the two alerts is bigger
 						// than the time between alerts
-						System.out.println("alerta 3");
 						if ((temperatura == last_temperature_alert
 								&& last_timestamp_alert + (tempoEntreAlertasTemperatura() * 1000 * 60) < System
 										.currentTimeMillis())
@@ -585,7 +580,6 @@ public class WriteMysql {
 						// check if temperatura has the same value as last temperatura alert
 						// if it has the same value, check if the time between the two alerts is bigger
 						// than the time between alerts
-						System.out.println("alerta 4");
 						if ((temperatura == last_temperature_alert
 								&& last_timestamp_alert + (tempoEntreAlertasTemperatura() * 1000 * 60) < System
 										.currentTimeMillis())
@@ -596,13 +590,11 @@ public class WriteMysql {
 						}
 					}
 
-					System.err.println("linha 555");
 					last_temperature_alert = temperatura;
 					last_timestamp_alert = System.currentTimeMillis();
 				}
-				System.err.println("Estou not else + " + i);
+
 			} else {
-				System.err.println("Estou else + " + i);
 				dadoSet.add(dadosCorretos.get(i));
 				writeToMySQL(dadosCorretos.get(i), "medicoes_temperatura");
 			}
@@ -617,7 +609,7 @@ public class WriteMysql {
 		 */
 		// writeArrayListToFile(outliers, "DadosOutliersTemperatura.txt");
 		// writeHashSetToFile(dadoSet, "DadoSetTemperatura.txt");
-		System.out.println("print");
+
 	}
 
 	public float calculatePercentile(float quartile) {
@@ -705,7 +697,6 @@ public class WriteMysql {
 					}
 				}
 				if (!anomalia) {
-					// System.out.println("ESTE DADO ESTAVA BEM");
 					dadosCorretos.add(data);
 				}
 			}
@@ -1387,7 +1378,6 @@ public class WriteMysql {
 				documentLabel.append(SqlCommando.toString() + "\n");
 				Statement s = connTo.createStatement();
 				int result = s.executeUpdate(SqlCommando);
-				System.out.println("Inseri " + result + " " + SqlCommando);
 				if (tabela.equals("medicoes_passagens")) {
 					writeInMongoBackupValue("sensoresPortas", mongoID);
 				} else {
@@ -1548,6 +1538,7 @@ public class WriteMysql {
 		// Cria uma query para ter apenas os documentos que têm um _id maior que o
 		// último guardado no ficheiro de backup
 		BasicDBObject query = new BasicDBObject();
+
 		if (lastIds.containsKey(collectionName)) {
 			query.put("id", new BasicDBObject("$gt", lastIds.get(collectionName)));
 		} else {
